@@ -131,23 +131,27 @@
 
     // Load products
     async function loadProducts() {
-      const res = await fetch(scriptURL);
-      const data = await res.json();
-      const productList = document.getElementById("productList");
-      productList.innerHTML = "";
+      try {
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+        const productList = document.getElementById("productList");
+        productList.innerHTML = "";
 
-      data.slice(1).forEach(row => {
-        const [id, name, price, image] = row;
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${image}" alt="${name}" />
-          <h4>${name}</h4>
-          <p>₹${price}</p>
-          <button onclick="deleteProduct('${id}')">🗑️ Delete</button>
-        `;
-        productList.appendChild(card);
-      });
+        data.slice(1).forEach(row => {
+          const [id, name, price, image] = row;
+          const card = document.createElement("div");
+          card.className = "product-card";
+          card.innerHTML = `
+            <img src="${image}" alt="${name}" />
+            <h4>${name}</h4>
+            <p>₹${price}</p>
+            <button onclick="deleteProduct('${id}')">🗑️ Delete</button>
+          `;
+          productList.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Error loading products:", err);
+      }
     }
 
     // Delete product by ID
