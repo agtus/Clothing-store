@@ -2,100 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shopping Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Cart - Clothing Store</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       background: #f7f7f7;
-      margin: 0;
       padding: 1rem;
     }
     h1 {
       text-align: center;
+      margin-bottom: 1rem;
     }
     .cart-container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 900px;
+      margin: auto;
     }
     .cart-item {
       display: flex;
-      align-items: center;
+      background: white;
       margin-bottom: 1rem;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
     .cart-item img {
-      width: 80px;
-      height: auto;
-      border-radius: 8px;
-      margin-right: 1rem;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
     }
-    .cart-item-details {
-      flex: 1;
+    .cart-info {
+      padding: 1rem;
+      flex-grow: 1;
     }
-    .cart-item button {
-      background: red;
-      color: white;
+    .cart-info h3 {
+      margin: 0;
+    }
+    .cart-info p {
+      color: #555;
+    }
+    .remove-btn {
+      background: none;
       border: none;
-      padding: 0.5rem;
-      border-radius: 5px;
+      color: red;
+      font-size: 1.2rem;
       cursor: pointer;
+      margin-top: 0.5rem;
     }
     .total {
-      font-weight: bold;
-      font-size: 1.2rem;
       text-align: right;
-      margin-top: 1rem;
+      font-size: 1.3rem;
+      margin: 1rem 0;
     }
     .checkout-btn {
       display: block;
-      margin: 2rem auto 0;
-      padding: 1rem 2rem;
-      background: green;
+      margin: 1rem auto;
+      padding: 0.8rem 2rem;
+      background: #000;
       color: white;
       border: none;
       font-size: 1rem;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
+    }
+    .back-btn {
+      display: block;
+      margin: 1rem auto;
+      text-align: center;
+      color: #333;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <h1>Your Cart</h1>
-  <div class="cart-container" id="cart-items"></div>
+  <h1>🛒 My Cart</h1>
+  <div class="cart-container" id="cart-container"></div>
   <div class="total" id="total-price">Total: ₹0</div>
-  <button class="checkout-btn" onclick="checkout()">Checkout</button>
+  <button class="checkout-btn" onclick="checkout()">Buy Now</button>
+  <a href="index.html" class="back-btn">← Continue Shopping</a>
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const container = document.getElementById('cart-container');
+    const totalEl = document.getElementById('total-price');
+    let total = 0;
 
     function renderCart() {
-      const container = document.getElementById('cart-items');
-      let total = 0;
       container.innerHTML = '';
+      total = 0;
+
+      if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align:center;">Your cart is empty.</p>';
+        totalEl.textContent = '';
+        return;
+      }
 
       cart.forEach((item, index) => {
-        total += parseFloat(item.price || 0);
+        total += parseInt(item.amount);
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
-          <img src="${item.image}" alt="${item.name}" />
-          <div class="cart-item-details">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-info">
             <h3>${item.name}</h3>
             <p>₹${item.price}</p>
+            <button class="remove-btn" onclick="removeItem(${index})">🗑️ Remove</button>
           </div>
-          <button onclick="removeItem(${index})">Remove</button>
         `;
         container.appendChild(div);
       });
 
-      document.getElementById('total-price').innerText = `Total: ₹${total.toFixed(2)}`;
+      totalEl.textContent = `Total: ₹${total / 100}`;
     }
 
     function removeItem(index) {
@@ -105,27 +124,25 @@
     }
 
     function checkout() {
-      const totalAmount = cart.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
 
       const options = {
-        key: "rzp_test_YourApiKeyHere", // Replace with your Razorpay API key
-        amount: totalAmount, // amount in the smallest currency unit
+        key: "rzp_test_YourApiKeyHere", // Replace with your Razorpay key
+        amount: total,
         currency: "INR",
         name: "My Clothing Store",
-        description: "Order Payment",
-        image: "https://your-logo-url.com/logo.png",
+        description: "Cart Checkout",
+        image: "https://via.placeholder.com/100",
         handler: function (response) {
           alert("Payment successful! ID: " + response.razorpay_payment_id);
-          localStorage.removeItem('cart');
-          window.location.href = "/";
-        },
-        prefill: {
-          name: "",
-          email: "",
-          contact: ""
+          localStorage.removeItem("cart");
+          window.location.href = "index.html";
         },
         theme: {
-          color: "#3399cc"
+          color: "#000"
         }
       };
       const rzp = new Razorpay(options);
