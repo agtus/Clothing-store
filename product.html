@@ -2,127 +2,241 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Product Detail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: 'Segoe UI', sans-serif;
       background: #f9f9f9;
     }
-    .product-detail {
+    .topbar {
       display: flex;
-      flex-wrap: wrap;
-      max-width: 1000px;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      font-size: 1.4rem;
+    }
+    .logo img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    .container {
+      max-width: 900px;
       margin: 2rem auto;
-      background: #fff;
-      padding: 2rem;
+      background: white;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    .product-detail img {
-      max-width: 400px;
+    .swiper {
       width: 100%;
+      height: 300px;
       border-radius: 10px;
-      margin-right: 2rem;
+      margin-bottom: 1rem;
     }
-    .info {
-      flex: 1;
+    .swiper-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-    .info h1 {
-      margin-top: 0;
+    h2 {
+      margin: 0.5rem 0;
     }
     .price {
-      color: green;
-      font-size: 1.5rem;
-      margin: 1rem 0;
+      font-size: 1.4rem;
+      color: #222;
     }
-    .buttons {
+    .desc {
       margin: 1rem 0;
+      line-height: 1.6;
     }
-    .buttons button {
-      padding: 1rem 2rem;
-      margin-right: 1rem;
+    select, input[type="number"] {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    button {
+      padding: 0.8rem;
       border: none;
-      border-radius: 5px;
-      font-size: 1rem;
+      border-radius: 6px;
       cursor: pointer;
-    }
-    .buy-now {
-      background: #ff9900;
+      font-size: 1rem;
+      background: black;
       color: white;
+      transition: 0.3s;
     }
-    .add-cart {
-      background: #232f3e;
-      color: white;
+    button:hover {
+      opacity: 0.9;
     }
-    footer {
-      text-align: center;
+    .delivery {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #444;
+    }
+    #sizeChartModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+    }
+    #sizeChartModal .content {
+      background: white;
       padding: 1rem;
-      background: #000;
-      color: white;
-      margin-top: 2rem;
+      max-width: 400px;
+      margin: 10% auto;
+      border-radius: 8px;
+    }
+    #sizeChartModal table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #sizeChartModal th, #sizeChartModal td {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
     }
   </style>
 </head>
 <body>
-  <div class="product-detail" id="product-detail"></div>
+  <div class="topbar">
+    <a href="index.html" class="logo">
+      <img src="https://via.placeholder.com/40x40?text=🛍️" alt="Logo" />
+      My Clothing Store
+    </a>
+  </div>
 
-  <footer>
-    <p>&copy; 2025 My Clothing Store</p>
-  </footer>
+  <div class="container">
+    <div class="swiper">
+      <div class="swiper-wrapper" id="swiper-wrapper"></div>
+      <div class="swiper-pagination"></div>
+    </div>
 
+    <h2 id="productName"></h2>
+    <p class="price" id="productPrice"></p>
+    <p class="desc" id="productDesc"></p>
+
+    <div>
+      <label for="sizeSelect">Select Size</label>
+      <select id="sizeSelect">
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="quantityInput">Quantity</label>
+      <input type="number" id="quantityInput" value="1" min="1" />
+    </div>
+
+    <div class="actions">
+      <button onclick="addToCart()">🛒 Add to Cart</button>
+      <button onclick="buyNow()">💳 Buy Now</button>
+      <button onclick="shareProduct()">🔗 Share</button>
+      <button onclick="document.getElementById('sizeChartModal').style.display='block'">📏 View Size Chart</button>
+    </div>
+
+    <div class="delivery">
+      🚚 Estimated Delivery: <span id="deliveryDate"></span>
+    </div>
+  </div>
+
+  <div id="sizeChartModal">
+    <div class="content">
+      <h3>Size Chart</h3>
+      <table>
+        <tr><th>Size</th><th>Chest</th><th>Waist</th></tr>
+        <tr><td>S</td><td>34-36"</td><td>28-30"</td></tr>
+        <tr><td>M</td><td>38-40"</td><td>32-34"</td></tr>
+        <tr><td>L</td><td>42-44"</td><td>36-38"</td></tr>
+        <tr><td>XL</td><td>46-48"</td><td>40-42"</td></tr>
+      </table>
+      <button onclick="document.getElementById('sizeChartModal').style.display='none'">Close</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    const product = JSON.parse(localStorage.getItem('selectedProduct'));
-    const container = document.getElementById('product-detail');
+    const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+    const images = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
 
-    if (!product) {
-      container.innerHTML = '<p>Product not found.</p>';
-    } else {
-      container.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" />
-        <div class="info">
-          <h1>${product.name}</h1>
-          <div class="price">₹${product.price}</div>
-          <p>${product.description}</p>
-          <div class="buttons">
-            <button class="buy-now" onclick="buyNow()">Buy Now</button>
-            <button class="add-cart" onclick='addToCart()'>Add to Cart</button>
-          </div>
-        </div>
-      `;
-    }
+    document.getElementById('productName').innerText = product.name || 'Product';
+    document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
+    document.getElementById('productDesc').innerText = product.description || 'No description available';
+
+    const wrapper = document.getElementById('swiper-wrapper');
+    images.forEach(img => {
+      const slide = document.createElement('div');
+      slide.className = 'swiper-slide';
+      slide.innerHTML = `<img src="${img}" alt="">`;
+      wrapper.appendChild(slide);
+    });
+
+    new Swiper('.swiper', {
+      pagination: { el: '.swiper-pagination' },
+    });
+
+    const now = new Date();
+    const early = new Date(now); early.setDate(now.getDate() + 3);
+    const late = new Date(now); late.setDate(now.getDate() + 7);
+    document.getElementById('deliveryDate').innerText =
+      `${early.toDateString()} - ${late.toDateString()}`;
 
     function addToCart() {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.push(product);
+      const size = document.getElementById('sizeSelect').value;
+      const qty = parseInt(document.getElementById('quantityInput').value);
+      if (qty < 1) return alert('Please enter a valid quantity.');
+
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push({ ...product, size, qty });
       localStorage.setItem('cart', JSON.stringify(cart));
-      alert('Added to cart!');
+      alert('✅ Added to cart!');
     }
 
     function buyNow() {
+      const size = document.getElementById('sizeSelect').value;
+      const qty = parseInt(document.getElementById('quantityInput').value);
+      if (!product.amount || qty < 1) return alert('Invalid quantity or product data');
+
       const options = {
-        key: "rzp_test_YourApiKeyHere", // Replace with real Razorpay Key
-        amount: parseInt(product.amount || product.price) * 100,
+        key: "rzp_test_1234567890", // 🔁 Replace with your Razorpay Key
+        amount: parseInt(product.amount) * qty,
         currency: "INR",
         name: "My Clothing Store",
-        description: product.name,
-        image: "https://your-logo-url.com/logo.png",
-        handler: function (response) {
-          alert("Payment successful! ID: " + response.razorpay_payment_id);
-        },
-        prefill: {
-          name: "",
-          email: "",
-          contact: ""
-        },
-        theme: {
-          color: "#3399cc"
-        }
+        description: `${product.name} (Size: ${size})`,
+        image: images[0],
+        handler: () => alert("✅ Payment successful!"),
+        theme: { color: "#000" }
       };
+
       const rzp = new Razorpay(options);
       rzp.open();
+    }
+
+    function shareProduct() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url);
+      alert("🔗 Product URL copied!");
     }
   </script>
 </body>
