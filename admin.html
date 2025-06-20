@@ -46,7 +46,7 @@
       font-weight: bold;
     }
     .product-list {
-      max-width: 1000px;
+      max-width: 900px;
       margin: 2rem auto;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -65,19 +65,13 @@
       height: 150px;
       object-fit: cover;
       border-radius: 5px;
-      margin-bottom: 0.5rem;
     }
-    .thumbs {
-      display: flex;
-      gap: 5px;
-      overflow-x: auto;
-      padding-bottom: 5px;
-    }
-    .thumbs img {
-      height: 40px;
-      width: 40px;
+    .product-card .thumbs img {
+      width: 50px;
+      height: 50px;
       object-fit: cover;
-      border-radius: 4px;
+      margin: 3px;
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -85,15 +79,17 @@
   <h1>🛠️ Admin Panel</h1>
 
   <form id="addForm">
-    <h2>Add Product</h2>
+    <h2>Add / Edit Product</h2>
     <label>Name</label>
     <input type="text" name="name" required />
     <label>Price (₹)</label>
     <input type="text" name="price" required />
     <label>Amount (Paise)</label>
     <input type="text" name="amount" required />
-    <label>Image URLs (comma-separated)</label>
-    <input type="text" name="image" placeholder="https://... , https://..." required />
+    <label>Upload Images</label>
+    <input type="file" id="imageUpload" accept="image/*" multiple />
+    <div id="uploadStatus">📷 Waiting for images...</div>
+    <input type="hidden" name="image" id="imageUrls" />
     <label>Description</label>
     <textarea name="desc" required></textarea>
     <label>Trending</label>
@@ -108,7 +104,7 @@
       <option value="Raw Materials">Raw Materials</option>
       <option value="Home Decors">Home Decors</option>
     </select>
-    <button type="submit">Add Product</button>
+    <button type="submit">Save Product</button>
     <div class="message" id="addMsg"></div>
   </form>
 
@@ -117,15 +113,47 @@
 
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbyiXDj4PgyXTRaZWE-DNiuqxxrazPOb4wh2BeDQvXgtalvjGX2v8vgsQSApGVXIP-fo/exec";
+    const cloudName = 'dxwvqo37k'; // 🔁 replace this
+    const uploadPreset = 'unsigned_preset'; // 🔁 replace this
 
-    // Add Product
+    let editingId = null;
+
+    document.getElementById('imageUpload').addEventListener('change', async (e) => {
+      const files = e.target.files;
+      const urls = [];
+      document.getElementById('uploadStatus').innerText = 'Uploading...';
+
+      for (let file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        if (data.secure_url) {
+          urls.push(data.secure_url);
+        }
+      }
+
+      document.getElementById('uploadStatus').innerText = `✅ ${urls.length} image(s) uploaded`;
+      document.getElementById('imageUrls').value = urls.join(',');
+    });
+
     document.getElementById("addForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const form = new FormData(this);
 
-      const id = Date.now().toString(); // Unique ID
-      form.append("id", id);
-      form.append("action", "add");
+      if (editingId) {
+        form.append("id", editingId);
+        form.append("action", "edit");
+      } else {
+        form.append("id", Date.now().toString());
+        form.append("action", "add");
+      }
 
       const res = await fetch(scriptURL, {
         method: "POST",
@@ -133,14 +161,18 @@
       });
 
       const msg = await res.text();
-      document.getElementById("addMsg").innerText = msg === "Added" ? "✅ Product added!" : "❌ Error";
-      if (msg === "Added") {
+      document.getElementById("addMsg").innerText = msg === "Added" || msg === "Edited"
+        ? `✅ Product ${editingId ? 'updated' : 'added'}!`
+        : "❌ Error";
+
+      if (msg === "Added" || msg === "Edited") {
         this.reset();
-        loadProducts(); // refresh list
+        editingId = null;
+        document.getElementById("uploadStatus").innerText = '📷 Waiting for images...';
+        loadProducts();
       }
     });
 
-    // Load products
     async function loadProducts() {
       try {
         const res = await fetch(scriptURL);
@@ -149,7 +181,7 @@
         productList.innerHTML = "";
 
         data.slice(1).forEach(row => {
-          const [id, name, price, image] = row;
+          const [id, name, price, image, desc, trending, section, amount] = row;
           const imgArray = image.split(',');
           const card = document.createElement("div");
           card.className = "product-card";
@@ -157,9 +189,8 @@
             <img src="${imgArray[0]}" alt="${name}" />
             <h4>${name}</h4>
             <p>₹${price}</p>
-            <div class="thumbs">
-              ${imgArray.map(img => `<img src="${img.trim()}" />`).join('')}
-            </div>
+            <div class="thumbs">${imgArray.map(i => `<img src="${i}" />`).join('')}</div>
+            <button onclick="editProduct('${id}', '${name}', '${price}', '${image}', \`${desc.replace(/`/g, "\\`")}\`, '${trending}', '${section}', '${amount}')">✏️ Edit</button>
             <button onclick="deleteProduct('${id}')">🗑️ Delete</button>
           `;
           productList.appendChild(card);
@@ -169,15 +200,26 @@
       }
     }
 
-    // Delete product by ID
+    function editProduct(id, name, price, image, desc, trending, section, amount) {
+      document.querySelector("input[name='name']").value = name;
+      document.querySelector("input[name='price']").value = price;
+      document.querySelector("input[name='amount']").value = amount;
+      document.getElementById("imageUrls").value = image;
+      document.getElementById("uploadStatus").innerText = `🖼️ Using existing image(s)`;
+      document.querySelector("textarea[name='desc']").value = desc;
+      document.querySelector("select[name='trending']").value = trending;
+      document.querySelector("select[name='section']").value = section;
+      editingId = id;
+      document.getElementById("addMsg").innerText = `🔧 Editing product...`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     async function deleteProduct(id) {
       if (!confirm(`Delete product ID ${id}?`)) return;
-
       const res = await fetch(scriptURL, {
         method: "POST",
         body: new URLSearchParams({ id, action: "delete" })
       });
-
       const msg = await res.text();
       if (msg === "Deleted") {
         alert("✅ Product deleted.");
