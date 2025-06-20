@@ -188,7 +188,7 @@
       const container = document.getElementById('product-container');
       container.innerHTML = '';
       products.forEach(p => {
-        const imageArray = image.split(',');
+        const imageArray = (p.image || "").split(',').map(img => img.trim()).filter(Boolean);
         const firstImage = imageArray[0] || 'fallback.jpg';
         const div = document.createElement('div');
         div.className = 'product';
