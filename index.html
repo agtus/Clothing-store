@@ -1,3 +1,4 @@
+<!-- Paste starts here -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Clothing Store</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     body {
       margin: 0;
@@ -28,6 +30,7 @@
       color: white;
       text-decoration: none;
       font-weight: bold;
+      cursor: pointer;
     }
     nav a:hover {
       text-decoration: underline;
@@ -59,7 +62,6 @@
       overflow: hidden;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       transition: transform 0.2s;
-      cursor: pointer;
     }
     .product:hover {
       transform: scale(1.02);
@@ -80,6 +82,28 @@
       margin: 0.3rem 0;
       color: #555;
     }
+    .btn-add {
+      background: #000;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #cart-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
@@ -88,10 +112,11 @@
   </header>
 
   <nav>
-    <a href="#women">Women</a>
-    <a href="#bedsheets">Bedsheets</a>
-    <a href="#raw">Raw Materials</a>
-    <a href="#decor">Home Decors</a>
+    <a onclick="filterSection('all')">All</a>
+    <a onclick="filterSection('women')">Women</a>
+    <a onclick="filterSection('bedsheets')">Bedsheets</a>
+    <a onclick="filterSection('raw materials')">Raw Materials</a>
+    <a onclick="filterSection('home decors')">Home Decors</a>
   </nav>
 
   <div class="hero">
@@ -101,41 +126,114 @@
   <h2 class="section-title">Trending Now</h2>
   <section class="products" id="product-list"></section>
 
+  <button id="cart-btn" onclick="viewCart()">🛒</button>
+
   <footer>
     <p>&copy; 2025 My Clothing Store</p>
   </footer>
 
   <script>
-    const sheetID = 'YOUR_SHEET_ID_HERE';
+    const sheetID = '2PACX-1vQc3GCwydGmTtaBC0Jx0GJKGDzWpQRzdSgFe6Oxd9wWLg9O8Csb_w5wXlKfc9WHSPUL2QSr2WLGBBur';
     const sheetName = 'Products';
     const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+
+    let allProducts = [];
 
     fetch(url)
       .then(res => res.text())
       .then(text => {
         const json = JSON.parse(text.substring(47).slice(0, -2));
         const rows = json.table.rows;
-        const productList = document.getElementById('product-list');
 
-        rows.forEach(row => {
+        allProducts = rows.map(row => {
           const data = row.c.map(cell => cell ? cell.v : "");
           const [id, name, price, image, desc, trending, section, amount] = data;
-
-          if (trending.toLowerCase() === 'yes') {
-            const el = document.createElement('div');
-            el.className = 'product';
-            el.onclick = () => window.location.href = `product.html?id=${id}`;
-            el.innerHTML = `
-              <img src="${image}" alt="${name}" />
-              <div class="product-info">
-                <h3>${name}</h3>
-                <p>₹${price}</p>
-              </div>
-            `;
-            productList.appendChild(el);
-          }
+          return { id, name, price, image, desc, trending, section: section.toLowerCase(), amount };
         });
+
+        displayProducts('all');
       });
+
+    function filterSection(section) {
+      displayProducts(section);
+    }
+
+    function displayProducts(section) {
+      const productList = document.getElementById('product-list');
+      productList.innerHTML = '';
+
+      const filtered = allProducts.filter(p => {
+        return p.trending.toLowerCase() === 'yes' && (section === 'all' || p.section === section);
+      });
+
+      filtered.forEach(product => {
+        const el = document.createElement('div');
+        el.className = 'product';
+        el.innerHTML = `
+          <img src="${product.image}" alt="${product.name}" />
+          <div class="product-info">
+            <h3>${product.name}</h3>
+            <p>₹${product.price}</p>
+            <button class="btn-add" onclick="addToCart(event, ${product.id})">Add to Cart</button>
+          </div>
+        `;
+        productList.appendChild(el);
+      });
+    }
+
+    function addToCart(event, productId) {
+      event.stopPropagation();
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const item = allProducts.find(p => p.id == productId);
+      if (item) {
+        cart.push(item);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert(`${item.name} added to cart!`);
+      }
+    }
+
+    function viewCart() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      let summary = "Items in Cart:\n";
+      let total = 0;
+      cart.forEach(item => {
+        summary += `- ${item.name} (₹${item.price})\n`;
+        total += parseInt(item.amount);
+      });
+
+      summary += `\nTotal: ₹${total / 100}`;
+
+      if (confirm(summary + "\n\nProceed to payment?")) {
+        const options = {
+          key: 'rzp_test_YourApiKeyHere',
+          amount: total,
+          currency: "INR",
+          name: "My Clothing Store",
+          description: "Cart Checkout",
+          image: "https://via.placeholder.com/100",
+          handler: function (response) {
+            alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
+            localStorage.removeItem('cart');
+          },
+          prefill: {
+            name: '',
+            email: '',
+            contact: ''
+          },
+          theme: {
+            color: "#000"
+          }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+      }
+    }
   </script>
 </body>
 </html>
+<!-- Paste ends here -->
