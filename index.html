@@ -3,143 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Clothing Store</title>
+  <title>Your Cart</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
       margin: 0;
-      background: #f7f7f7;
+      padding: 0;
     }
     header {
-      background-color: #000;
-      color: #fff;
+      background-color: #232f3e;
+      color: white;
       padding: 1rem;
       text-align: center;
     }
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      background-color: #eee;
-      padding: 0.5rem;
-    }
-    nav button {
-      padding: 0.5rem 1rem;
-      border: none;
-      background: #000;
-      color: white;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .product {
+    .cart-container {
+      max-width: 900px;
+      margin: 2rem auto;
       background: white;
       border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-      margin: 1rem;
-      padding: 1rem;
-      width: 250px;
-      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
     }
-    .product img {
-      max-width: 100%;
-      height: auto;
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 0;
+    }
+    .cart-item img {
+      width: 80px;
       border-radius: 8px;
+      margin-right: 1rem;
+    }
+    .cart-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .cart-info a {
+      text-decoration: none;
+      color: #232f3e;
+    }
+    .cart-info h3 {
+      margin: 0;
+    }
+    .price {
+      color: green;
+      font-weight: bold;
+    }
+    .cart-item button {
+      background: #ff3c3c;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .total {
+      text-align: right;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    .checkout-btn {
+      display: block;
+      margin: 2rem auto 0;
+      padding: 1rem 2rem;
+      background: #ff9900;
+      color: white;
+      border: none;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
     }
     footer {
       text-align: center;
       padding: 1rem;
-      background: #000;
+      background: #232f3e;
       color: white;
-    }
-    #cart-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #000;
-      color: #fff;
-      border: none;
-      padding: 1rem;
-      border-radius: 50%;
-      font-size: 1.5rem;
-      cursor: pointer;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>My Clothing Store</h1>
+    <h1>Your Shopping Cart</h1>
   </header>
 
-  <nav>
-    <button onclick="filterProducts('all')">All</button>
-    <button onclick="filterProducts('women')">Women</button>
-    <button onclick="filterProducts('bedsheets')">Bedsheets</button>
-    <button onclick="filterProducts('raw materials')">Raw Materials</button>
-    <button onclick="filterProducts('home decors')">Home Decors</button>
-  </nav>
-
-  <div class="container" id="product-container"></div>
-
-  <a href="cart.html" id="cart-btn">🛒</a>
+  <div class="cart-container" id="cart-items"></div>
+  <div class="total" id="total-price">Total: ₹0</div>
+  <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
 
   <footer>
     <p>&copy; 2025 My Clothing Store</p>
   </footer>
 
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    let allProducts = [];
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    async function fetchProducts() {
-      const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQc3GCwydGmTtaBC0Jx0GJKGDzWpQRzdSgFe6Oxd9wWLg9O8Csb_w5wXlKfc9WHSPUL2QSr2WLGBBur/pub?output=csv');
-      const data = await response.text();
-      const rows = data.split('\n').slice(1);
-
-      allProducts = rows.map(row => {
-        const [id, name, price, image, description, trending, section, amount] = row.split(',');
-        return { id, name, price, image, description, trending, section: section?.trim().toLowerCase(), amount };
-      });
-
-      renderProducts(allProducts);
-    }
-
-    function renderProducts(products) {
-      const container = document.getElementById('product-container');
+    function renderCart() {
+      const container = document.getElementById('cart-items');
+      let total = 0;
       container.innerHTML = '';
-      products.forEach(p => {
-        if (!p.name || !p.image) return;
+
+      if (cart.length === 0) {
+        container.innerHTML = '<p>Your cart is empty.</p>';
+        document.getElementById('total-price').textContent = 'Total: ₹0';
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        total += parseFloat(item.price || 0);
         const div = document.createElement('div');
-        div.className = 'product';
+        div.className = 'cart-item';
         div.innerHTML = `
-          <img src="${p.image}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <p>${p.description}</p>
-          <p>₹${p.price}</p>
-          <button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
+          <div class="cart-info">
+            <img src="${item.image}" alt="${item.name}" />
+            <div>
+              <a href="product.html" onclick="viewProduct(${index})"><h3>${item.name}</h3></a>
+              <p class="price">₹${item.price}</p>
+            </div>
+          </div>
+          <button onclick="removeItem(${index})">Remove</button>
         `;
         container.appendChild(div);
       });
+
+      document.getElementById('total-price').textContent = `Total: ₹${total.toFixed(2)}`;
     }
 
-    function filterProducts(category) {
-      if (category === 'all') return renderProducts(allProducts);
-      const filtered = allProducts.filter(p => p.section === category);
-      renderProducts(filtered);
-    }
-
-    function addToCart(item) {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.push(item);
+    function removeItem(index) {
+      cart.splice(index, 1);
       localStorage.setItem('cart', JSON.stringify(cart));
-      alert('Added to cart!');
+      renderCart();
     }
 
-    fetchProducts();
+    function viewProduct(index) {
+      localStorage.setItem('selectedProduct', JSON.stringify(cart[index]));
+    }
+
+    function checkout() {
+      const totalAmount = cart.reduce((sum, item) => sum + parseFloat(item.amount || item.price || 0), 0);
+
+      const options = {
+        key: "rzp_test_YourApiKeyHere", // Replace with your Razorpay API key
+        amount: totalAmount * 100, // Razorpay uses paise
+        currency: "INR",
+        name: "My Clothing Store",
+        description: "Cart Checkout",
+        image: "https://your-logo-url.com/logo.png",
+        handler: function (response) {
+          alert("Payment successful! ID: " + response.razorpay_payment_id);
+          localStorage.removeItem('cart');
+          window.location.href = '/';
+        },
+        prefill: {
+          name: "",
+          email: "",
+          contact: ""
+        },
+        theme: {
+          color: "#3399cc"
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+
+    renderCart();
   </script>
 </body>
 </html>
