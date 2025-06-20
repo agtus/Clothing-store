@@ -118,7 +118,7 @@
         div.className = 'product';
         div.onclick = () => viewProduct(p);
         div.innerHTML = `
-          <img src="${p.image}" alt="${p.name}">
+          <img src="${imageArray[0]}" alt="${product.name}" />
           <h3>${p.name}</h3>
           <p>₹${p.price}</p>
         `;
