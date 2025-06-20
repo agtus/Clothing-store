@@ -190,7 +190,7 @@
             <h4>${name}</h4>
             <p>₹${price}</p>
             <div class="thumbs">${imgArray.map(i => `<img src="${i}" />`).join('')}</div>
-            <button onclick="editProduct('${id}', '${name}', '${price}', '${image}', \`${(desc || "").replace(/`/g, "\\`")}\`, '${trending}', '${section}', '${amount}')">✏️ Edit</button>
+            <button onclick="editProduct('${id}', '${name}', '${price}', '${image}', \`${String(desc || "").replace(/`/g, "\\`")}\`, '${trending}', '${section}', '${amount}')">✏️ Edit</button>
             <button onclick="deleteProduct('${id}')">🗑️ Delete</button>`;
           productList.appendChild(card);
         });
