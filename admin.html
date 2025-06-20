@@ -46,7 +46,7 @@
       font-weight: bold;
     }
     .product-list {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 2rem auto;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -65,9 +65,19 @@
       height: 150px;
       object-fit: cover;
       border-radius: 5px;
+      margin-bottom: 0.5rem;
     }
-    .product-card h4 {
-      margin: 0.5rem 0 0.2rem;
+    .thumbs {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+    .thumbs img {
+      height: 40px;
+      width: 40px;
+      object-fit: cover;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -76,16 +86,14 @@
 
   <form id="addForm">
     <h2>Add Product</h2>
-    <label>ID</label>
-    <input type="text" name="id" required />
     <label>Name</label>
     <input type="text" name="name" required />
     <label>Price (₹)</label>
     <input type="text" name="price" required />
     <label>Amount (Paise)</label>
     <input type="text" name="amount" required />
-    <label>Image URL</label>
-    <input type="text" name="image" required />
+    <label>Image URLs (comma-separated)</label>
+    <input type="text" name="image" placeholder="https://... , https://..." required />
     <label>Description</label>
     <textarea name="desc" required></textarea>
     <label>Trending</label>
@@ -114,6 +122,9 @@
     document.getElementById("addForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const form = new FormData(this);
+
+      const id = Date.now().toString(); // Unique ID
+      form.append("id", id);
       form.append("action", "add");
 
       const res = await fetch(scriptURL, {
@@ -139,12 +150,16 @@
 
         data.slice(1).forEach(row => {
           const [id, name, price, image] = row;
+          const imgArray = image.split(',');
           const card = document.createElement("div");
           card.className = "product-card";
           card.innerHTML = `
-            <img src="${image}" alt="${name}" />
+            <img src="${imgArray[0]}" alt="${name}" />
             <h4>${name}</h4>
             <p>₹${price}</p>
+            <div class="thumbs">
+              ${imgArray.map(img => `<img src="${img.trim()}" />`).join('')}
+            </div>
             <button onclick="deleteProduct('${id}')">🗑️ Delete</button>
           `;
           productList.appendChild(card);
