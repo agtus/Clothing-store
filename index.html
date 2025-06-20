@@ -165,14 +165,11 @@
           const [id, name, price, image, description, trending, section, amount] = row.split(',');
           if (!name || !image) return null;
 
-          const images = image.split(',').map(i => i.trim()).filter(Boolean);
-          const firstImage = images[0] || '';
-
           return {
             id,
             name,
             price,
-            image: firstImage,
+            image, // keep full image string
             description,
             trending,
             section: section?.trim().toLowerCase(),
