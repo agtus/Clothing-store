@@ -18,6 +18,21 @@
       padding: 1rem 2rem;
       text-align: center;
     }
+    nav {
+      background: #333;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 0.8rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
     .hero {
       background: url('https://via.placeholder.com/1200x400') no-repeat center center/cover;
       height: 300px;
@@ -28,11 +43,15 @@
       font-size: 2rem;
       text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
     }
+    h2 {
+      padding: 1rem 2rem 0.5rem;
+      color: #222;
+    }
     .products {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1.5rem;
-      padding: 2rem;
+      padding: 1rem 2rem;
     }
     .product {
       background: white;
@@ -83,35 +102,61 @@
     <h1>My Clothing Store</h1>
   </header>
 
+  <nav>
+    <a href="#women">Women</a>
+    <a href="#bedsheets">Bedsheets</a>
+    <a href="#raw">Raw Materials</a>
+    <a href="#decor">Home Decors</a>
+  </nav>
+
   <section class="hero">
-    <div>Trendy. Comfortable. Affordable.</div>
+    <div>Welcome to Your Stylish Home & Wardrobe</div>
   </section>
 
+  <h2 id="women">Women</h2>
   <section class="products">
     <div class="product">
-      <img src="https://via.placeholder.com/300x250" alt="T-Shirt">
+      <img src="https://via.placeholder.com/300x250" alt="Dress">
       <div class="product-info">
-        <h3>Classic T-Shirt</h3>
-        <p>$19.99</p>
-        <a href="https://wa.me/1234567890" class="btn"><i class="fab fa-whatsapp"></i> Buy on WhatsApp</a>
+        <h3>Elegant Dress</h3>
+        <p>$39.99</p>
+        <a href="https://wa.me/1234567890" class="btn">Buy on WhatsApp</a>
       </div>
     </div>
+  </section>
 
+  <h2 id="bedsheets">Bedsheets</h2>
+  <section class="products">
     <div class="product">
-      <img src="https://via.placeholder.com/300x250" alt="Hoodie">
+      <img src="https://via.placeholder.com/300x250" alt="Bedsheet">
       <div class="product-info">
-        <h3>Stylish Hoodie</h3>
-        <p>$29.99</p>
-        <a href="https://wa.me/1234567890" class="btn"><i class="fab fa-whatsapp"></i> Buy on WhatsApp</a>
+        <h3>Soft Cotton Bedsheet</h3>
+        <p>$24.99</p>
+        <a href="https://wa.me/1234567890" class="btn">Buy on WhatsApp</a>
       </div>
     </div>
+  </section>
 
+  <h2 id="raw">Raw Materials</h2>
+  <section class="products">
     <div class="product">
-      <img src="https://via.placeholder.com/300x250" alt="Jeans">
+      <img src="https://via.placeholder.com/300x250" alt="Fabric">
       <div class="product-info">
-        <h3>Denim Jeans</h3>
-        <p>$34.99</p>
-        <a href="https://wa.me/1234567890" class="btn"><i class="fab fa-whatsapp"></i> Buy on WhatsApp</a>
+        <h3>Silk Fabric Roll</h3>
+        <p>$49.99</p>
+        <a href="https://wa.me/1234567890" class="btn">Buy on WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <h2 id="decor">Home Decors</h2>
+  <section class="products">
+    <div class="product">
+      <img src="https://via.placeholder.com/300x250" alt="Vase">
+      <div class="product-info">
+        <h3>Ceramic Vase</h3>
+        <p>$14.99</p>
+        <a href="https://wa.me/1234567890" class="btn">Buy on WhatsApp</a>
       </div>
     </div>
   </section>
