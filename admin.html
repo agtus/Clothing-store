@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel - Clothing Store</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+    }
+    form, .delete-box {
+      max-width: 600px;
+      margin: 1rem auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      background: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .message {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛠️ Admin Panel</h1>
+
+  <form id="addForm">
+    <h2>Add Product</h2>
+    <label>ID</label>
+    <input type="text" name="id" required />
+    <label>Name</label>
+    <input type="text" name="name" required />
+    <label>Price (₹)</label>
+    <input type="text" name="price" required />
+    <label>Amount (Paise)</label>
+    <input type="text" name="amount" required />
+    <label>Image URL</label>
+    <input type="text" name="image" required />
+    <label>Description</label>
+    <textarea name="desc" required></textarea>
+    <label>Trending</label>
+    <select name="trending">
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+    <label>Section</label>
+    <select name="section">
+      <option value="Women">Women</option>
+      <option value="Bedsheets">Bedsheets</option>
+      <option value="Raw Materials">Raw Materials</option>
+      <option value="Home Decors">Home Decors</option>
+    </select>
+    <button type="submit">Add Product</button>
+    <div class="message" id="addMsg"></div>
+  </form>
+
+  <div class="delete-box">
+    <h2>Delete Product</h2>
+    <label>Enter Product ID to Delete</label>
+    <input type="text" id="deleteId" />
+    <button onclick="deleteProduct()">Delete</button>
+    <div class="message" id="deleteMsg"></div>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec";
+
+    document.getElementById("addForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const form = new FormData(this);
+      form.append("action", "add");
+
+      const res = await fetch(scriptURL, {
+        method: "POST",
+        body: new URLSearchParams(form)
+      });
+
+      const msg = await res.text();
+      document.getElementById("addMsg").innerText = msg === "Added" ? "✅ Product added!" : "❌ Error";
+      if (msg === "Added") this.reset();
+    });
+
+    async function deleteProduct() {
+      const id = document.getElementById("deleteId").value.trim();
+      if (!id) return alert("Enter product ID");
+
+      const res = await fetch(scriptURL, {
+        method: "POST",
+        body: new URLSearchParams({ id, action: "delete" })
+      });
+
+      const msg = await res.text();
+      document.getElementById("deleteMsg").innerText =
+        msg === "Deleted" ? "🗑️ Product deleted!" : "⚠️ Product not found.";
+    }
+  </script>
+</body>
+</html>
