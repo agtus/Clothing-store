@@ -10,6 +10,7 @@
       font-family: 'Segoe UI', sans-serif;
       background: #f9f9f9;
     }
+
     .topbar {
       display: flex;
       align-items: center;
@@ -17,6 +18,7 @@
       background: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
+
     .logo {
       display: flex;
       align-items: center;
@@ -25,13 +27,14 @@
       font-weight: bold;
       font-size: 1.4rem;
     }
+
     .logo img {
       height: 40px;
       margin-right: 10px;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 2rem auto;
       background: white;
       border-radius: 10px;
@@ -44,38 +47,40 @@
       aspect-ratio: 4 / 3;
       overflow: hidden;
       border-radius: 10px;
-      margin-bottom: 1rem;
+      position: relative;
+      cursor: zoom-in;
     }
 
     .main-image img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      cursor: zoom-in;
     }
 
     .thumbnails {
       display: flex;
+      gap: 10px;
       overflow-x: auto;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+      margin-top: 1rem;
+      padding-bottom: 0.5rem;
     }
 
     .thumbnails img {
-      height: 70px;
       width: 70px;
+      height: 70px;
       object-fit: cover;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       border: 2px solid transparent;
+      transition: 0.2s;
     }
 
     .thumbnails img.active {
-      border-color: #000;
+      border-color: black;
     }
 
     h2 {
-      margin: 0.5rem 0;
+      margin-top: 1rem;
     }
 
     .price {
@@ -123,50 +128,23 @@
       color: #444;
     }
 
-    #sizeChartModal {
-      display: none;
+    #popupViewer {
       position: fixed;
       top: 0; left: 0;
       right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 100;
-    }
-
-    #sizeChartModal .content {
-      background: white;
-      padding: 1rem;
-      max-width: 400px;
-      margin: 10% auto;
-      border-radius: 8px;
-    }
-
-    #sizeChartModal table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    #sizeChartModal th, #sizeChartModal td {
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-    }
-
-    #imagePopup {
+      background: rgba(0, 0, 0, 0.8);
       display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.9);
-      z-index: 999;
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
 
-    #imagePopup img {
-      max-width: 90%;
-      max-height: 90%;
-      object-fit: contain;
+    #popupViewer img {
+      max-width: 90vw;
+      max-height: 90vh;
     }
 
-    #imagePopup:active {
+    #popupViewer:active {
       display: none;
     }
 
@@ -182,6 +160,7 @@
       font-size: 1.5rem;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 10;
     }
   </style>
 </head>
@@ -194,11 +173,10 @@
   </div>
 
   <div class="container">
-    <div class="main-image" id="mainImageWrapper">
-      <img id="mainImage" src="" alt="Main Product Image" />
+    <div class="main-image" onclick="openViewer()">
+      <img id="mainProductImage" src="" alt="Main Product Image">
     </div>
-
-    <div class="thumbnails" id="thumbnails"></div>
+    <div class="thumbnails" id="thumbnailRow"></div>
 
     <h2 id="productName"></h2>
     <p class="price" id="productPrice"></p>
@@ -223,7 +201,6 @@
       <button onclick="addToCart()">🛒 Add to Cart</button>
       <button onclick="buyNow()">💳 Buy Now</button>
       <button onclick="shareProduct()">🔗 Share</button>
-      <button onclick="document.getElementById('sizeChartModal').style.display='block'">📏 View Size Chart</button>
     </div>
 
     <div class="delivery">
@@ -231,22 +208,8 @@
     </div>
   </div>
 
-  <div id="sizeChartModal">
-    <div class="content">
-      <h3>Size Chart</h3>
-      <table>
-        <tr><th>Size</th><th>Chest</th><th>Waist</th></tr>
-        <tr><td>S</td><td>34-36"</td><td>28-30"</td></tr>
-        <tr><td>M</td><td>38-40"</td><td>32-34"</td></tr>
-        <tr><td>L</td><td>42-44"</td><td>36-38"</td></tr>
-        <tr><td>XL</td><td>46-48"</td><td>40-42"</td></tr>
-      </table>
-      <button onclick="document.getElementById('sizeChartModal').style.display='none'">Close</button>
-    </div>
-  </div>
-
-  <div id="imagePopup" onclick="this.style.display='none'">
-    <img id="popupImg" src="" alt="Zoomed Image" />
+  <div id="popupViewer" onclick="closeViewer()">
+    <img id="popupImage" src="" alt="Zoomed Image">
   </div>
 
   <a href="cart.html" id="cart-btn">🛒</a>
@@ -254,34 +217,34 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const images = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
+    const images = (product.image || '').split(',').map(i => i.trim()).filter(i => i.startsWith('http'));
+    const mainImg = document.getElementById('mainProductImage');
+    const thumbRow = document.getElementById('thumbnailRow');
+    const popupImg = document.getElementById('popupImage');
 
-    const mainImage = document.getElementById('mainImage');
-    const thumbnails = document.getElementById('thumbnails');
-    const popup = document.getElementById('imagePopup');
-    const popupImg = document.getElementById('popupImg');
+    let currentImageIndex = 0;
 
-    if (images.length > 0) {
-      mainImage.src = images[0];
-      popupImg.src = images[0];
+    function setMainImage(index) {
+      currentImageIndex = index;
+      mainImg.src = images[index];
+      popupImg.src = images[index];
 
-      images.forEach((src, i) => {
-        const thumb = document.createElement('img');
-        thumb.src = src;
-        thumb.className = i === 0 ? 'active' : '';
-        thumb.onclick = () => {
-          document.querySelectorAll('.thumbnails img').forEach(img => img.classList.remove('active'));
-          thumb.classList.add('active');
-          mainImage.src = src;
-          popupImg.src = src;
-        };
-        thumbnails.appendChild(thumb);
+      document.querySelectorAll('.thumbnails img').forEach((img, i) => {
+        img.classList.toggle('active', i === index);
       });
     }
 
-    mainImage.onclick = () => {
-      popup.style.display = 'flex';
-    };
+    if (images.length) {
+      images.forEach((imgSrc, i) => {
+        const thumb = document.createElement('img');
+        thumb.src = imgSrc;
+        thumb.onclick = () => setMainImage(i);
+        thumbRow.appendChild(thumb);
+      });
+      setMainImage(0);
+    } else {
+      mainImg.src = 'fallback.jpg';
+    }
 
     document.getElementById('productName').innerText = product.name || 'Product';
     document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
@@ -293,10 +256,19 @@
     document.getElementById('deliveryDate').innerText =
       `${early.toDateString()} - ${late.toDateString()}`;
 
+    function openViewer() {
+      document.getElementById('popupViewer').style.display = 'flex';
+    }
+
+    function closeViewer() {
+      document.getElementById('popupViewer').style.display = 'none';
+    }
+
     function addToCart() {
       const size = document.getElementById('sizeSelect').value;
       const qty = parseInt(document.getElementById('quantityInput').value);
       if (qty < 1) return alert('Please enter a valid quantity.');
+
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       cart.push({ ...product, size, qty });
       localStorage.setItem('cart', JSON.stringify(cart));
@@ -307,6 +279,7 @@
       const size = document.getElementById('sizeSelect').value;
       const qty = parseInt(document.getElementById('quantityInput').value);
       if (!product.amount || qty < 1) return alert('Invalid quantity or product data');
+
       const options = {
         key: "rzp_test_1234567890", // Replace with your Razorpay Key
         amount: parseInt(product.amount) * qty,
@@ -317,6 +290,7 @@
         handler: () => alert("✅ Payment successful!"),
         theme: { color: "#000" }
       };
+
       const rzp = new Razorpay(options);
       rzp.open();
     }
