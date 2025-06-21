@@ -48,7 +48,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 10px;
     }
     h2 {
       margin: 0.5rem 0;
@@ -114,39 +113,6 @@
       padding: 0.5rem;
       border: 1px solid #ddd;
     }
-    .color-swatches {
-      display: flex;
-      gap: 0.5rem;
-      margin: 0.5rem 0;
-    }
-    .color-swatch {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      text-align: center;
-      line-height: 32px;
-      font-size: 0.7rem;
-      background-color: #eee;
-    }
-    .color-swatch.active {
-      border-color: black;
-    }
-    #cart-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #000;
-      color: #fff;
-      border: none;
-      padding: 1rem;
-      border-radius: 50%;
-      font-size: 1.5rem;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 99;
-    }
   </style>
 </head>
 <body>
@@ -168,8 +134,8 @@
     <p class="desc" id="productDesc"></p>
 
     <div>
-      <label for="colorOptions">Color</label>
-      <div class="color-swatches" id="colorOptions"></div>
+      <label for="colorSelect">Select Color</label>
+      <select id="colorSelect" onchange="updateColorImages()"></select>
     </div>
 
     <div>
@@ -208,68 +174,73 @@
     </div>
   </div>
 
-  <a href="cart.html" id="cart-btn">🛒</a>
-
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const colors = JSON.parse(product.colors || '{}');
-    const availableSizes = (product.sizes || '').split(',').filter(Boolean);
-    const swiperWrapper = document.getElementById('swiper-wrapper');
+    const colorData = JSON.parse(product.colors || '{}');
+    const defaultImages = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
+    const availableSizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
 
     document.getElementById('productName').innerText = product.name || 'Product';
     document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
-    document.getElementById('productDesc').innerText = product.description || 'No description';
+    document.getElementById('productDesc').innerText = product.description || 'No description available';
 
-    // Fill size dropdown
+    // Populate sizes
     const sizeSelect = document.getElementById('sizeSelect');
     availableSizes.forEach(size => {
       const opt = document.createElement('option');
-      opt.value = opt.innerText = size;
+      opt.value = opt.textContent = size;
       sizeSelect.appendChild(opt);
     });
 
-    // Fill color swatches
-    const colorContainer = document.getElementById('colorOptions');
-    Object.keys(colors).forEach((clr, i) => {
-      const btn = document.createElement('div');
-      btn.className = 'color-swatch' + (i === 0 ? ' active' : '');
-      btn.innerText = clr;
-      btn.onclick = () => {
-        document.querySelectorAll('.color-swatch').forEach(e => e.classList.remove('active'));
-        btn.classList.add('active');
-        renderImages(clr);
-      };
-      colorContainer.appendChild(btn);
-    });
-
-    function renderImages(color) {
-      swiperWrapper.innerHTML = '';
-      const images = (colors[color] || '').split(',').filter(Boolean);
-      images.forEach(img => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `<img src="${img}" alt="">`;
-        swiperWrapper.appendChild(slide);
+    // Populate colors
+    const colorSelect = document.getElementById('colorSelect');
+    const colorKeys = Object.keys(colorData);
+    if (colorKeys.length) {
+      colorKeys.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = c;
+        colorSelect.appendChild(opt);
       });
-      new Swiper('.swiper', { pagination: { el: '.swiper-pagination' } });
+    } else {
+      colorSelect.style.display = 'none';
+      document.querySelector('label[for="colorSelect"]').style.display = 'none';
     }
 
-    // Initial render
-    renderImages(Object.keys(colors)[0]);
+    function renderSwiper(images) {
+      const wrapper = document.getElementById('swiper-wrapper');
+      wrapper.innerHTML = '';
+      images.forEach(img => {
+        const div = document.createElement('div');
+        div.className = 'swiper-slide';
+        div.innerHTML = `<img src="${img}" alt="">`;
+        wrapper.appendChild(div);
+      });
+
+      new Swiper('.swiper', {
+        pagination: { el: '.swiper-pagination' }
+      });
+    }
+
+    function updateColorImages() {
+      const selected = document.getElementById('colorSelect').value;
+      const imgs = colorData[selected]?.split(',').map(i => i.trim()).filter(Boolean);
+      renderSwiper(imgs || defaultImages);
+    }
+
+    updateColorImages(); // initial load
 
     const now = new Date();
     const early = new Date(now); early.setDate(now.getDate() + 3);
     const late = new Date(now); late.setDate(now.getDate() + 7);
-    document.getElementById('deliveryDate').innerText =
-      `${early.toDateString()} - ${late.toDateString()}`;
+    document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
 
     function addToCart() {
-      const size = document.getElementById('sizeSelect').value;
+      const size = sizeSelect.value;
       const qty = parseInt(document.getElementById('quantityInput').value);
-      if (qty < 1) return alert('Please enter valid quantity.');
-      const color = document.querySelector('.color-swatch.active')?.innerText || '';
+      const color = colorSelect?.value || '';
+      if (qty < 1) return alert('Invalid quantity.');
 
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       cart.push({ ...product, size, qty, color });
@@ -278,28 +249,28 @@
     }
 
     function buyNow() {
-      const size = document.getElementById('sizeSelect').value;
+      const size = sizeSelect.value;
       const qty = parseInt(document.getElementById('quantityInput').value);
-      if (!product.amount || qty < 1) return alert('Invalid quantity or product data');
-
-      const color = document.querySelector('.color-swatch.active')?.innerText || '';
-      const img = (colors[color] || '').split(',')[0];
+      if (!product.amount || qty < 1) return alert('Invalid quantity or price.');
 
       const options = {
-        key: "rzp_test_1234567890",
+        key: "rzp_test_1234567890", // 🔁 Replace with your key
         amount: parseInt(product.amount) * qty,
         currency: "INR",
         name: "My Clothing Store",
-        description: `${product.name} (Size: ${size}, Color: ${color})`,
-        image: img,
+        description: `${product.name} (Size: ${size})`,
+        image: defaultImages[0],
         handler: () => alert("✅ Payment successful!"),
         theme: { color: "#000" }
       };
-      new Razorpay(options).open();
+
+      const rzp = new Razorpay(options);
+      rzp.open();
     }
 
     function shareProduct() {
-      navigator.clipboard.writeText(window.location.href);
+      const url = window.location.href;
+      navigator.clipboard.writeText(url);
       alert("🔗 Product URL copied!");
     }
   </script>
