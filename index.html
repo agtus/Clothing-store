@@ -187,10 +187,17 @@
       const container = document.getElementById('product-container');
       container.innerHTML = '';
       products.forEach(p => {
-        const firstImage = p.images?.[0] || 'fallback.jpg';
+        const images = (p.image || "").split(',').map(i => i.trim()).filter(Boolean);
+        const firstImage = images[0] || 'fallback.jpg';
         const div = document.createElement('div');
         div.className = 'product';
-        div.onclick = () => viewProduct(p);
+        div.onclick = () => {
+          localStorage.setItem('selectedProduct', JSON.stringify({
+            ...p,
+            images // include full array for product.html
+          }));
+          window.location.href = 'product.html';
+        };
         div.innerHTML = `
           <img src="${firstImage}" alt="${p.name}" />
           <h3>${p.name}</h3>
@@ -199,19 +206,6 @@
         container.appendChild(div);
       });
     }
-  
-    function filterProducts(category) {
-      if (category === 'all') return renderProducts(allProducts);
-      const filtered = allProducts.filter(p => p.section === category);
-      renderProducts(filtered);
-    }
-  
-    function viewProduct(product) {
-      localStorage.setItem('selectedProduct', JSON.stringify(product));
-      window.location.href = 'product.html';
-    }
-  
-    fetchProducts();
   </script>
 </body>
 </html>
