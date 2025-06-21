@@ -14,7 +14,7 @@
     }
     form {
       max-width: 700px;
-      margin: 1rem auto;
+      margin: auto;
       background: white;
       padding: 1.5rem;
       border-radius: 10px;
@@ -31,20 +31,25 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
-    .size-options, .color-group {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-top: 0.5rem;
+    .color-section {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+      background: #f9f9f9;
     }
-    .color-set {
-      border: 1px solid #ccc;
-      padding: 0.7rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+    .color-section h4 {
+      margin: 0 0 0.5rem;
     }
-    .color-set label {
-      margin: 0;
+    .color-section input[type="text"] {
+      width: auto;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+    .thumb-preview img {
+      height: 60px;
+      margin: 5px;
+      border-radius: 5px;
     }
     button {
       margin-top: 1rem;
@@ -61,17 +66,16 @@
       font-weight: bold;
     }
     .product-list {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 2rem auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1rem;
     }
     .product-card {
       background: #fff;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
       padding: 1rem;
       text-align: center;
     }
@@ -86,26 +90,17 @@
 <body>
   <h1>🛠️ Admin Panel</h1>
 
-  <form id="addForm">
+  <form id="productForm">
     <h2>Add / Edit Product</h2>
+
     <label>Name</label>
     <input type="text" name="name" required />
+
     <label>Price (₹)</label>
     <input type="text" name="price" required />
+
     <label>Amount (Paise)</label>
     <input type="text" name="amount" required />
-    
-    <label>Available Sizes</label>
-    <div class="size-options">
-      <label><input type="checkbox" value="S" /> S</label>
-      <label><input type="checkbox" value="M" /> M</label>
-      <label><input type="checkbox" value="L" /> L</label>
-      <label><input type="checkbox" value="XL" /> XL</label>
-    </div>
-
-    <label>Color Variants</label>
-    <div id="colorsContainer"></div>
-    <button type="button" onclick="addColorSet()">➕ Add Color</button>
 
     <label>Description</label>
     <textarea name="desc" required></textarea>
@@ -124,136 +119,179 @@
       <option value="Home Decors">Home Decors</option>
     </select>
 
-    <input type="hidden" name="colors" />
-    <input type="hidden" name="sizes" />
-    <input type="hidden" name="id" />
-    <input type="hidden" name="action" />
+    <label>Available Sizes (hold Ctrl/Cmd to select multiple)</label>
+    <select name="sizes" multiple>
+      <option value="S">S</option>
+      <option value="M">M</option>
+      <option value="L">L</option>
+      <option value="XL">XL</option>
+    </select>
+
+    <div id="colorsContainer">
+      <h3>Color Variants</h3>
+    </div>
+    <button type="button" onclick="addColorSection()">➕ Add Color</button>
+
+    <input type="hidden" name="colors" id="colorData" />
 
     <button type="submit">💾 Save Product</button>
-    <div class="message" id="addMsg"></div>
+    <div class="message" id="formMsg"></div>
   </form>
 
   <h2>All Products</h2>
   <section class="product-list" id="productList"></section>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxgv5PfjwXGtsVYtwJHwTZmMjRwe1zx_BIbeNYdJytcaqX9ejAzcGQedQocxmWxIGN0wQ/exec";
-    const cloudName = "dxwvqo37k";
-    const uploadPreset = "unsigned_preset";
-
+    const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+    const cloudName = 'dxwvqo37k'; // Your Cloudinary cloud name
+    const uploadPreset = 'unsigned_preset'; // Your Cloudinary preset
     let editingId = null;
+    const colorData = {};
 
-    function addColorSet(color = '', images = []) {
-      const container = document.getElementById('colorsContainer');
+    function addColorSection(name = '', urls = []) {
+      const id = 'color-' + Date.now();
       const div = document.createElement('div');
-      div.className = 'color-set';
+      div.className = 'color-section';
+      div.id = id;
       div.innerHTML = `
-        <label>Color Name</label>
-        <input type="text" class="color-name" value="${color}" required />
-        <label>Upload Images</label>
-        <input type="file" class="image-input" accept="image/*" multiple />
-        <div class="status">${images.length ? `🖼️ ${images.length} image(s) loaded` : '📷 Waiting for upload...'}</div>
-        <input type="hidden" class="image-urls" value="${images.join(',')}" />
+        <h4>Color Name</h4>
+        <input type="text" placeholder="e.g. Red" value="${name}" />
+        <input type="file" accept="image/*" multiple onchange="uploadColorImages(event, '${id}')" />
+        <div class="thumb-preview" id="${id}-thumbs">${urls.map(u => `<img src="${u}">`).join('')}</div>
+        <button type="button" onclick="this.parentElement.remove()">❌ Remove Color</button>
       `;
-      container.appendChild(div);
-
-      const input = div.querySelector('.image-input');
-      input.addEventListener('change', async function() {
-        const files = input.files;
-        const status = div.querySelector('.status');
-        const urls = [];
-
-        status.innerText = 'Uploading...';
-        for (let file of files) {
-          const formData = new FormData();
-          formData.append('file', file);
-          formData.append('upload_preset', uploadPreset);
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
-            method: 'POST',
-            body: formData
-          });
-          const data = await res.json();
-          if (data.secure_url) urls.push(data.secure_url);
-        }
-
-        div.querySelector('.image-urls').value = urls.join(',');
-        status.innerText = `✅ ${urls.length} uploaded`;
-      });
+      document.getElementById('colorsContainer').appendChild(div);
+      if (name && urls.length) {
+        colorData[name] = urls.join(',');
+      }
     }
 
-    document.getElementById("addForm").addEventListener("submit", async function(e) {
+    async function uploadColorImages(e, sectionId) {
+      const files = e.target.files;
+      const thumbs = document.getElementById(`${sectionId}-thumbs`);
+      thumbs.innerHTML = 'Uploading...';
+      const urls = [];
+
+      for (let file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.secure_url) {
+          urls.push(data.secure_url);
+        }
+      }
+
+      const colorName = document.querySelector(`#${sectionId} input[type="text"]`).value.trim();
+      if (colorName) {
+        colorData[colorName] = urls.join(',');
+      }
+
+      thumbs.innerHTML = urls.map(u => `<img src="${u}" />`).join('');
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const form = new FormData(this);
 
-      const sizes = Array.from(document.querySelectorAll(".size-options input:checked")).map(i => i.value);
-      form.set("sizes", sizes.join(','));
+      // Collect sizes
+      const sizes = Array.from(document.querySelector('select[name="sizes"]').selectedOptions).map(opt => opt.value).join(',');
+      form.set("sizes", sizes);
 
-      const colorSets = document.querySelectorAll(".color-set");
-      const colorData = {};
-      colorSets.forEach(set => {
-        const color = set.querySelector('.color-name').value.trim();
-        const imgs = set.querySelector('.image-urls').value;
-        if (color && imgs) colorData[color] = imgs;
-      });
+      // Colors
       form.set("colors", JSON.stringify(colorData));
 
       if (editingId) {
-        form.set("id", editingId);
-        form.set("action", "edit");
+        form.append("id", editingId);
+        form.append("action", "edit");
       } else {
-        form.set("id", Date.now().toString());
-        form.set("action", "add");
+        form.append("id", Date.now().toString());
+        form.append("action", "add");
       }
 
       const res = await fetch(scriptURL, {
-        method: "POST",
+        method: 'POST',
         body: new URLSearchParams(form)
       });
 
       const msg = await res.text();
-      document.getElementById("addMsg").innerText = msg === "Added" || msg === "Edited"
-        ? `✅ Product ${editingId ? 'updated' : 'added'}!`
-        : "❌ Error";
+      document.getElementById('formMsg').innerText = msg.includes("Added") || msg.includes("Edited")
+        ? `✅ Product ${editingId ? 'updated' : 'added'}!` : "❌ Error";
 
-      if (msg === "Added" || msg === "Edited") {
+      if (msg.includes("Added") || msg.includes("Edited")) {
         this.reset();
         editingId = null;
-        document.getElementById('colorsContainer').innerHTML = '';
+        document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
+        Object.keys(colorData).forEach(k => delete colorData[k]);
         loadProducts();
       }
     });
 
     async function loadProducts() {
-      try {
-        const res = await fetch(scriptURL);
-        const data = await res.json();
-        const list = document.getElementById("productList");
-        list.innerHTML = '';
+      const res = await fetch(scriptURL);
+      const data = await res.json();
+      const productList = document.getElementById("productList");
+      productList.innerHTML = "";
 
-        data.slice(1).forEach(row => {
-          const [id, name, price, image, desc, trending, section, amount] = row;
-          const card = document.createElement("div");
-          const img = (image || '').split(',')[0];
-          card.className = 'product-card';
-          card.innerHTML = `
-            <img src="${img}" alt="${name}" />
-            <h4>${name}</h4>
-            <p>₹${price}</p>
-            <button onclick="deleteProduct('${id}')">🗑️ Delete</button>`;
-          list.appendChild(card);
-        });
-      } catch (err) {
-        console.error("Load error:", err);
+      data.slice(1).forEach(row => {
+        const [id, name, price, , desc, trending, section, amount, sizes, colors] = row;
+        const colorObj = JSON.parse(colors || '{}');
+        const firstImg = Object.values(colorObj)[0]?.split(',')[0];
+
+        const div = document.createElement('div');
+        div.className = 'product-card';
+        div.innerHTML = `
+          <img src="${firstImg}" />
+          <h4>${name}</h4>
+          <p>₹${price}</p>
+          <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
+          <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
+        `;
+        productList.appendChild(div);
+      });
+    }
+
+    function editProduct([id, name, price, , desc, trending, section, amount, sizes, colors]) {
+      editingId = id;
+      document.querySelector("input[name='name']").value = name;
+      document.querySelector("input[name='price']").value = price;
+      document.querySelector("input[name='amount']").value = amount;
+      document.querySelector("textarea[name='desc']").value = desc;
+      document.querySelector("select[name='trending']").value = trending;
+      document.querySelector("select[name='section']").value = section;
+
+      // Sizes
+      const sizeArr = (sizes || '').split(',');
+      const sizeOptions = document.querySelector("select[name='sizes']").options;
+      for (let opt of sizeOptions) {
+        opt.selected = sizeArr.includes(opt.value);
       }
+
+      // Colors
+      document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
+      const parsedColors = JSON.parse(colors || '{}');
+      for (let c in parsedColors) {
+        const imgs = parsedColors[c].split(',');
+        addColorSection(c, imgs);
+      }
+
+      document.getElementById('formMsg').innerText = `📝 Editing ${name}...`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function deleteProduct(id) {
-      if (!confirm("Delete this product?")) return;
+      if (!confirm(`Delete product ID ${id}?`)) return;
       const res = await fetch(scriptURL, {
         method: "POST",
         body: new URLSearchParams({ id, action: "delete" })
       });
       const msg = await res.text();
+      alert(msg === "Deleted" ? "✅ Deleted" : "❌ Not found");
       if (msg === "Deleted") loadProducts();
     }
 
