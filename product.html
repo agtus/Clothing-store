@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body {
       margin: 0;
@@ -30,6 +29,7 @@
       height: 40px;
       margin-right: 10px;
     }
+
     .container {
       max-width: 900px;
       margin: 2rem auto;
@@ -39,59 +39,55 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
-    .swiper-container {
-      position: relative;
+    .main-image {
       width: 100%;
-      padding-top: 100%;
-      border-radius: 10px;
+      aspect-ratio: 4 / 3;
       overflow: hidden;
+      border-radius: 10px;
+      margin-bottom: 1rem;
     }
 
-    .swiper {
-      position: absolute;
-      top: 0; left: 0;
+    .main-image img {
       width: 100%;
       height: 100%;
-    }
-
-    .swiper-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       cursor: zoom-in;
     }
 
-    .thumbs {
+    .thumbnails {
       display: flex;
-      gap: 8px;
-      margin-top: 10px;
       overflow-x: auto;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
 
-    .thumbs img {
-      height: 60px;
-      width: 60px;
+    .thumbnails img {
+      height: 70px;
+      width: 70px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
       border: 2px solid transparent;
     }
 
-    .thumbs img.active {
+    .thumbnails img.active {
       border-color: #000;
     }
 
     h2 {
       margin: 0.5rem 0;
     }
+
     .price {
       font-size: 1.4rem;
       color: #222;
     }
+
     .desc {
       margin: 1rem 0;
       line-height: 1.6;
     }
+
     select, input[type="number"] {
       padding: 0.5rem;
       margin: 0.5rem 0;
@@ -99,11 +95,13 @@
       border: 1px solid #ccc;
       border-radius: 6px;
     }
+
     .actions {
       display: flex;
       flex-direction: column;
       gap: 0.7rem;
     }
+
     button {
       padding: 0.8rem;
       border: none;
@@ -114,9 +112,11 @@
       color: white;
       transition: 0.3s;
     }
+
     button:hover {
       opacity: 0.9;
     }
+
     .delivery {
       margin-top: 1rem;
       font-size: 0.95rem;
@@ -131,6 +131,7 @@
       background: rgba(0,0,0,0.6);
       z-index: 100;
     }
+
     #sizeChartModal .content {
       background: white;
       padding: 1rem;
@@ -138,13 +139,35 @@
       margin: 10% auto;
       border-radius: 8px;
     }
+
     #sizeChartModal table {
       width: 100%;
       border-collapse: collapse;
     }
+
     #sizeChartModal th, #sizeChartModal td {
       padding: 0.5rem;
       border: 1px solid #ddd;
+    }
+
+    #imagePopup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #imagePopup img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+
+    #imagePopup:active {
+      display: none;
     }
 
     #cart-btn {
@@ -171,13 +194,11 @@
   </div>
 
   <div class="container">
-    <div class="swiper-container">
-      <div class="swiper mainSwiper">
-        <div class="swiper-wrapper" id="swiper-wrapper"></div>
-        <div class="swiper-pagination"></div>
-      </div>
+    <div class="main-image" id="mainImageWrapper">
+      <img id="mainImage" src="" alt="Main Product Image" />
     </div>
-    <div class="thumbs" id="thumbs"></div>
+
+    <div class="thumbnails" id="thumbnails"></div>
 
     <h2 id="productName"></h2>
     <p class="price" id="productPrice"></p>
@@ -224,51 +245,53 @@
     </div>
   </div>
 
+  <div id="imagePopup" onclick="this.style.display='none'">
+    <img id="popupImg" src="" alt="Zoomed Image" />
+  </div>
+
   <a href="cart.html" id="cart-btn">🛒</a>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script src="https://unpkg.com/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
     const images = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
-    const wrapper = document.getElementById('swiper-wrapper');
-    const thumbs = document.getElementById('thumbs');
+
+    const mainImage = document.getElementById('mainImage');
+    const thumbnails = document.getElementById('thumbnails');
+    const popup = document.getElementById('imagePopup');
+    const popupImg = document.getElementById('popupImg');
+
+    if (images.length > 0) {
+      mainImage.src = images[0];
+      popupImg.src = images[0];
+
+      images.forEach((src, i) => {
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.className = i === 0 ? 'active' : '';
+        thumb.onclick = () => {
+          document.querySelectorAll('.thumbnails img').forEach(img => img.classList.remove('active'));
+          thumb.classList.add('active');
+          mainImage.src = src;
+          popupImg.src = src;
+        };
+        thumbnails.appendChild(thumb);
+      });
+    }
+
+    mainImage.onclick = () => {
+      popup.style.display = 'flex';
+    };
 
     document.getElementById('productName').innerText = product.name || 'Product';
     document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
     document.getElementById('productDesc').innerText = product.description || 'No description available';
 
-    images.forEach((img, i) => {
-      const slide = document.createElement('div');
-      slide.className = 'swiper-slide';
-      slide.innerHTML = `<img src="${img}" data-zoomable />`;
-      wrapper.appendChild(slide);
-
-      const thumb = document.createElement('img');
-      thumb.src = img;
-      if (i === 0) thumb.classList.add('active');
-      thumb.onclick = () => {
-        swiper.slideTo(i);
-        document.querySelectorAll('.thumbs img').forEach(t => t.classList.remove('active'));
-        thumb.classList.add('active');
-      };
-      thumbs.appendChild(thumb);
-    });
-
-    const swiper = new Swiper('.mainSwiper', {
-      pagination: { el: '.swiper-pagination' }
-    });
-
-    mediumZoom('[data-zoomable]', {
-      margin: 24,
-      background: '#000'
-    });
-
     const now = new Date();
     const early = new Date(now); early.setDate(now.getDate() + 3);
     const late = new Date(now); late.setDate(now.getDate() + 7);
-    document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
+    document.getElementById('deliveryDate').innerText =
+      `${early.toDateString()} - ${late.toDateString()}`;
 
     function addToCart() {
       const size = document.getElementById('sizeSelect').value;
@@ -285,7 +308,7 @@
       const qty = parseInt(document.getElementById('quantityInput').value);
       if (!product.amount || qty < 1) return alert('Invalid quantity or product data');
       const options = {
-        key: "rzp_test_1234567890",
+        key: "rzp_test_1234567890", // Replace with your Razorpay Key
         amount: parseInt(product.amount) * qty,
         currency: "INR",
         name: "My Clothing Store",
@@ -299,7 +322,8 @@
     }
 
     function shareProduct() {
-      navigator.clipboard.writeText(window.location.href);
+      const url = window.location.href;
+      navigator.clipboard.writeText(url);
       alert("🔗 Product URL copied!");
     }
   </script>
