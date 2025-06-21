@@ -270,7 +270,11 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const images = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
+    const images = (product.image || '')
+      .replace(/\r/g, '')     // remove carriage returns from CSV
+      .split(',')
+      .map(i => i.trim())
+      .filter(i => i && i.startsWith('http'));
 
     document.getElementById('productName').innerText = product.name || 'Product';
     document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
