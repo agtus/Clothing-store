@@ -188,10 +188,8 @@
       container.innerHTML = '';
       products.forEach(p => {
         if (!p.name || !p.image) return;
-    
-        const imageArray = p.image.split(',').map(i => i.trim()).filter(Boolean); // split comma images
-        const firstImage = imageArray[0] || 'fallback.jpg'; // fallback image
-    
+        const imageArray = p.image.split(',');
+        const firstImage = imageArray[0]?.trim();
         const div = document.createElement('div');
         div.className = 'product';
         div.onclick = () => viewProduct(p);
