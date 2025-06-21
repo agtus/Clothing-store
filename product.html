@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body {
       margin: 0;
@@ -34,7 +35,7 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 900px;
       margin: 2rem auto;
       background: white;
       border-radius: 10px;
@@ -42,45 +43,51 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
+    .image-viewer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
     .main-image {
       width: 100%;
-      aspect-ratio: 4 / 3;
-      overflow: hidden;
+      max-width: 400px;
+      aspect-ratio: 4 / 5;
       border-radius: 10px;
-      position: relative;
-      cursor: zoom-in;
+      overflow: hidden;
     }
 
     .main-image img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
+      cursor: zoom-in;
+      border-radius: 10px;
     }
 
     .thumbnails {
       display: flex;
-      gap: 10px;
       overflow-x: auto;
-      margin-top: 1rem;
-      padding-bottom: 0.5rem;
+      gap: 10px;
+      padding: 0.5rem;
     }
 
     .thumbnails img {
-      width: 70px;
-      height: 70px;
+      width: 60px;
+      height: 60px;
       object-fit: cover;
+      border: 2px solid transparent;
       border-radius: 6px;
       cursor: pointer;
-      border: 2px solid transparent;
-      transition: 0.2s;
     }
 
     .thumbnails img.active {
-      border-color: black;
+      border-color: #000;
     }
 
     h2 {
-      margin-top: 1rem;
+      margin: 0.5rem 0;
     }
 
     .price {
@@ -128,23 +135,52 @@
       color: #444;
     }
 
-    #popupViewer {
+    #sizeChartModal {
+      display: none;
       position: fixed;
       top: 0; left: 0;
       right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+    }
+
+    #sizeChartModal .content {
+      background: white;
+      padding: 1rem;
+      max-width: 400px;
+      margin: 10% auto;
+      border-radius: 8px;
+    }
+
+    #sizeChartModal table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #sizeChartModal th, #sizeChartModal td {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+    }
+
+    #popupZoom {
       display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 999;
     }
 
-    #popupViewer img {
-      max-width: 90vw;
-      max-height: 90vh;
+    #popupZoom img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
     }
 
-    #popupViewer:active {
+    #popupZoom:active {
       display: none;
     }
 
@@ -160,7 +196,7 @@
       font-size: 1.5rem;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 10;
+      z-index: 1000;
     }
   </style>
 </head>
@@ -173,10 +209,12 @@
   </div>
 
   <div class="container">
-    <div class="main-image" onclick="openViewer()">
-      <img id="mainProductImage" src="" alt="Main Product Image">
+    <div class="image-viewer">
+      <div class="main-image">
+        <img id="mainImage" src="" alt="Product" loading="lazy" />
+      </div>
+      <div class="thumbnails" id="thumbnails"></div>
     </div>
-    <div class="thumbnails" id="thumbnailRow"></div>
 
     <h2 id="productName"></h2>
     <p class="price" id="productPrice"></p>
@@ -201,6 +239,7 @@
       <button onclick="addToCart()">🛒 Add to Cart</button>
       <button onclick="buyNow()">💳 Buy Now</button>
       <button onclick="shareProduct()">🔗 Share</button>
+      <button onclick="document.getElementById('sizeChartModal').style.display='block'">📏 View Size Chart</button>
     </div>
 
     <div class="delivery">
@@ -208,8 +247,22 @@
     </div>
   </div>
 
-  <div id="popupViewer" onclick="closeViewer()">
-    <img id="popupImage" src="" alt="Zoomed Image">
+  <div id="sizeChartModal">
+    <div class="content">
+      <h3>Size Chart</h3>
+      <table>
+        <tr><th>Size</th><th>Chest</th><th>Waist</th></tr>
+        <tr><td>S</td><td>34-36"</td><td>28-30"</td></tr>
+        <tr><td>M</td><td>38-40"</td><td>32-34"</td></tr>
+        <tr><td>L</td><td>42-44"</td><td>36-38"</td></tr>
+        <tr><td>XL</td><td>46-48"</td><td>40-42"</td></tr>
+      </table>
+      <button onclick="document.getElementById('sizeChartModal').style.display='none'">Close</button>
+    </div>
+  </div>
+
+  <div id="popupZoom" onclick="this.style.display='none'">
+    <img id="popupImg" src="" />
   </div>
 
   <a href="cart.html" id="cart-btn">🛒</a>
@@ -217,52 +270,44 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const images = (product.image || '').split(',').map(i => i.trim()).filter(i => i.startsWith('http'));
-    const mainImg = document.getElementById('mainProductImage');
-    const thumbRow = document.getElementById('thumbnailRow');
-    const popupImg = document.getElementById('popupImage');
-
-    let currentImageIndex = 0;
-
-    function setMainImage(index) {
-      currentImageIndex = index;
-      mainImg.src = images[index];
-      popupImg.src = images[index];
-
-      document.querySelectorAll('.thumbnails img').forEach((img, i) => {
-        img.classList.toggle('active', i === index);
-      });
-    }
-
-    if (images.length) {
-      images.forEach((imgSrc, i) => {
-        const thumb = document.createElement('img');
-        thumb.src = imgSrc;
-        thumb.onclick = () => setMainImage(i);
-        thumbRow.appendChild(thumb);
-      });
-      setMainImage(0);
-    } else {
-      mainImg.src = 'fallback.jpg';
-    }
+    const images = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
 
     document.getElementById('productName').innerText = product.name || 'Product';
     document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
     document.getElementById('productDesc').innerText = product.description || 'No description available';
+
+    const mainImage = document.getElementById('mainImage');
+    const popupImg = document.getElementById('popupImg');
+    const thumbnails = document.getElementById('thumbnails');
+
+    if (images.length > 0) {
+      mainImage.src = images[0];
+      popupImg.src = images[0];
+
+      images.forEach((src, index) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.loading = 'lazy';
+        if (index === 0) img.classList.add('active');
+        img.onclick = () => {
+          mainImage.src = src;
+          popupImg.src = src;
+          thumbnails.querySelectorAll('img').forEach(i => i.classList.remove('active'));
+          img.classList.add('active');
+        };
+        thumbnails.appendChild(img);
+      });
+
+      mainImage.onclick = () => {
+        document.getElementById('popupZoom').style.display = 'flex';
+      };
+    }
 
     const now = new Date();
     const early = new Date(now); early.setDate(now.getDate() + 3);
     const late = new Date(now); late.setDate(now.getDate() + 7);
     document.getElementById('deliveryDate').innerText =
       `${early.toDateString()} - ${late.toDateString()}`;
-
-    function openViewer() {
-      document.getElementById('popupViewer').style.display = 'flex';
-    }
-
-    function closeViewer() {
-      document.getElementById('popupViewer').style.display = 'none';
-    }
 
     function addToCart() {
       const size = document.getElementById('sizeSelect').value;
@@ -281,7 +326,7 @@
       if (!product.amount || qty < 1) return alert('Invalid quantity or product data');
 
       const options = {
-        key: "rzp_test_1234567890", // Replace with your Razorpay Key
+        key: "rzp_test_1234567890", // 🔁 Replace with your Razorpay Key
         amount: parseInt(product.amount) * qty,
         currency: "INR",
         name: "My Clothing Store",
@@ -296,8 +341,7 @@
     }
 
     function shareProduct() {
-      const url = window.location.href;
-      navigator.clipboard.writeText(url);
+      navigator.clipboard.writeText(window.location.href);
       alert("🔗 Product URL copied!");
     }
   </script>
