@@ -187,17 +187,14 @@
       const container = document.getElementById('product-container');
       container.innerHTML = '';
       products.forEach(p => {
-        const images = (p.image || "").split(',').map(i => i.trim()).filter(Boolean);
-        const firstImage = images[0] || 'fallback.jpg';
+        if (!p.name || !p.image) return;
+    
+        const imageArray = p.image.split(',').map(i => i.trim()).filter(Boolean); // split comma images
+        const firstImage = imageArray[0] || 'fallback.jpg'; // fallback image
+    
         const div = document.createElement('div');
         div.className = 'product';
-        div.onclick = () => {
-          localStorage.setItem('selectedProduct', JSON.stringify({
-            ...p,
-            images // include full array for product.html
-          }));
-          window.location.href = 'product.html';
-        };
+        div.onclick = () => viewProduct(p);
         div.innerHTML = `
           <img src="${firstImage}" alt="${p.name}" />
           <h3>${p.name}</h3>
