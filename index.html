@@ -154,44 +154,43 @@
 
   <script>
     let allProducts = [];
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxgv5PfjwXGtsVYtwJHwTZmMjRwe1zx_BIbeNYdJytcaqX9ejAzcGQedQocxmWxIGN0wQ/exec';
 
     async function fetchProducts() {
-      const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQc3GCwydGmTtaBC0Jx0GJKGDzWpQRzdSgFe6Oxd9wWLg9O8Csb_w5wXlKfc9WHSPUL2QSr2WLGBBur/pub?output=csv');
-      const data = await response.text();
-      const rows = data.split('\n').slice(1);
+      try {
+        const response = await fetch(scriptURL);
+        const data = await response.json();
 
-      allProducts = rows
-        .map(row => {
-          const [id, name, price, image, description, trending, section, amount] = row.split(',');
-          if (!name || !image) return null;
-
+        allProducts = data.slice(1).map(row => {
+          const [id, name, price, image, description, trending, section, amount] = row;
+          const imageArray = (image || "").split(',').map(i => i.trim()).filter(Boolean);
           return {
             id,
             name,
             price,
-            image, // keep full image string
+            image: imageArray[0] || 'fallback.jpg',
             description,
             trending,
             section: section?.trim().toLowerCase(),
             amount
           };
-        })
-        .filter(Boolean);
+        });
 
-      renderProducts(allProducts);
+        renderProducts(allProducts);
+      } catch (err) {
+        console.error("❌ Failed to load products:", err);
+      }
     }
 
     function renderProducts(products) {
       const container = document.getElementById('product-container');
       container.innerHTML = '';
       products.forEach(p => {
-        const imageArray = (p.image || "").split(',').map(img => img.trim()).filter(Boolean);
-        const firstImage = imageArray[0] || 'fallback.jpg';
         const div = document.createElement('div');
         div.className = 'product';
         div.onclick = () => viewProduct(p);
         div.innerHTML = `
-          <img src="${firstImage}" alt="${p.name}" />
+          <img src="${p.image}" alt="${p.name}" />
           <h3>${p.name}</h3>
           <p>₹${p.price}</p>
         `;
