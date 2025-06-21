@@ -30,38 +30,65 @@
       margin-right: 10px;
     }
     .container {
-      max-width: 1000px;
+      max-width: 900px;
       margin: 2rem auto;
       background: white;
       border-radius: 10px;
       padding: 1rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    .main-img {
+    .main-image {
       width: 100%;
-      aspect-ratio: 1/1;
+      height: 300px;
       object-fit: contain;
       border-radius: 10px;
-      background: #f2f2f2;
+      margin-bottom: 1rem;
+      background: #f0f0f0;
     }
-    .thumbs {
+    .thumbnails {
       display: flex;
-      overflow-x: auto;
       gap: 0.5rem;
-      margin-top: 0.5rem;
+      overflow-x: auto;
+      margin-bottom: 1rem;
     }
-    .thumbs img {
-      height: 70px;
+    .thumbnails img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
       border-radius: 6px;
       cursor: pointer;
       border: 2px solid transparent;
     }
-    .thumbs img.active {
+    .thumbnails img.active {
       border-color: black;
     }
-    h2 { margin: 0.5rem 0; }
-    .price { font-size: 1.4rem; color: #222; }
-    .desc { margin: 1rem 0; line-height: 1.6; }
+    .color-grid {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      cursor: pointer;
+    }
+    .color-swatch.active {
+      border: 2px solid black;
+      outline: 2px solid #000;
+    }
+    h2 {
+      margin: 0.5rem 0;
+    }
+    .price {
+      font-size: 1.4rem;
+      color: #222;
+    }
+    .desc {
+      margin: 1rem 0;
+      line-height: 1.6;
+    }
     select, input[type="number"] {
       padding: 0.5rem;
       margin: 0.5rem 0;
@@ -82,27 +109,15 @@
       font-size: 1rem;
       background: black;
       color: white;
+      transition: 0.3s;
+    }
+    button:hover {
+      opacity: 0.9;
     }
     .delivery {
       margin-top: 1rem;
       font-size: 0.95rem;
       color: #444;
-    }
-    .color-grid {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .color-swatch {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid #ccc;
-      cursor: pointer;
-    }
-    .color-swatch.active {
-      border: 2px solid black;
-      outline: 2px solid black;
     }
   </style>
 </head>
@@ -115,20 +130,27 @@
   </div>
 
   <div class="container">
-    <img id="mainImage" class="main-img" src="" alt="Product" />
-    <div class="thumbs" id="thumbnailContainer"></div>
-
-    <div class="color-grid" id="colorGrid"></div>
+    <img id="mainImage" class="main-image" src="" alt="Main Product Image">
+    <div class="thumbnails" id="thumbnails"></div>
 
     <h2 id="productName"></h2>
     <p class="price" id="productPrice"></p>
     <p class="desc" id="productDesc"></p>
 
-    <label>Select Size</label>
-    <select id="sizeSelect"></select>
+    <div>
+      <label>Select Color</label>
+      <div class="color-grid" id="colorGrid"></div>
+    </div>
 
-    <label>Quantity</label>
-    <input type="number" id="quantityInput" value="1" min="1" />
+    <div>
+      <label for="sizeSelect">Select Size</label>
+      <select id="sizeSelect"></select>
+    </div>
+
+    <div>
+      <label for="quantityInput">Quantity</label>
+      <input type="number" id="quantityInput" value="1" min="1" />
+    </div>
 
     <div class="actions">
       <button onclick="addToCart()">🛒 Add to Cart</button>
@@ -140,74 +162,76 @@
     </div>
   </div>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const allColors = product.colors ? JSON.parse(product.colors) : { default: product.image };
-    const availableSizes = (product.sizes || 'S,M,L,XL').split(',').map(s => s.trim()).filter(Boolean);
-
-    let currentImages = (allColors[Object.keys(allColors)[0]] || "").split(',').map(i => i.trim()).filter(Boolean);
-    let selectedColor = Object.keys(allColors)[0];
+    const imagesByColor = JSON.parse(product.colors || '{}');
+    const sizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
 
     const mainImage = document.getElementById('mainImage');
-    const thumbs = document.getElementById('thumbnailContainer');
+    const thumbnails = document.getElementById('thumbnails');
     const colorGrid = document.getElementById('colorGrid');
     const sizeSelect = document.getElementById('sizeSelect');
-
-    function renderThumbnails(images) {
-      thumbs.innerHTML = '';
-      images.forEach((img, idx) => {
-        const thumb = document.createElement('img');
-        thumb.src = img;
-        thumb.classList.toggle('active', idx === 0);
-        thumb.onclick = () => {
-          mainImage.src = img;
-          thumbs.querySelectorAll('img').forEach(i => i.classList.remove('active'));
-          thumb.classList.add('active');
-        };
-        thumbs.appendChild(thumb);
-      });
-      mainImage.src = images[0] || '';
-    }
-
-    function renderColorOptions() {
-      colorGrid.innerHTML = '';
-      for (let color in allColors) {
-        const colorBtn = document.createElement('div');
-        colorBtn.className = 'color-swatch';
-        colorBtn.style.backgroundColor = color;
-        if (color === selectedColor) colorBtn.classList.add('active');
-        colorBtn.onclick = () => {
-          selectedColor = color;
-          currentImages = allColors[color].split(',').map(i => i.trim()).filter(Boolean);
-          renderThumbnails(currentImages);
-          colorGrid.querySelectorAll('.color-swatch').forEach(c => c.classList.remove('active'));
-          colorBtn.classList.add('active');
-        };
-        colorGrid.appendChild(colorBtn);
-      }
-    }
-
-    function populateSizes() {
-      sizeSelect.innerHTML = '';
-      availableSizes.forEach(size => {
-        const option = document.createElement('option');
-        option.value = size;
-        option.textContent = size;
-        sizeSelect.appendChild(option);
-      });
-    }
 
     document.getElementById('productName').innerText = product.name || 'Product';
     document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
     document.getElementById('productDesc').innerText = product.description || 'No description available';
 
+    sizes.forEach(size => {
+      const option = document.createElement('option');
+      option.value = size;
+      option.innerText = size;
+      sizeSelect.appendChild(option);
+    });
+
+    function showImages(color) {
+      const urls = (imagesByColor[color] || '').split(',').map(u => u.trim()).filter(Boolean);
+      if (urls.length === 0) return;
+      mainImage.src = urls[0];
+      thumbnails.innerHTML = '';
+      urls.forEach((url, i) => {
+        const thumb = document.createElement('img');
+        thumb.src = url;
+        if (i === 0) thumb.classList.add('active');
+        thumb.onclick = () => {
+          mainImage.src = url;
+          thumbnails.querySelectorAll('img').forEach(el => el.classList.remove('active'));
+          thumb.classList.add('active');
+        };
+        thumbnails.appendChild(thumb);
+      });
+    }
+
+    for (let color in imagesByColor) {
+      const swatch = document.createElement('div');
+      swatch.className = 'color-swatch';
+      swatch.style.background = color;
+      swatch.onclick = () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        showImages(color);
+      };
+      colorGrid.appendChild(swatch);
+    }
+
+    const firstColor = Object.keys(imagesByColor)[0];
+    if (firstColor) {
+      showImages(firstColor);
+      colorGrid.children[0]?.classList.add('active');
+    }
+
+    const now = new Date();
+    const early = new Date(now); early.setDate(now.getDate() + 3);
+    const late = new Date(now); late.setDate(now.getDate() + 7);
+    document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
+
     function addToCart() {
       const size = sizeSelect.value;
       const qty = parseInt(document.getElementById('quantityInput').value);
-      if (qty < 1) return alert('Please enter a valid quantity.');
+      const color = colorGrid.querySelector('.color-swatch.active')?.style.background || '';
+      if (qty < 1 || !color || !size) return alert('Please select color, size, and quantity.');
+
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ ...product, size, qty });
+      cart.push({ ...product, color, size, qty });
       localStorage.setItem('cart', JSON.stringify(cart));
       alert('✅ Added to cart!');
     }
@@ -215,30 +239,24 @@
     function buyNow() {
       const size = sizeSelect.value;
       const qty = parseInt(document.getElementById('quantityInput').value);
-      if (!product.amount || qty < 1) return alert('Invalid quantity or product data');
+      const color = colorGrid.querySelector('.color-swatch.active')?.style.background || '';
+      if (!product.amount || qty < 1 || !color || !size) return alert('Please fill all details.');
+
       const options = {
-        key: "rzp_test_1234567890",
+        key: "rzp_test_1234567890", // Replace with real Razorpay key
         amount: parseInt(product.amount) * qty,
         currency: "INR",
         name: "My Clothing Store",
-        description: `${product.name} (Size: ${size})`,
-        image: currentImages[0],
+        description: `${product.name} (Size: ${size}, Color: ${color})`,
+        image: mainImage.src,
         handler: () => alert("✅ Payment successful!"),
         theme: { color: "#000" }
       };
+
       const rzp = new Razorpay(options);
       rzp.open();
     }
-
-    const now = new Date();
-    const early = new Date(now); early.setDate(now.getDate() + 3);
-    const late = new Date(now); late.setDate(now.getDate() + 7);
-    document.getElementById('deliveryDate').innerText =
-      `${early.toDateString()} - ${late.toDateString()}`;
-
-    renderColorOptions();
-    renderThumbnails(currentImages);
-    populateSizes();
   </script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
