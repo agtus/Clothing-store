@@ -123,6 +123,7 @@
       font-size: 1.5rem;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 999;
     }
 
     @media (max-width: 600px) {
@@ -154,43 +155,42 @@
 
   <script>
     let allProducts = [];
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxgv5PfjwXGtsVYtwJHwTZmMjRwe1zx_BIbeNYdJytcaqX9ejAzcGQedQocxmWxIGN0wQ/exec';
 
     async function fetchProducts() {
-      try {
-        const response = await fetch(scriptURL);
-        const data = await response.json();
+      const res = await fetch("https://script.google.com/macros/s/AKfycbxgv5PfjwXGtsVYtwJHwTZmMjRwe1zx_BIbeNYdJytcaqX9ejAzcGQedQocxmWxIGN0wQ/exec");
+      const data = await res.json();
+      const rows = data.slice(1);
 
-        allProducts = data.slice(1).map(row => {
-          const [id, name, price, image, description, trending, section, amount] = row;
-          const imageArray = (image || "").split(',').map(i => i.trim()).filter(Boolean);
-          return {
-            id,
-            name,
-            price,
-            image: imageArray[0] || 'fallback.jpg',
-            description,
-            trending,
-            section: section?.trim().toLowerCase(),
-            amount
-          };
-        });
+      allProducts = rows.map(row => {
+        const [id, name, price, image, description, trending, section, amount] = row;
+        const images = (image || "").split(',').map(i => i.trim()).filter(Boolean);
+        const firstImage = images[0] || 'fallback.jpg';
+        return {
+          id,
+          name,
+          price,
+          image: images.join(','),
+          description,
+          trending,
+          section: section?.trim().toLowerCase(),
+          amount
+        };
+      });
 
-        renderProducts(allProducts);
-      } catch (err) {
-        console.error("❌ Failed to load products:", err);
-      }
+      renderProducts(allProducts);
     }
 
     function renderProducts(products) {
       const container = document.getElementById('product-container');
       container.innerHTML = '';
       products.forEach(p => {
+        const firstImage = (p.image || '').split(',')[0]?.trim() || 'fallback.jpg';
+        console.log(`Rendering product ${p.name}, First image: ${firstImage}`);
         const div = document.createElement('div');
         div.className = 'product';
         div.onclick = () => viewProduct(p);
         div.innerHTML = `
-          <img src="${p.image}" alt="${p.name}" />
+          <img src="${firstImage}" alt="${p.name}" />
           <h3>${p.name}</h3>
           <p>₹${p.price}</p>
         `;
