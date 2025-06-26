@@ -141,7 +141,6 @@
     const cloudName = 'dxwvqo37k';
     const uploadPreset = 'unsigned_preset';
     let editingId = null;
-    const colorData = {};
 
     function addColorSection(name = '', urls = []) {
       const id = 'color-' + Date.now();
@@ -211,7 +210,6 @@
         .map(opt => opt.value)
         .join(',');
       form.set("sizes", sizes);
-
       form.set("colors", document.getElementById("colorData").value);
 
       if (editingId) {
@@ -235,36 +233,47 @@
         this.reset();
         editingId = null;
         document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-        Object.keys(colorData).forEach(k => delete colorData[k]);
         loadProducts();
       }
     });
 
     async function loadProducts() {
-      const res = await fetch(scriptURL);
-      const data = await res.json();
-      const productList = document.getElementById("productList");
-      productList.innerHTML = "";
+      try {
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+        const productList = document.getElementById("productList");
+        productList.innerHTML = "";
 
-      data.slice(1).forEach(row => {
-        const [id, name, price, , desc, trending, section, amount, colors, sizes] = row;
-        const colorObj = JSON.parse(colors || '{}');
-        const firstImg = Object.values(colorObj)[0]?.split(',')[0];
+        data.slice(1).forEach(row => {
+          const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
+          let colorObj = {};
+          let firstImg = '';
 
-        const div = document.createElement('div');
-        div.className = 'product-card';
-        div.innerHTML = `
-          <img src="${firstImg}" />
-          <h4>${name}</h4>
-          <p>₹${price}</p>
-          <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
-          <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
-        `;
-        productList.appendChild(div);
-      });
+          try {
+            colorObj = JSON.parse(colors || '{}');
+            firstImg = Object.values(colorObj)[0]?.split(',')[0] || '';
+          } catch (err) {
+            console.warn("Invalid colors JSON:", colors);
+          }
+
+          const div = document.createElement('div');
+          div.className = 'product-card';
+          div.innerHTML = `
+            <img src="${firstImg}" />
+            <h4>${name}</h4>
+            <p>₹${price}</p>
+            <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
+            <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
+          `;
+          productList.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Failed to load products:", err);
+        document.getElementById("productList").innerHTML = `<p style="color:red;">❌ Failed to load products</p>`;
+      }
     }
 
-    function editProduct([id, name, price, , desc, trending, section, amount, colors, sizes]) {
+    function editProduct([id, name, price, desc, trending, section, amount, colors, sizes]) {
       editingId = id;
       document.querySelector("input[name='name']").value = name;
       document.querySelector("input[name='price']").value = price;
@@ -280,10 +289,14 @@
       }
 
       document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-      const parsedColors = JSON.parse(colors || '{}');
-      for (let c in parsedColors) {
-        const imgs = parsedColors[c].split(',');
-        addColorSection(c, imgs);
+      try {
+        const parsedColors = JSON.parse(colors || '{}');
+        for (let c in parsedColors) {
+          const imgs = parsedColors[c].split(',');
+          addColorSection(c, imgs);
+        }
+      } catch (err) {
+        console.warn("Invalid color JSON during edit:", colors);
       }
 
       document.getElementById('formMsg').innerText = `📝 Editing ${name}...`;
