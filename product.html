@@ -12,7 +12,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #e3e6ec;
+      background: #4b4b4b;
       color: #fff;
       display: flex;
       flex-direction: column;
@@ -23,7 +23,7 @@
 
     .product-card {
       display: flex;
-      top: 140px;
+      
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(15px);
       border-radius: 16px;
@@ -33,6 +33,22 @@
       max-width: 960px;
       gap: 2rem;
     }
+    @media (max-width: 768px) {
+      .product-card {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .product-image, .product-info {
+        width: 100%;
+      }
+
+      .main-img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
 
     .product-image {
       flex: 1;
@@ -187,6 +203,7 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+    console.log('Loaded product:', product);
     const colorData = JSON.parse(product.colors || '{}');
     const defaultImages = Object.values(colorData)[0]?.split(',') || [];
     let currentImages = defaultImages;
@@ -194,7 +211,12 @@
 
     document.getElementById('productName').innerText = product.name;
     document.getElementById('productPrice').innerText = `₹${product.price}`;
-    document.getElementById('productDesc').innerText = product.description;
+    if (product.desc) {
+      document.getElementById('productDesc').innerText = product.desc;
+    } else {
+      document.getElementById('productDesc').innerText = 'No description available.';
+      console.warn('⚠️ Description missing from product:', product);
+    }
 
     const colorSelect = document.getElementById('colorSelect');
     const sizeSelect = document.getElementById('sizeSelect');
