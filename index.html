@@ -157,34 +157,15 @@
     let allProducts = [];
 
     async function fetchProducts() {
-      const res = await fetch("https://script.google.com/macros/s/AKfycbxgv5PfjwXGtsVYtwJHwTZmMjRwe1zx_BIbeNYdJytcaqX9ejAzcGQedQocxmWxIGN0wQ/exec");
+      const res = await fetch("https://script.google.com/macros/s/AKfycbwtvzscTXXDR_r0BAxAtY5BuZO4VsCkFj_wGh3F3GIRXPhkymB5Y1BrTpppg9XH_nfF8Q/exec");
       const data = await res.json();
       const rows = data.slice(1);
 
       allProducts = rows.map(row => {
         const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
-        let firstImage = 'fallback.jpg';
-
-        try {
-          const colorObj = JSON.parse(colors || '{}');
-          const firstColor = Object.values(colorObj)[0];
-          if (firstColor) {
-            firstImage = firstColor.split(',')[0]?.trim() || 'fallback.jpg';
-          }
-        } catch (e) {
-          console.warn('Invalid color JSON:', colors);
-        }
-
         return {
-          id,
-          name,
-          price,
-          description: desc,
-          trending,
-          section: (section || '').trim().toLowerCase(),
-          amount,
-          image: firstImage,
-          rawData: row
+          id, name, price, desc, trending, section: section?.trim().toLowerCase(),
+          amount, colors, sizes
         };
       });
 
@@ -194,15 +175,25 @@
     function renderProducts(products) {
       const container = document.getElementById('product-container');
       container.innerHTML = '';
+
       products.forEach(p => {
+        let imgUrl = 'fallback.jpg';
+        try {
+          const parsedColors = JSON.parse(p.colors || '{}');
+          imgUrl = Object.values(parsedColors)[0]?.split(',')[0] || imgUrl;
+        } catch {}
+
         const div = document.createElement('div');
         div.className = 'product';
-        div.onclick = () => viewProduct(p);
         div.innerHTML = `
-          <img src="${p.image}" alt="${p.name}" />
+          <img src="${imgUrl}" alt="${p.name}" />
           <h3>${p.name}</h3>
           <p>₹${p.price}</p>
         `;
+        div.addEventListener('click', () => {
+          localStorage.setItem('selectedProduct', JSON.stringify(p));
+          window.location.href = 'product.html';
+        });
         container.appendChild(div);
       });
     }
@@ -212,12 +203,6 @@
       const filtered = allProducts.filter(p => p.section === category);
       renderProducts(filtered);
     }
-
-    function viewProduct(product) {
-      localStorage.setItem('selectedProduct', JSON.stringify(product));
-      window.location.href = 'product.html';
-    }
-
 
     fetchProducts();
   </script>
