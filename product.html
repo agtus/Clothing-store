@@ -8,21 +8,27 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
+      background: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30') center/cover no-repeat fixed;
+      backdrop-filter: blur(10px);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .topbar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .logo {
       display: flex;
       align-items: center;
       text-decoration: none;
-      color: black;
+      color: white;
       font-weight: bold;
       font-size: 1.4rem;
     }
@@ -30,108 +36,101 @@
       height: 40px;
       margin-right: 10px;
     }
-    #cartIcon {
-      position: relative;
-      font-size: 1.8rem;
-      text-decoration: none;
-      color: black;
-    }
-    #cartIcon .cart-count {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: red;
-      color: white;
-      border-radius: 50%;
-      font-size: 12px;
-      padding: 2px 6px;
-    }
-
     .container {
-      max-width: 800px;
-      margin: 2rem auto;
-      background: white;
-      border-radius: 10px;
-      padding: 2rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .image-preview {
-      text-align: center;
-    }
-
-    .main-image {
-      width: 100%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       max-width: 400px;
-      border-radius: 10px;
+      margin: 2rem auto;
+      border-radius: 16px;
+      padding: 1.5rem;
+      color: white;
+    }
+    .main-img {
+      width: 100%;
+      height: 300px;
       object-fit: cover;
-      transition: transform 0.3s ease;
+      border-radius: 10px;
+      margin-bottom: 1rem;
     }
-
-    .main-image:hover {
-      transform: scale(1.05);
-    }
-
-    .thumbnail-row {
+    .thumbnails {
       display: flex;
-      justify-content: center;
       gap: 10px;
-      margin-top: 1rem;
+      overflow-x: auto;
+      margin-bottom: 1rem;
     }
-
-    .thumbnail-row img {
+    .thumbnails img {
       width: 60px;
       height: 60px;
-      border-radius: 6px;
       object-fit: cover;
+      border-radius: 6px;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: 0.2s;
+      transition: 0.3s;
     }
-
-    .thumbnail-row img.active {
-      border-color: #000;
+    .thumbnails img.active {
+      border-color: white;
     }
-
-    h2 { margin: 0.5rem 0; }
-    .price { font-size: 1.4rem; color: #222; }
-    .desc { margin: 1rem 0; line-height: 1.6; }
-
+    h2 {
+      margin: 0.5rem 0;
+    }
+    .price {
+      font-size: 1.4rem;
+      margin: 0.5rem 0;
+    }
+    .desc {
+      margin: 1rem 0;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      color: #e3e3e3;
+    }
     select, input[type="number"] {
-      padding: 0.6rem;
-      margin-top: 0.5rem;
       width: 100%;
-      border: 1px solid #ccc;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
       border-radius: 6px;
+      border: 1px solid #ccc;
     }
-
     .actions {
       display: flex;
       flex-direction: column;
       gap: 0.7rem;
+      margin-top: 1rem;
     }
-
     button {
-      padding: 0.9rem;
+      padding: 0.8rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-size: 1rem;
-      background: black;
-      color: white;
+      background: white;
+      color: black;
+      font-weight: bold;
       transition: 0.3s;
     }
-
     button:hover {
-      opacity: 0.9;
+      background: #eee;
+    }
+    .delivery {
+      margin-top: 1rem;
+      font-size: 0.9rem;
     }
 
-    .delivery {
-      font-size: 0.95rem;
-      color: #444;
+    #cart-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 1rem;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 999;
     }
   </style>
 </head>
@@ -141,35 +140,24 @@
       <img src="https://via.placeholder.com/40x40?text=🛍️" alt="Logo" />
       My Clothing Store
     </a>
-    <a href="cart.html" id="cartIcon">🛒 <span class="cart-count" id="cartCount">0</span></a>
   </div>
 
   <div class="container">
-    <div class="image-preview">
-      <img id="mainImage" class="main-image" src="" alt="Product Image"/>
-      <div class="thumbnail-row" id="thumbnailRow"></div>
-    </div>
+    <img id="mainImage" class="main-img" src="" alt="Product Image" />
+    <div class="thumbnails" id="thumbnailContainer"></div>
 
-    <div>
-      <h2 id="productName">Product Name</h2>
-      <p class="price" id="productPrice">₹0</p>
-      <p class="desc" id="productDesc">Description...</p>
-    </div>
+    <h2 id="productName"></h2>
+    <p class="price" id="productPrice"></p>
+    <p class="desc" id="productDesc"></p>
 
-    <div>
-      <label for="colorSelect">Select Color</label>
-      <select id="colorSelect" onchange="updateImagesFromColor()"></select>
-    </div>
+    <label for="colorSelect">Select Color</label>
+    <select id="colorSelect" onchange="updateColorImages()"></select>
 
-    <div>
-      <label for="sizeSelect">Select Size</label>
-      <select id="sizeSelect"></select>
-    </div>
+    <label for="sizeSelect">Select Size</label>
+    <select id="sizeSelect"></select>
 
-    <div>
-      <label for="quantityInput">Quantity</label>
-      <input type="number" id="quantityInput" value="1" min="1"/>
-    </div>
+    <label for="quantityInput">Quantity</label>
+    <input type="number" id="quantityInput" value="1" min="1" />
 
     <div class="actions">
       <button onclick="addToCart()">🛒 Add to Cart</button>
@@ -181,59 +169,65 @@
     </div>
   </div>
 
+  <a href="cart.html" id="cart-btn">🛒</a>
+
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
     const colorData = JSON.parse(product.colors || '{}');
+    const defaultImages = Object.values(colorData)[0]?.split(',') || [];
     const availableSizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
-    const mainImage = document.getElementById('mainImage');
-    const thumbnailRow = document.getElementById('thumbnailRow');
+
+    const mainImg = document.getElementById('mainImage');
+    const thumbnails = document.getElementById('thumbnailContainer');
+    const sizeSelect = document.getElementById('sizeSelect');
+    const colorSelect = document.getElementById('colorSelect');
 
     document.getElementById('productName').innerText = product.name || 'Product';
-    document.getElementById('productPrice').innerText = `₹${product.price || '0'}`;
-    document.getElementById('productDesc').innerText = product.description || '';
+    document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
+    document.getElementById('productDesc').innerText = product.description || 'No description available';
 
-    // Populate sizes
-    const sizeSelect = document.getElementById('sizeSelect');
     availableSizes.forEach(size => {
       const opt = document.createElement('option');
       opt.value = opt.textContent = size;
       sizeSelect.appendChild(opt);
     });
 
-    // Populate color dropdown
-    const colorSelect = document.getElementById('colorSelect');
     const colorKeys = Object.keys(colorData);
-    colorKeys.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = opt.textContent = c;
-      colorSelect.appendChild(opt);
-    });
-
-    function updateImagesFromColor() {
-      const color = colorSelect.value;
-      const images = (colorData[color] || '').split(',').map(i => i.trim()).filter(Boolean);
-      renderThumbnails(images);
+    if (colorKeys.length) {
+      colorKeys.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = c;
+        colorSelect.appendChild(opt);
+      });
+    } else {
+      colorSelect.style.display = 'none';
+      document.querySelector('label[for="colorSelect"]').style.display = 'none';
     }
 
     function renderThumbnails(images) {
-      if (!images.length) return;
-      mainImage.src = images[0];
-      thumbnailRow.innerHTML = '';
-      images.forEach((img, index) => {
+      thumbnails.innerHTML = '';
+      images.forEach((img, idx) => {
         const thumb = document.createElement('img');
         thumb.src = img;
-        if (index === 0) thumb.classList.add('active');
+        thumb.className = idx === 0 ? 'active' : '';
         thumb.onclick = () => {
-          document.querySelectorAll('.thumbnail-row img').forEach(i => i.classList.remove('active'));
+          document.querySelectorAll('.thumbnails img').forEach(i => i.classList.remove('active'));
           thumb.classList.add('active');
-          mainImage.src = img;
+          mainImg.src = img;
         };
-        thumbnailRow.appendChild(thumb);
+        thumbnails.appendChild(thumb);
       });
+      mainImg.src = images[0];
     }
 
-    updateImagesFromColor();
+    function updateColorImages() {
+      const selectedColor = colorSelect.value;
+      const imgs = colorData[selectedColor]?.split(',').map(i => i.trim()) || defaultImages;
+      renderThumbnails(imgs);
+    }
+
+    updateColorImages();
 
     const now = new Date();
     const early = new Date(now); early.setDate(now.getDate() + 3);
@@ -241,22 +235,21 @@
     document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
 
     function addToCart() {
-      const color = colorSelect.value;
       const size = sizeSelect.value;
       const qty = parseInt(document.getElementById('quantityInput').value);
-      if (!size || !qty || qty < 1) return alert('❌ Invalid selection.');
+      const color = colorSelect?.value || '';
+      if (qty < 1) return alert('Invalid quantity.');
 
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ ...product, size, color, qty });
+      cart.push({ ...product, size, qty, color });
       localStorage.setItem('cart', JSON.stringify(cart));
-      updateCartCount();
-      alert("✅ Added to cart!");
+      alert('✅ Added to cart!');
     }
 
     function buyNow() {
       const size = sizeSelect.value;
       const qty = parseInt(document.getElementById('quantityInput').value);
-      if (!product.amount || qty < 1) return alert('❌ Invalid quantity or price.');
+      if (!product.amount || qty < 1) return alert('Invalid quantity or price.');
 
       const options = {
         key: "rzp_test_1234567890", // Replace with real key
@@ -264,20 +257,14 @@
         currency: "INR",
         name: "My Clothing Store",
         description: `${product.name} (Size: ${size})`,
-        image: mainImage.src,
+        image: mainImg.src,
         handler: () => alert("✅ Payment successful!"),
         theme: { color: "#000" }
       };
 
-      new Razorpay(options).open();
+      const rzp = new Razorpay(options);
+      rzp.open();
     }
-
-    function updateCartCount() {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      document.getElementById('cartCount').innerText = cart.length;
-    }
-
-    updateCartCount();
   </script>
 </body>
 </html>
