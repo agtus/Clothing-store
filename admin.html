@@ -141,7 +141,7 @@
     const cloudName = 'dxwvqo37k';
     const uploadPreset = 'unsigned_preset';
     let editingId = null;
-    let colorDataList = [];
+    const colorData = {};
 
     function addColorSection(name = '', urls = []) {
       const id = 'color-' + Date.now();
@@ -191,16 +191,16 @@
     }
 
     function updateColorData() {
-      colorDataList = [];
       const sections = document.querySelectorAll('.color-section');
+      const obj = {};
       sections.forEach(sec => {
-        const color = sec.querySelector('input[type="text"]').value.trim();
-        const imgs = Array.from(sec.querySelectorAll('img')).map(img => img.src).join(',');
-        if (color && imgs) {
-          colorDataList.push(`${color}::${imgs}`);
+        const color = sec.querySelector('input[type="text"]').value.trim().toLowerCase();
+        const imgs = Array.from(sec.querySelectorAll('img')).map(img => img.src);
+        if (color && imgs.length) {
+          obj[color] = imgs.join(',');
         }
       });
-      document.getElementById("colorData").value = colorDataList.join('||');
+      document.getElementById("colorData").value = JSON.stringify(obj);
     }
 
     document.getElementById('productForm').addEventListener('submit', async function (e) {
@@ -235,7 +235,7 @@
         this.reset();
         editingId = null;
         document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-        colorDataList = [];
+        Object.keys(colorData).forEach(k => delete colorData[k]);
         loadProducts();
       }
     });
@@ -248,8 +248,8 @@
 
       data.slice(1).forEach(row => {
         const [id, name, price, , desc, trending, section, amount, colors, sizes] = row;
-        const colorGroups = colors?.split('||') || [];
-        const firstImg = colorGroups[0]?.split('::')[1]?.split(',')[0] || '';
+        const colorObj = JSON.parse(colors || '{}');
+        const firstImg = Object.values(colorObj)[0]?.split(',')[0];
 
         const div = document.createElement('div');
         div.className = 'product-card';
@@ -280,13 +280,11 @@
       }
 
       document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-      const parsedColors = (colors || '').split('||');
-      parsedColors.forEach(c => {
-        const [color, urls] = c.split('::');
-        if (color && urls) {
-          addColorSection(color, urls.split(','));
-        }
-      });
+      const parsedColors = JSON.parse(colors || '{}');
+      for (let c in parsedColors) {
+        const imgs = parsedColors[c].split(',');
+        addColorSection(c, imgs);
+      }
 
       document.getElementById('formMsg').innerText = `📝 Editing ${name}...`;
       window.scrollTo({ top: 0, behavior: 'smooth' });
