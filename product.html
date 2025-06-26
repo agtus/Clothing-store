@@ -104,6 +104,11 @@
       border-radius: 6px;
     }
 
+    .actions {
+      display: flex;
+      flex-direction: column;
+    }
+
     .actions button {
       padding: 0.8rem;
       width: 100%;
@@ -114,11 +119,8 @@
       font-size: 1rem;
       background: black;
       color: white;
-      transition: 0.3s;
-    }
-
-    .actions button:hover {
-      opacity: 0.9;
+      position: relative;
+      overflow: hidden;
     }
 
     .delivery {
@@ -127,15 +129,29 @@
       margin-top: 1rem;
     }
 
-    .fly-img {
-      position: fixed;
-      z-index: 9999;
+    .cart-icon-fly {
+      position: absolute;
+      font-size: 1.2rem;
+      animation: cartFly 0.8s ease-in-out forwards;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       pointer-events: none;
-      width: 60px;
-      height: 60px;
-      border-radius: 10px;
-      object-fit: cover;
-      transition: all 1s ease-in-out;
+    }
+
+    @keyframes cartFly {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      40% {
+        transform: translate(150%, -200%) scale(1.5);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
     }
   </style>
 </head>
@@ -200,7 +216,7 @@
         opt.value = opt.textContent = c;
         colorSelect.appendChild(opt);
       });
-      updateColorImages(); // Load first color's images
+      updateColorImages();
     } else {
       colorSelect.style.display = 'none';
       document.querySelector('label[for="colorSelect"]').style.display = 'none';
@@ -259,25 +275,12 @@
       cart.push({ ...product, size, qty, color });
       localStorage.setItem('cart', JSON.stringify(cart));
 
-      // animate image to cart
-      const img = document.getElementById('mainImage');
-      const clone = img.cloneNode();
-      const rect = img.getBoundingClientRect();
-      clone.className = 'fly-img';
-      clone.style.left = rect.left + 'px';
-      clone.style.top = rect.top + 'px';
-      document.body.appendChild(clone);
-
-      const cartX = window.innerWidth - 60;
-      const cartY = window.innerHeight - 60;
-      requestAnimationFrame(() => {
-        clone.style.left = cartX + 'px';
-        clone.style.top = cartY + 'px';
-        clone.style.opacity = 0;
-        clone.style.transform = 'scale(0.2)';
-      });
-
-      setTimeout(() => clone.remove(), 1000);
+      // Add-to-cart animation
+      const icon = document.createElement('div');
+      icon.className = 'cart-icon-fly';
+      icon.innerText = '🛒';
+      button.appendChild(icon);
+      setTimeout(() => icon.remove(), 1000);
     }
 
     function buyNow() {
