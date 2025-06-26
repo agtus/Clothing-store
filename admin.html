@@ -41,11 +41,6 @@
     .color-section h4 {
       margin: 0 0 0.5rem;
     }
-    .color-section input[type="text"] {
-      width: auto;
-      display: inline-block;
-      margin-right: 0.5rem;
-    }
     .thumb-preview img {
       height: 60px;
       margin: 5px;
@@ -142,11 +137,11 @@
   <section class="product-list" id="productList"></section>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwtvzscTXXDR_r0BAxAtY5BuZO4VsCkFj_wGh3F3GIRXPhkymB5Y1BrTpppg9XH_nfF8Q/exec';
-    const cloudName = 'dxwvqo37k'; // Your Cloudinary cloud name
-    const uploadPreset = 'unsigned_preset'; // Your Cloudinary preset
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxgv5PfjwXGtsVYtwJHwTZmMjRwe1zx_BIbeNYdJytcaqX9ejAzcGQedQocxmWxIGN0wQ/exec';
+    const cloudName = 'dxwvqo37k';
+    const uploadPreset = 'unsigned_preset';
     let editingId = null;
-    const colorData = {};
+    let colorDataList = [];
 
     function addColorSection(name = '', urls = []) {
       const id = 'color-' + Date.now();
@@ -158,12 +153,15 @@
         <input type="text" placeholder="e.g. Red" value="${name}" />
         <input type="file" accept="image/*" multiple onchange="uploadColorImages(event, '${id}')" />
         <div class="thumb-preview" id="${id}-thumbs">${urls.map(u => `<img src="${u}">`).join('')}</div>
-        <button type="button" onclick="this.parentElement.remove()">❌ Remove Color</button>
+        <button type="button" onclick="removeColorSection('${id}')">❌ Remove Color</button>
       `;
       document.getElementById('colorsContainer').appendChild(div);
-      if (name && urls.length) {
-        colorData[name] = urls.join(',');
-      }
+      updateColorData();
+    }
+
+    function removeColorSection(id) {
+      document.getElementById(id).remove();
+      updateColorData();
     }
 
     async function uploadColorImages(e, sectionId) {
@@ -181,30 +179,40 @@
           method: 'POST',
           body: formData
         });
+
         const data = await res.json();
         if (data.secure_url) {
           urls.push(data.secure_url);
         }
       }
 
-      const colorName = document.querySelector(`#${sectionId} input[type="text"]`).value.trim();
-      if (colorName) {
-        colorData[colorName] = urls.join(',');
-      }
-
       thumbs.innerHTML = urls.map(u => `<img src="${u}" />`).join('');
+      updateColorData();
+    }
+
+    function updateColorData() {
+      colorDataList = [];
+      const sections = document.querySelectorAll('.color-section');
+      sections.forEach(sec => {
+        const color = sec.querySelector('input[type="text"]').value.trim();
+        const imgs = Array.from(sec.querySelectorAll('img')).map(img => img.src).join(',');
+        if (color && imgs) {
+          colorDataList.push(`${color}::${imgs}`);
+        }
+      });
+      document.getElementById("colorData").value = colorDataList.join('||');
     }
 
     document.getElementById('productForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const form = new FormData(this);
 
-      // Collect sizes
-      const sizes = Array.from(document.querySelector('select[name="sizes"]').selectedOptions).map(opt => opt.value).join(',');
+      const sizes = Array.from(document.querySelector('select[name="sizes"]').selectedOptions)
+        .map(opt => opt.value)
+        .join(',');
       form.set("sizes", sizes);
 
-      // Colors
-      form.set("colors", JSON.stringify(colorData));
+      form.set("colors", document.getElementById("colorData").value);
 
       if (editingId) {
         form.append("id", editingId);
@@ -227,7 +235,7 @@
         this.reset();
         editingId = null;
         document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-        Object.keys(colorData).forEach(k => delete colorData[k]);
+        colorDataList = [];
         loadProducts();
       }
     });
@@ -239,9 +247,9 @@
       productList.innerHTML = "";
 
       data.slice(1).forEach(row => {
-        const [id, name, price, , desc, trending, section, amount, sizes, colors] = row;
-        const colorObj = JSON.parse(colors || '{}');
-        const firstImg = Object.values(colorObj)[0]?.split(',')[0];
+        const [id, name, price, , desc, trending, section, amount, colors, sizes] = row;
+        const colorGroups = colors?.split('||') || [];
+        const firstImg = colorGroups[0]?.split('::')[1]?.split(',')[0] || '';
 
         const div = document.createElement('div');
         div.className = 'product-card';
@@ -256,7 +264,7 @@
       });
     }
 
-    function editProduct([id, name, price, , desc, trending, section, amount, sizes, colors]) {
+    function editProduct([id, name, price, , desc, trending, section, amount, colors, sizes]) {
       editingId = id;
       document.querySelector("input[name='name']").value = name;
       document.querySelector("input[name='price']").value = price;
@@ -265,20 +273,20 @@
       document.querySelector("select[name='trending']").value = trending;
       document.querySelector("select[name='section']").value = section;
 
-      // Sizes
       const sizeArr = (sizes || '').split(',');
       const sizeOptions = document.querySelector("select[name='sizes']").options;
       for (let opt of sizeOptions) {
         opt.selected = sizeArr.includes(opt.value);
       }
 
-      // Colors
       document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-      const parsedColors = JSON.parse(colors || '{}');
-      for (let c in parsedColors) {
-        const imgs = parsedColors[c].split(',');
-        addColorSection(c, imgs);
-      }
+      const parsedColors = (colors || '').split('||');
+      parsedColors.forEach(c => {
+        const [color, urls] = c.split('::');
+        if (color && urls) {
+          addColorSection(color, urls.split(','));
+        }
+      });
 
       document.getElementById('formMsg').innerText = `📝 Editing ${name}...`;
       window.scrollTo({ top: 0, behavior: 'smooth' });
