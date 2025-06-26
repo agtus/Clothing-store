@@ -8,17 +8,16 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f5f5f5;
+      background: #f9f9f9;
     }
-
     .topbar {
       display: flex;
+      justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
       background: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-
     .logo {
       display: flex;
       align-items: center;
@@ -27,78 +26,83 @@
       font-weight: bold;
       font-size: 1.4rem;
     }
-
     .logo img {
       height: 40px;
       margin-right: 10px;
     }
+    #cartIcon {
+      position: relative;
+      font-size: 1.8rem;
+      text-decoration: none;
+      color: black;
+    }
+    #cartIcon .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      font-size: 12px;
+      padding: 2px 6px;
+    }
 
     .container {
-      max-width: 900px;
+      max-width: 800px;
       margin: 2rem auto;
-      display: flex;
-      gap: 2rem;
       background: white;
       border-radius: 10px;
       padding: 2rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .image-preview {
+      text-align: center;
     }
 
     .main-image {
-      flex: 1;
-    }
-
-    .main-image img {
       width: 100%;
-      height: 400px;
-      object-fit: cover;
+      max-width: 400px;
       border-radius: 10px;
-    }
-
-    .thumbnails {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .thumbnails img {
-      width: 70px;
-      height: 70px;
       object-fit: cover;
-      border: 2px solid transparent;
-      border-radius: 8px;
-      cursor: pointer;
+      transition: transform 0.3s ease;
     }
 
-    .thumbnails img.active {
+    .main-image:hover {
+      transform: scale(1.05);
+    }
+
+    .thumbnail-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+
+    .thumbnail-row img {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+
+    .thumbnail-row img.active {
       border-color: #000;
     }
 
-    .details {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    h2 {
-      margin-bottom: 0.5rem;
-    }
-
-    .price {
-      font-size: 1.5rem;
-      color: #222;
-      margin-bottom: 1rem;
-    }
-
-    .desc {
-      margin-bottom: 1rem;
-      color: #555;
-    }
+    h2 { margin: 0.5rem 0; }
+    .price { font-size: 1.4rem; color: #222; }
+    .desc { margin: 1rem 0; line-height: 1.6; }
 
     select, input[type="number"] {
-      padding: 0.5rem;
-      margin: 0.5rem 0 1rem;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 6px;
@@ -107,51 +111,27 @@
     .actions {
       display: flex;
       flex-direction: column;
+      gap: 0.7rem;
     }
 
-    .actions button {
-      padding: 0.8rem;
-      width: 100%;
-      margin-bottom: 0.7rem;
+    button {
+      padding: 0.9rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-size: 1rem;
       background: black;
       color: white;
-      position: relative;
-      overflow: hidden;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.9;
     }
 
     .delivery {
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 1rem;
-    }
-
-    .cart-icon-fly {
-      position: absolute;
-      font-size: 1.2rem;
-      animation: cartFly 0.8s ease-in-out forwards;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    @keyframes cartFly {
-      0% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-      40% {
-        transform: translate(150%, -200%) scale(1.5);
-        opacity: 0.8;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-      }
+      font-size: 0.95rem;
+      color: #444;
     }
   </style>
 </head>
@@ -161,147 +141,143 @@
       <img src="https://via.placeholder.com/40x40?text=🛍️" alt="Logo" />
       My Clothing Store
     </a>
+    <a href="cart.html" id="cartIcon">🛒 <span class="cart-count" id="cartCount">0</span></a>
   </div>
 
   <div class="container">
-    <div class="main-image">
-      <img id="mainImage" src="" alt="Product" />
-      <div class="thumbnails" id="thumbnails"></div>
+    <div class="image-preview">
+      <img id="mainImage" class="main-image" src="" alt="Product Image"/>
+      <div class="thumbnail-row" id="thumbnailRow"></div>
     </div>
-    <div class="details">
+
+    <div>
       <h2 id="productName">Product Name</h2>
-      <div class="price" id="productPrice">₹0</div>
-      <div class="desc" id="productDesc">Description here</div>
+      <p class="price" id="productPrice">₹0</p>
+      <p class="desc" id="productDesc">Description...</p>
+    </div>
 
-      <label for="colorSelect">Color</label>
-      <select id="colorSelect" onchange="updateColorImages()"></select>
+    <div>
+      <label for="colorSelect">Select Color</label>
+      <select id="colorSelect" onchange="updateImagesFromColor()"></select>
+    </div>
 
-      <label for="sizeSelect">Size</label>
+    <div>
+      <label for="sizeSelect">Select Size</label>
       <select id="sizeSelect"></select>
+    </div>
 
+    <div>
       <label for="quantityInput">Quantity</label>
-      <input type="number" id="quantityInput" value="1" min="1" />
+      <input type="number" id="quantityInput" value="1" min="1"/>
+    </div>
 
-      <div class="actions">
-        <button onclick="addToCart(this)">🛒 Add to Cart</button>
-        <button onclick="buyNow()">💳 Buy Now</button>
-      </div>
+    <div class="actions">
+      <button onclick="addToCart()">🛒 Add to Cart</button>
+      <button onclick="buyNow()">💳 Buy Now</button>
+    </div>
 
-      <div class="delivery">
-        🚚 Delivery between <span id="deliveryDate"></span>
-      </div>
+    <div class="delivery">
+      🚚 Estimated Delivery: <span id="deliveryDate"></span>
     </div>
   </div>
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    if (!product.name) {
-      document.body.innerHTML = "<h2 style='text-align:center;margin-top:4rem;'>❌ No product found.</h2>";
-      throw new Error("No product in localStorage");
-    }
-
     const colorData = JSON.parse(product.colors || '{}');
-    const defaultImages = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
-    let currentImages = [...defaultImages];
+    const availableSizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
+    const mainImage = document.getElementById('mainImage');
+    const thumbnailRow = document.getElementById('thumbnailRow');
 
-    const colorSelect = document.getElementById('colorSelect');
+    document.getElementById('productName').innerText = product.name || 'Product';
+    document.getElementById('productPrice').innerText = `₹${product.price || '0'}`;
+    document.getElementById('productDesc').innerText = product.description || '';
+
+    // Populate sizes
     const sizeSelect = document.getElementById('sizeSelect');
-    const quantityInput = document.getElementById('quantityInput');
-
-    const colorKeys = Object.keys(colorData);
-    if (colorKeys.length) {
-      colorKeys.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = opt.textContent = c;
-        colorSelect.appendChild(opt);
-      });
-      updateColorImages();
-    } else {
-      colorSelect.style.display = 'none';
-      document.querySelector('label[for="colorSelect"]').style.display = 'none';
-      renderImages(defaultImages);
-    }
-
-    const sizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
-    sizes.forEach(size => {
+    availableSizes.forEach(size => {
       const opt = document.createElement('option');
       opt.value = opt.textContent = size;
       sizeSelect.appendChild(opt);
     });
 
-    document.getElementById('productName').innerText = product.name;
-    document.getElementById('productPrice').innerText = `₹${product.price}`;
-    document.getElementById('productDesc').innerText = product.description;
+    // Populate color dropdown
+    const colorSelect = document.getElementById('colorSelect');
+    const colorKeys = Object.keys(colorData);
+    colorKeys.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = c;
+      colorSelect.appendChild(opt);
+    });
 
-    function renderImages(images) {
-      const mainImg = document.getElementById('mainImage');
-      const thumbDiv = document.getElementById('thumbnails');
-      currentImages = images;
-      mainImg.src = images[0] || '';
+    function updateImagesFromColor() {
+      const color = colorSelect.value;
+      const images = (colorData[color] || '').split(',').map(i => i.trim()).filter(Boolean);
+      renderThumbnails(images);
+    }
 
-      thumbDiv.innerHTML = '';
-      images.forEach((img, i) => {
-        const t = document.createElement('img');
-        t.src = img;
-        if (i === 0) t.classList.add('active');
-        t.onclick = () => {
-          mainImg.src = img;
-          thumbDiv.querySelectorAll('img').forEach(img => img.classList.remove('active'));
-          t.classList.add('active');
+    function renderThumbnails(images) {
+      if (!images.length) return;
+      mainImage.src = images[0];
+      thumbnailRow.innerHTML = '';
+      images.forEach((img, index) => {
+        const thumb = document.createElement('img');
+        thumb.src = img;
+        if (index === 0) thumb.classList.add('active');
+        thumb.onclick = () => {
+          document.querySelectorAll('.thumbnail-row img').forEach(i => i.classList.remove('active'));
+          thumb.classList.add('active');
+          mainImage.src = img;
         };
-        thumbDiv.appendChild(t);
+        thumbnailRow.appendChild(thumb);
       });
     }
 
-    function updateColorImages() {
-      const selectedColor = colorSelect.value;
-      const imgs = (colorData[selectedColor] || '').split(',').map(i => i.trim()).filter(Boolean);
-      renderImages(imgs.length ? imgs : defaultImages);
-    }
+    updateImagesFromColor();
 
     const now = new Date();
     const early = new Date(now); early.setDate(now.getDate() + 3);
     const late = new Date(now); late.setDate(now.getDate() + 7);
     document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
 
-    function addToCart(button) {
-      const qty = parseInt(quantityInput.value);
+    function addToCart() {
+      const color = colorSelect.value;
       const size = sizeSelect.value;
-      const color = colorSelect?.value || '';
-      if (qty < 1) return alert("Invalid quantity");
+      const qty = parseInt(document.getElementById('quantityInput').value);
+      if (!size || !qty || qty < 1) return alert('❌ Invalid selection.');
 
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ ...product, size, qty, color });
+      cart.push({ ...product, size, color, qty });
       localStorage.setItem('cart', JSON.stringify(cart));
-
-      // Add-to-cart animation
-      const icon = document.createElement('div');
-      icon.className = 'cart-icon-fly';
-      icon.innerText = '🛒';
-      button.appendChild(icon);
-      setTimeout(() => icon.remove(), 1000);
+      updateCartCount();
+      alert("✅ Added to cart!");
     }
 
     function buyNow() {
-      const qty = parseInt(quantityInput.value);
       const size = sizeSelect.value;
-      const color = colorSelect?.value || '';
-      if (!product.amount || qty < 1) return alert("Invalid data");
+      const qty = parseInt(document.getElementById('quantityInput').value);
+      if (!product.amount || qty < 1) return alert('❌ Invalid quantity or price.');
 
       const options = {
-        key: "rzp_test_1234567890", // Replace with your Razorpay key
+        key: "rzp_test_1234567890", // Replace with real key
         amount: parseInt(product.amount) * qty,
         currency: "INR",
         name: "My Clothing Store",
-        description: `${product.name} (${size})`,
-        image: currentImages[0],
+        description: `${product.name} (Size: ${size})`,
+        image: mainImage.src,
         handler: () => alert("✅ Payment successful!"),
         theme: { color: "#000" }
       };
 
       new Razorpay(options).open();
     }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      document.getElementById('cartCount').innerText = cart.length;
+    }
+
+    updateCartCount();
   </script>
 </body>
 </html>
