@@ -41,7 +41,7 @@
     let allProducts = [];
 
     async function fetchProducts() {
-      document.getElementById('loader').style.display = 'flex'; // Show loader
+      document.getElementById('loader').style.display = 'flex'; // Show loade
       const res = await fetch("https://script.google.com/macros/s/AKfycbwtvzscTXXDR_r0BAxAtY5BuZO4VsCkFj_wGh3F3GIRXPhkymB5Y1BrTpppg9XH_nfF8Q/exec");
       const data = await res.json();
       const rows = data.slice(1);
