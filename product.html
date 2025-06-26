@@ -1,17 +1,16 @@
-<!-- product.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
+      background: #f5f5f5;
     }
+
     .topbar {
       display: flex;
       align-items: center;
@@ -19,6 +18,7 @@
       background: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
+
     .logo {
       display: flex;
       align-items: center;
@@ -27,54 +27,87 @@
       font-weight: bold;
       font-size: 1.4rem;
     }
+
     .logo img {
       height: 40px;
       margin-right: 10px;
     }
+
     .container {
-      max-width: 400px;
+      max-width: 900px;
       margin: 2rem auto;
+      display: flex;
+      gap: 2rem;
       background: white;
       border-radius: 10px;
-      padding: 1rem;
+      padding: 2rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    .swiper {
+
+    .main-image {
+      flex: 1;
+    }
+
+    .main-image img {
       width: 100%;
-      height: 300px;
+      height: 400px;
+      object-fit: cover;
       border-radius: 10px;
+    }
+
+    .thumbnails {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .thumbnails img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .thumbnails img.active {
+      border-color: #000;
+    }
+
+    .details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 {
+      margin-bottom: 0.5rem;
+    }
+
+    .price {
+      font-size: 1.5rem;
+      color: #222;
       margin-bottom: 1rem;
     }
-    .swiper-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    h2 {
-      margin: 0.5rem 0;
-    }
-    .price {
-      font-size: 1.4rem;
-      color: #222;
-    }
+
     .desc {
-      margin: 1rem 0;
-      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: #555;
     }
+
     select, input[type="number"] {
       padding: 0.5rem;
-      margin: 0.5rem 0;
+      margin: 0.5rem 0 1rem;
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
-    .actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-    }
-    button {
+
+    .actions button {
       padding: 0.8rem;
+      width: 100%;
+      margin-bottom: 0.7rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -83,58 +116,26 @@
       color: white;
       transition: 0.3s;
     }
-    button:hover {
+
+    .actions button:hover {
       opacity: 0.9;
     }
+
     .delivery {
+      font-size: 0.9rem;
+      color: #666;
       margin-top: 1rem;
-      font-size: 0.95rem;
-      color: #444;
-    }
-    .color-thumbnails {
-      display: flex;
-      gap: 0.5rem;
-      margin: 0.5rem 0 1rem;
-      overflow-x: auto;
-    }
-    .color-btn {
-      border: 2px solid transparent;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .color-btn img {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-    .color-btn.selected {
-      border-color: #000;
     }
 
-    #sizeChartModal {
-      display: none;
+    .fly-img {
       position: fixed;
-      top: 0; left: 0;
-      right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 100;
-    }
-    #sizeChartModal .content {
-      background: white;
-      padding: 1rem;
-      max-width: 400px;
-      margin: 10% auto;
-      border-radius: 8px;
-    }
-    #sizeChartModal table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    #sizeChartModal th, #sizeChartModal td {
-      padding: 0.5rem;
-      border: 1px solid #ddd;
+      z-index: 9999;
+      pointer-events: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      transition: all 1s ease-in-out;
     }
   </style>
 </head>
@@ -147,132 +148,156 @@
   </div>
 
   <div class="container">
-    <div class="swiper">
-      <div class="swiper-wrapper" id="swiper-wrapper"></div>
-      <div class="swiper-pagination"></div>
+    <div class="main-image">
+      <img id="mainImage" src="" alt="Product" />
+      <div class="thumbnails" id="thumbnails"></div>
     </div>
+    <div class="details">
+      <h2 id="productName">Product Name</h2>
+      <div class="price" id="productPrice">₹0</div>
+      <div class="desc" id="productDesc">Description here</div>
 
-    <h2 id="productName"></h2>
-    <p class="price" id="productPrice"></p>
-    <p class="desc" id="productDesc"></p>
-
-    <div>
-      <label for="colorSelect">Select Color</label>
+      <label for="colorSelect">Color</label>
       <select id="colorSelect" onchange="updateColorImages()"></select>
-    </div>
 
-    <div>
-      <label for="sizeSelect">Select Size</label>
+      <label for="sizeSelect">Size</label>
       <select id="sizeSelect"></select>
-    </div>
 
-    <div>
       <label for="quantityInput">Quantity</label>
       <input type="number" id="quantityInput" value="1" min="1" />
-    </div>
 
-    <div class="actions">
-      <button onclick="addToCart()">🛒 Add to Cart</button>
-      <button onclick="buyNow()">💳 Buy Now</button>
-      <button onclick="shareProduct()">🔗 Share</button>
-    </div>
+      <div class="actions">
+        <button onclick="addToCart(this)">🛒 Add to Cart</button>
+        <button onclick="buyNow()">💳 Buy Now</button>
+      </div>
 
-    <div class="delivery">
-      🚚 Estimated Delivery: <span id="deliveryDate"></span>
+      <div class="delivery">
+        🚚 Delivery between <span id="deliveryDate"></span>
+      </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    if (!product || !product.name) {
-      document.querySelector('.container').innerHTML = "<p style='text-align:center; margin:2rem;'>❌ No product found. Please return to the store.</p>";
+    if (!product.name) {
+      document.body.innerHTML = "<h2 style='text-align:center;margin-top:4rem;'>❌ No product found.</h2>";
       throw new Error("No product in localStorage");
     }
 
     const colorData = JSON.parse(product.colors || '{}');
-    const availableSizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
-    const defaultImages = Object.values(colorData)[0]?.split(',') || [];
+    const defaultImages = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
+    let currentImages = [...defaultImages];
 
-    document.getElementById('productName').innerText = product.name;
-    document.getElementById('productPrice').innerText = `₹${product.price}`;
-    document.getElementById('productDesc').innerText = product.desc;
-
+    const colorSelect = document.getElementById('colorSelect');
     const sizeSelect = document.getElementById('sizeSelect');
-    availableSizes.forEach(size => {
+    const quantityInput = document.getElementById('quantityInput');
+
+    const colorKeys = Object.keys(colorData);
+    if (colorKeys.length) {
+      colorKeys.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = c;
+        colorSelect.appendChild(opt);
+      });
+      updateColorImages(); // Load first color's images
+    } else {
+      colorSelect.style.display = 'none';
+      document.querySelector('label[for="colorSelect"]').style.display = 'none';
+      renderImages(defaultImages);
+    }
+
+    const sizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
+    sizes.forEach(size => {
       const opt = document.createElement('option');
       opt.value = opt.textContent = size;
       sizeSelect.appendChild(opt);
     });
 
-    const colorSelect = document.getElementById('colorSelect');
-    Object.keys(colorData).forEach(color => {
-      const opt = document.createElement('option');
-      opt.value = opt.textContent = color;
-      colorSelect.appendChild(opt);
-    });
+    document.getElementById('productName').innerText = product.name;
+    document.getElementById('productPrice').innerText = `₹${product.price}`;
+    document.getElementById('productDesc').innerText = product.description;
 
-    function renderSwiper(images) {
-      const wrapper = document.getElementById('swiper-wrapper');
-      wrapper.innerHTML = '';
-      images.forEach(img => {
-        const div = document.createElement('div');
-        div.className = 'swiper-slide';
-        div.innerHTML = `<img src="${img}" alt="">`;
-        wrapper.appendChild(div);
-      });
-      new Swiper('.swiper', {
-        pagination: { el: '.swiper-pagination' }
+    function renderImages(images) {
+      const mainImg = document.getElementById('mainImage');
+      const thumbDiv = document.getElementById('thumbnails');
+      currentImages = images;
+      mainImg.src = images[0] || '';
+
+      thumbDiv.innerHTML = '';
+      images.forEach((img, i) => {
+        const t = document.createElement('img');
+        t.src = img;
+        if (i === 0) t.classList.add('active');
+        t.onclick = () => {
+          mainImg.src = img;
+          thumbDiv.querySelectorAll('img').forEach(img => img.classList.remove('active'));
+          t.classList.add('active');
+        };
+        thumbDiv.appendChild(t);
       });
     }
 
     function updateColorImages() {
       const selectedColor = colorSelect.value;
-      const imgs = colorData[selectedColor]?.split(',') || defaultImages;
-      renderSwiper(imgs);
+      const imgs = (colorData[selectedColor] || '').split(',').map(i => i.trim()).filter(Boolean);
+      renderImages(imgs.length ? imgs : defaultImages);
     }
-
-    updateColorImages();
 
     const now = new Date();
     const early = new Date(now); early.setDate(now.getDate() + 3);
     const late = new Date(now); late.setDate(now.getDate() + 7);
     document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
 
-    function addToCart() {
+    function addToCart(button) {
+      const qty = parseInt(quantityInput.value);
       const size = sizeSelect.value;
-      const qty = parseInt(document.getElementById('quantityInput').value);
       const color = colorSelect?.value || '';
-      if (qty < 1) return alert('Invalid quantity.');
+      if (qty < 1) return alert("Invalid quantity");
+
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       cart.push({ ...product, size, qty, color });
       localStorage.setItem('cart', JSON.stringify(cart));
-      alert('✅ Added to cart!');
+
+      // animate image to cart
+      const img = document.getElementById('mainImage');
+      const clone = img.cloneNode();
+      const rect = img.getBoundingClientRect();
+      clone.className = 'fly-img';
+      clone.style.left = rect.left + 'px';
+      clone.style.top = rect.top + 'px';
+      document.body.appendChild(clone);
+
+      const cartX = window.innerWidth - 60;
+      const cartY = window.innerHeight - 60;
+      requestAnimationFrame(() => {
+        clone.style.left = cartX + 'px';
+        clone.style.top = cartY + 'px';
+        clone.style.opacity = 0;
+        clone.style.transform = 'scale(0.2)';
+      });
+
+      setTimeout(() => clone.remove(), 1000);
     }
 
     function buyNow() {
+      const qty = parseInt(quantityInput.value);
       const size = sizeSelect.value;
-      const qty = parseInt(document.getElementById('quantityInput').value);
-      if (!product.amount || qty < 1) return alert('Invalid quantity or price.');
+      const color = colorSelect?.value || '';
+      if (!product.amount || qty < 1) return alert("Invalid data");
 
       const options = {
-        key: "rzp_test_1234567890",
+        key: "rzp_test_1234567890", // Replace with your Razorpay key
         amount: parseInt(product.amount) * qty,
         currency: "INR",
         name: "My Clothing Store",
-        description: `${product.name} (Size: ${size})`,
-        image: defaultImages[0],
+        description: `${product.name} (${size})`,
+        image: currentImages[0],
         handler: () => alert("✅ Payment successful!"),
         theme: { color: "#000" }
       };
 
       new Razorpay(options).open();
-    }
-
-    function shareProduct() {
-      navigator.clipboard.writeText(window.location.href);
-      alert("🔗 Product URL copied!");
     }
   </script>
 </body>
