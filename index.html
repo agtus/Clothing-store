@@ -162,18 +162,29 @@
       const rows = data.slice(1);
 
       allProducts = rows.map(row => {
-        const [id, name, price, image, description, trending, section, amount] = row;
-        const images = (image || "").split(',').map(i => i.trim()).filter(Boolean);
-        const firstImage = images[0] || 'fallback.jpg';
+        const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
+        let firstImage = 'fallback.jpg';
+
+        try {
+          const colorObj = JSON.parse(colors || '{}');
+          const firstColor = Object.values(colorObj)[0];
+          if (firstColor) {
+            firstImage = firstColor.split(',')[0]?.trim() || 'fallback.jpg';
+          }
+        } catch (e) {
+          console.warn('Invalid color JSON:', colors);
+        }
+
         return {
           id,
           name,
           price,
-          image: images.join(','),
-          description,
+          description: desc,
           trending,
-          section: section?.trim().toLowerCase(),
-          amount
+          section: (section || '').trim().toLowerCase(),
+          amount,
+          image: firstImage,
+          rawData: row
         };
       });
 
@@ -184,13 +195,11 @@
       const container = document.getElementById('product-container');
       container.innerHTML = '';
       products.forEach(p => {
-        const firstImage = (p.image || '').split(',')[0]?.trim() || 'fallback.jpg';
-        console.log(`Rendering product ${p.name}, First image: ${firstImage}`);
         const div = document.createElement('div');
         div.className = 'product';
         div.onclick = () => viewProduct(p);
         div.innerHTML = `
-          <img src="${firstImage}" alt="${p.name}" />
+          <img src="${p.image}" alt="${p.name}" />
           <h3>${p.name}</h3>
           <p>₹${p.price}</p>
         `;
@@ -205,7 +214,7 @@
     }
 
     function viewProduct(product) {
-      localStorage.setItem('selectedProduct', JSON.stringify(product));
+      localStorage.setItem('selectedProduct', JSON.stringify(product.rawData));
       window.location.href = 'product.html';
     }
 
