@@ -9,9 +9,8 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f4f4f4;
+      background: #f9f9f9;
     }
-
     .topbar {
       display: flex;
       align-items: center;
@@ -19,7 +18,6 @@
       background: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-
     .logo {
       display: flex;
       align-items: center;
@@ -28,116 +26,90 @@
       font-weight: bold;
       font-size: 1.4rem;
     }
-
     .logo img {
       height: 40px;
       margin-right: 10px;
     }
-
     .container {
-      max-width: 500px;
+      max-width: 400px;
       margin: 2rem auto;
       background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-
     .swiper {
       width: 100%;
-      height: 320px;
+      height: 300px;
       border-radius: 10px;
       margin-bottom: 1rem;
     }
-
     .swiper-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-
     h2 {
       margin: 0.5rem 0;
     }
-
     .price {
-      font-size: 1.5rem;
-      font-weight: bold;
+      font-size: 1.4rem;
       color: #222;
     }
-
     .desc {
       margin: 1rem 0;
-      color: #555;
       line-height: 1.6;
     }
-
-    .section label {
-      font-weight: 600;
-      margin-top: 0.8rem;
-      display: block;
-    }
-
-    .colors {
-      display: flex;
-      gap: 10px;
-      margin: 0.5rem 0 1rem;
-      flex-wrap: wrap;
-    }
-
-    .color-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: border 0.3s;
-    }
-
-    .color-btn.selected {
-      border-color: #000;
-    }
-
-    .color-btn img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
     select, input[type="number"] {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
       width: 100%;
-      padding: 0.6rem;
-      margin: 0.5rem 0 1rem;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
-
     .actions {
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 0.7rem;
     }
-
     button {
       padding: 0.8rem;
       border: none;
       border-radius: 6px;
-      font-size: 1rem;
       cursor: pointer;
-      background: #000;
-      color: #fff;
+      font-size: 1rem;
+      background: black;
+      color: white;
       transition: 0.3s;
     }
-
     button:hover {
-      background: #333;
+      opacity: 0.9;
     }
-
     .delivery {
       margin-top: 1rem;
       font-size: 0.95rem;
       color: #444;
+    }
+    .color-thumbnails {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0.5rem 0 1rem;
+      overflow-x: auto;
+    }
+    .color-btn {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .color-btn img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .color-btn.selected {
+      border-color: #000;
     }
 
     #sizeChartModal {
@@ -145,10 +117,9 @@
       position: fixed;
       top: 0; left: 0;
       right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       z-index: 100;
     }
-
     #sizeChartModal .content {
       background: white;
       padding: 1rem;
@@ -156,16 +127,13 @@
       margin: 10% auto;
       border-radius: 8px;
     }
-
-    table {
+    #sizeChartModal table {
       width: 100%;
       border-collapse: collapse;
     }
-
-    th, td {
+    #sizeChartModal th, #sizeChartModal td {
       padding: 0.5rem;
       border: 1px solid #ddd;
-      text-align: center;
     }
   </style>
 </head>
@@ -183,22 +151,19 @@
       <div class="swiper-pagination"></div>
     </div>
 
-    <h2 id="productName">Product Name</h2>
-    <p class="price" id="productPrice">₹0</p>
-    <p class="desc" id="productDesc">Description here...</p>
+    <h2 id="productName">Product</h2>
+    <p class="price" id="productPrice">₹</p>
+    <p class="desc" id="productDesc"></p>
 
-    <div class="section">
-      <label>Select Color</label>
-      <div class="colors" id="colorThumbnails"></div>
-    </div>
+    <div id="colorThumbnails" class="color-thumbnails"></div>
 
-    <div class="section">
-      <label>Select Size</label>
+    <div>
+      <label for="sizeSelect">Select Size</label>
       <select id="sizeSelect"></select>
     </div>
 
-    <div class="section">
-      <label>Quantity</label>
+    <div>
+      <label for="quantityInput">Quantity</label>
       <input type="number" id="quantityInput" value="1" min="1" />
     </div>
 
@@ -231,103 +196,107 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const colorData = JSON.parse(product.colors || '{}');
-    const defaultImages = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
-    const availableSizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
-
-    const sizeSelect = document.getElementById('sizeSelect');
-    const colorThumbnails = document.getElementById('colorThumbnails');
-    const swiperWrapper = document.getElementById('swiper-wrapper');
-
-    document.getElementById('productName').innerText = product.name || 'Product';
-    document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
-    document.getElementById('productDesc').innerText = product.description || 'No description available';
-
-    // Sizes
-    sizeSelect.innerHTML = '';
-    availableSizes.forEach(size => {
-      const opt = document.createElement('option');
-      opt.value = opt.textContent = size;
-      sizeSelect.appendChild(opt);
-    });
-
-    // Colors with thumbnails
-    let currentColor = '';
-    Object.entries(colorData).forEach(([color, urls], index) => {
-      const btn = document.createElement('div');
-      btn.className = 'color-btn';
-      if (index === 0) {
-        btn.classList.add('selected');
-        currentColor = color;
-        renderSwiper(urls.split(','));
+    document.addEventListener("DOMContentLoaded", () => {
+      const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+      if (!product || !product.name) {
+        document.querySelector('.container').innerHTML = "<p style='text-align:center'>❌ No product found.</p>";
+        return;
       }
-      btn.innerHTML = `<img src="${urls.split(',')[0]}" alt="${color}" />`;
-      btn.onclick = () => {
-        document.querySelectorAll('.color-btn').forEach(el => el.classList.remove('selected'));
-        btn.classList.add('selected');
-        currentColor = color;
-        renderSwiper(urls.split(','));
+
+      const colorData = JSON.parse(product.colors || '{}');
+      const defaultImages = (product.image || '').split(',').map(i => i.trim()).filter(Boolean);
+      const availableSizes = (product.sizes || '').split(',').map(s => s.trim()).filter(Boolean);
+
+      document.getElementById('productName').innerText = product.name || 'Product';
+      document.getElementById('productPrice').innerText = `₹${product.price || ''}`;
+      document.getElementById('productDesc').innerText = product.description || 'No description available';
+
+      const sizeSelect = document.getElementById('sizeSelect');
+      sizeSelect.innerHTML = '';
+      availableSizes.forEach(size => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = size;
+        sizeSelect.appendChild(opt);
+      });
+
+      const colorThumbnails = document.getElementById('colorThumbnails');
+      const swiperWrapper = document.getElementById('swiper-wrapper');
+      let currentColor = '';
+      
+      Object.entries(colorData).forEach(([color, urls], index) => {
+        const btn = document.createElement('div');
+        btn.className = 'color-btn';
+        if (index === 0) {
+          btn.classList.add('selected');
+          currentColor = color;
+          renderSwiper(urls.split(','));
+        }
+        btn.innerHTML = `<img src="${urls.split(',')[0]}" alt="${color}" />`;
+        btn.onclick = () => {
+          document.querySelectorAll('.color-btn').forEach(el => el.classList.remove('selected'));
+          btn.classList.add('selected');
+          currentColor = color;
+          renderSwiper(urls.split(','));
+        };
+        colorThumbnails.appendChild(btn);
+      });
+
+      if (!currentColor && defaultImages.length) {
+        renderSwiper(defaultImages);
+      }
+
+      function renderSwiper(images) {
+        swiperWrapper.innerHTML = '';
+        images.forEach(src => {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          slide.innerHTML = `<img src="${src}" alt="">`;
+          swiperWrapper.appendChild(slide);
+        });
+        new Swiper('.swiper', {
+          pagination: { el: '.swiper-pagination' }
+        });
+      }
+
+      const now = new Date();
+      const early = new Date(now); early.setDate(now.getDate() + 3);
+      const late = new Date(now); late.setDate(now.getDate() + 7);
+      document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
+
+      window.addToCart = function () {
+        const size = sizeSelect.value;
+        const qty = parseInt(document.getElementById('quantityInput').value);
+        if (qty < 1) return alert('Invalid quantity.');
+
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.push({ ...product, size, qty, color: currentColor });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert('✅ Added to cart!');
       };
-      colorThumbnails.appendChild(btn);
+
+      window.buyNow = function () {
+        const size = sizeSelect.value;
+        const qty = parseInt(document.getElementById('quantityInput').value);
+        if (!product.amount || qty < 1) return alert('Invalid quantity or price.');
+
+        const options = {
+          key: "rzp_test_1234567890", // Replace with your Razorpay key
+          amount: parseInt(product.amount) * qty,
+          currency: "INR",
+          name: "My Clothing Store",
+          description: `${product.name} (Size: ${size})`,
+          image: defaultImages[0],
+          handler: () => alert("✅ Payment successful!"),
+          theme: { color: "#000" }
+        };
+        new Razorpay(options).open();
+      };
+
+      window.shareProduct = function () {
+        navigator.clipboard.writeText(window.location.href);
+        alert("🔗 Product URL copied!");
+      };
     });
-
-    if (!currentColor && defaultImages.length) {
-      renderSwiper(defaultImages);
-    }
-
-    function renderSwiper(images) {
-      swiperWrapper.innerHTML = '';
-      images.forEach(src => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `<img src="${src}" alt="">`;
-        swiperWrapper.appendChild(slide);
-      });
-      new Swiper('.swiper', {
-        pagination: { el: '.swiper-pagination' }
-      });
-    }
-
-    // Estimated delivery
-    const now = new Date();
-    const early = new Date(now); early.setDate(now.getDate() + 3);
-    const late = new Date(now); late.setDate(now.getDate() + 7);
-    document.getElementById('deliveryDate').innerText = `${early.toDateString()} - ${late.toDateString()}`;
-
-    function addToCart() {
-      const size = sizeSelect.value;
-      const qty = parseInt(document.getElementById('quantityInput').value);
-      if (qty < 1) return alert('Invalid quantity.');
-
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ ...product, size, qty, color: currentColor });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert('✅ Added to cart!');
-    }
-
-    function buyNow() {
-      const size = sizeSelect.value;
-      const qty = parseInt(document.getElementById('quantityInput').value);
-      if (!product.amount || qty < 1) return alert('Invalid quantity or price.');
-
-      const options = {
-        key: "rzp_test_1234567890", // Replace this
-        amount: parseInt(product.amount) * qty,
-        currency: "INR",
-        name: "My Clothing Store",
-        description: `${product.name} (Size: ${size})`,
-        image: defaultImages[0],
-        handler: () => alert("✅ Payment successful!"),
-        theme: { color: "#000" }
-      };
-      new Razorpay(options).open();
-    }
-
-    function shareProduct() {
-      navigator.clipboard.writeText(window.location.href);
-      alert("🔗 Product URL copied!");
-    }
   </script>
 </body>
 </html>
