@@ -2,7 +2,7 @@ html, body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-image: url(images/background.jpg) ;
+      background-color: white;
       background-repeat: no-repeat;
       background-size: 100% 100%;
       color: #000000;
@@ -14,6 +14,7 @@ html, body {
     .topbar {
       
       position: fixed;
+      top: 0;
       z-index: 1000;
       align-items: center;
       width: 100%;
@@ -43,52 +44,6 @@ html, body {
       margin-right: 10px;
     }
 
-    #dock {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 20px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 25px;
-      display: flex;
-      gap: 2rem;
-      padding: 0.6rem 2rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      z-index: 1000;
-      justify-content: center;
-    }
-
-    #dock a {
-      text-decoration: none;
-      color: white;
-      font-size: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.2s;
-      font-weight: 500;
-      padding: 0.2rem 0.8rem;
-    }
-
-    #dock a:hover {
-      transform: scale(1.2);
-    }
-
-    #dock span:first-child {
-      font-size: 1.5rem;   /* Icon size */
-      line-height: 1;
-      display: block;
-      width: 1.8em;
-      height: 1.8em;
-      text-align: center;
-    }
-
-    #dock span:last-child {
-      font-size: 0.7rem;
-      margin-top: 0.1em;
-      display: block;
-    }
 
     .category-nav {
       margin-left: auto;
@@ -130,7 +85,7 @@ html, body {
       left: 0;
       right: 0;
       bottom: 90px; /* Height of bottom navbar + some gap */
-      padding: 0rem 0.5rem 1rem 0.5rem;
+      padding: 0.5rem 0.5rem 1rem 0.5rem;
       overflow-y: auto;
       display: flex;
       flex-wrap: wrap;
@@ -154,7 +109,9 @@ html, body {
         bottom: 80px; /* Reduce bottom gap for smaller screens */
         padding: 0.5rem 0.2rem 0.5rem 0.2rem;
         gap: 1rem;
+        
       }
+      
     }
 
     .product {
@@ -168,6 +125,7 @@ html, body {
       transition: transform 0.3s, box-shadow 0.3s;
       color: #fff;
       backdrop-filter: blur(10px);
+      
       
     }
 
@@ -185,41 +143,106 @@ html, body {
     }
 
     .product h3 {
+      font-variant-caps: all-petite-caps;
       margin: 0.8rem 0 0.3rem;
       font-size: 1.1rem;
       color: #000000;
     }
 
-    .product p {
+    .product h4 {
       margin: 0;
       color: #159bc4;
       font-weight: 600;
     }
 
-    #cart-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #000;
-      color: #fff;
-      border: none;
-      padding: 1rem;
-      border-radius: 50%;
-      font-size: 1.5rem;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 999;
+    .product p {
+      font-size: 0.9rem;
+      color: #000000;
+      margin: 0.5rem 0;
+      font-weight: 400;
     }
 
+  
     @media (max-width: 600px) {
       .product {
         width: 90%;
+        height: 200px;
       }
-      #dock {
-        flex-direction: row;
-        gap: 1rem;
-        padding: 0.6rem 0.5rem;
+      .product-card{
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0px;
+        
       }
+      .product img {
+        height: 200px;
+        width: 200px;
+        float: left;
+        margin-right: 20px;
+      }
+      .product h3 {
+        font-variant-caps: all-petite-caps;
+        font-weight: 500;
+        font-size: 2rem ;
+        text-align: left;
+      }
+      .product p {
+        color: #5e5e5e;
+        line-height: 1.6rem;
+        align-items: center;
+        text-align: left;
+        overflow: hidden;
+        display: -webkit-box; 
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        max-height: 3.2rem;
+        font-size: medium;
+        
+      }
+      .product h4 {
+        
+        text-align: left;
+        font-size: 1.5rem;
+     
+    }
+      .container.dock-navbar {
+          width: auto;
+          gap: 4rem;
+          padding: 0.6rem 0.5rem;
+          bottom: 0px;
+      }
+        .container.dock-navbar img {
+          width: 35px;
+          height: 35px;
+      }
+
+    .category-nav {
+      height: 60px; /* Adjust height for mobile */
+      margin-left: auto;
+      margin-right: auto;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 55px; /* Adjust based on your topbar height */
+      z-index: 1000;
+      display: flex;
+      flex-wrap: nowrap;           /* Prevent wrapping */
+      overflow-x: auto;            /* Enable horizontal scroll */
+      overflow-y: hidden;
+      justify-content: flex-start; /* Align buttons to the left */
+      gap: 0.5rem;
+      padding: 1.2rem 2rem 0.5rem 2rem;
+      background: transparent;
+      scrollbar-width: none;       /* Firefox: hide scrollbar */
+      -ms-overflow-style: none;    /* IE and Edge: hide scrollbar */
+    }
+
+    .category-nav::-webkit-scrollbar {
+      display: none;               /* Chrome, Safari, Opera: hide scrollbar */
+    }
+
+      
     }
 
     .spinner {
@@ -271,7 +294,7 @@ html, body {
 
     .container.dock-navbar button:hover {
       
-      transform: scale(1.15);
+      transform: scale(1.2);
     }
 
     .container.dock-navbar img {
@@ -280,111 +303,157 @@ html, body {
       display: block;
     }
 
-    @media (max-width: 600px) {
-      .container.dock-navbar {
-        gap: 1rem;
-        padding: 0.6rem 0.5rem;
-      }
-      .container.dock-navbar img {
-        width: 28px;
-        height: 28px;
-      }
-    }
+   
 
-    /* --- Add or update these styles for the mobile side-drop category menu --- */
+    /* Hide mobile filter button and dropdown on desktop */
 
-    /* Hide the original category-nav on mobile */
-    @media (max-width: 600px) {
-      .category-nav {
-        display: none !important;
-      }
-    }
 
-    /* Side menu button (hamburger) */
-    .category-menu-btn {
-      display: none;
-      position: fixed;
-      top: 80px;
-      left: 16px;
-      z-index: 1101;
-      background: rgba(255,255,255,0.9);
-      border: none;
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .category-menu-btn:active {
-      background: #eee;
-    }
-
-    .category-menu-btn span {
-      display: block;
-      width: 24px;
-      height: 3px;
-      background: #333;
-      margin: 4px 0;
-      border-radius: 2px;
-    }
-
-    @media (max-width: 600px) {
-      .category-menu-btn {
-        display: flex;
-      }
-    }
-
-    /* Side drop menu */
-    .category-side-menu {
-      display: none;
-      flex-direction: row;
-      align-items: center;
-      position: fixed;
-      top: 70px;
-      left: 0;
-      width: 100vw;
-      height: 60px;
-      background: rgba(255,255,255,0.97);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-      z-index: 1100;
-      overflow-x: auto;
-      padding: 0 0.5rem;
-      gap: 0.5rem;
-      transition: transform 0.3s;
-    }
-
-    .category-side-menu.active {
-      display: flex;
-    }
-
-    .category-side-menu button {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid #000000;
-      color: #000000;
-      padding: 0.4rem 1rem;
-      border-radius: 18px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s;
-      font-size: 0.95rem;
-      white-space: nowrap;
+/* styles for product details page */
+body {
       margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffffff;
+      color: #000000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
     }
 
-    .category-side-menu button:hover,
-    .category-side-menu button.active {
-      background: #159bc4;
-      color: #fff;
-      border-color: #159bc4;
+    .product-card {
+      display: flex;
+      
+      
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      padding: 2rem;
+      width: 100%;
+      max-width: 960px;
+      gap: 2rem;
     }
+    @media (max-width: 768px) {
+      .product-card {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 30px;
+      }
 
-    @media (min-width: 601px) {
-      .category-menu-btn,
-      .category-side-menu {
-        display: none !important;
+      .product-image, .product-info {
+        width: 100%;
+      }
+
+      .main-img {
+        max-width: 100%;
+        height: auto;
       }
     }
+
+
+    .product-image {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .main-img {
+      width: 100%;
+      max-width: 300px;
+      height: 300px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+
+    .thumbnails {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .thumbnails img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+
+    .thumbnails img:hover, .thumbnails img.active {
+      border-color: #fff;
+    }
+
+    .product-info {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .product-info h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .price {
+      font-size: 1.6rem;
+      color: #00aeba;
+    }
+
+    .desc {
+      border: solid 1px #000000;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 1rem;
+      color: #000000;
+    }
+
+    .selects, .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    select, input {
+      background-color: rgba(255, 228, 196, 0);
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: solid 1px #000000;
+      font-size: 1rem;
+    }
+
+    button {
+      padding-top: 10px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      background: #00000000;
+      color: rgb(0, 0, 0);
+      border: solid 1px black;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+    /* Add this to style.css for a subtle quantity hint */
+    .qty-hint {
+      display: block;
+      font-size: 0.95rem;
+      color: #888;
+      margin-top: 0.2rem;
+      margin-left: 2px;
+    }
+  
+    
+   
+    
+    
