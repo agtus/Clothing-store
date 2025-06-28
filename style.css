@@ -447,7 +447,7 @@ body {
     /* Add this to style.css for a subtle quantity hint */
     .qty-hint {
       display: block;
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       color: #888;
       margin-top: 0.2rem;
       margin-left: 2px;
