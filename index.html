@@ -7,18 +7,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <button class="category-menu-btn" id="catMenuBtn" aria-label="Show categories">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-  <div class="category-side-menu" id="catSideMenu">
-    <button onclick="filterProducts('all')">All</button>
-    <button onclick="filterProducts('women')">Women</button>
-    <button onclick="filterProducts('bedsheets')">Bedsheets</button>
-    <button onclick="filterProducts('raw materials')">Raw Materials</button>
-    <button onclick="filterProducts('home decors')">Home Decors</button>
-  </div>
+  <!-- Only show the mobile filter button and dropdown on mobile screens -->
+  
+    <!-- Modern menu icon (Material Design style) -->
+    
+  
+  
   <header class="topbar">
       
         <a href="index.html" class="logo">
@@ -86,7 +80,9 @@
         div.innerHTML = `
           <img src="${imgUrl}" alt="${p.name}" />
           <h3>${p.name}</h3>
-          <p>₹${p.price}</p>
+          <p>${p.desc || 'No description available.'}</p>
+          <h4>₹${p.price}</h4>
+          
         `;
         div.addEventListener('click', () => {
           localStorage.setItem('selectedProduct', JSON.stringify(p));
@@ -103,20 +99,6 @@
     }
 
     fetchProducts();
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const btn = document.getElementById('catMenuBtn');
-      const menu = document.getElementById('catSideMenu');
-      btn.addEventListener('click', function() {
-        menu.classList.toggle('active');
-      });
-      // Optional: Hide menu when clicking outside
-      document.addEventListener('click', function(e) {
-        if (!btn.contains(e.target) && !menu.contains(e.target)) {
-          menu.classList.remove('active');
-        }
-      });
-    });
   </script>
 </body>
 </html>
