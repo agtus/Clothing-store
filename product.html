@@ -49,17 +49,23 @@
     }
     .thumbnails {
       display: flex;
-      justify-content: center;
+      justify-content: start;
       gap: 0.5rem;
-      padding: 0.5rem 0;
+      padding: 0.5rem;
+      flex-wrap: wrap;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
     }
     .thumbnails img {
-      width: 50px;
-      height: 50px;
-      border-radius: 8px;
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
       background: #aaa;
       cursor: pointer;
-      opacity: 0.6;
+      opacity: 0.7;
+      object-fit: cover;
     }
     .thumbnails img.active {
       border: 2px solid #5c4edc;
@@ -112,12 +118,12 @@
     .size-options button.disabled::after {
       content: "";
       position: absolute;
-      top: 50%;
-      left: 50%;
       width: 100%;
       height: 2px;
       background: #aaa;
-      transform: translate(-50%, -50%) rotate(-45deg);
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%) rotate(-45deg);
     }
     .color-options {
       display: flex;
@@ -238,7 +244,7 @@
         <div class="tab" onclick="showTab('delivery')">Delivery</div>
         <div class="tab" onclick="showTab('reviews')">Reviews</div>
       </div>
-      <div class="desc" id="tab-desc"></div>
+      <div class="desc" id="tab-desc">Loading...</div>
       <div class="desc" id="tab-delivery" style="display:none">Fast delivery in 3-5 days with tracking ID and cash on delivery available.</div>
       <div class="desc" id="tab-reviews" style="display:none">
         <div id="review-list"></div>
@@ -260,16 +266,20 @@
 
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const colorData = JSON.parse(product.colors || '{}');
-    const defaultColor = Object.keys(colorData)[0];
-    let currentImages = colorData[defaultColor]?.split(',') || [];
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw3it7nprccXDYjSq3bLhqTdqYcDDpnlBg947QSxI6_rh2Cv8aXQO7xdi9HydLz8EUn/exec'; // Replace this with your live Apps Script URL
+    const productId = product.id;
+    let selectedRating = 0;
 
     document.getElementById('productName').innerText = product.name;
     document.getElementById('productPrice').innerText = `₹${product.price}`;
     document.getElementById('priceBtn').innerText = `${product.price}`;
     if (product.desc) document.getElementById('tab-desc').innerText = product.desc;
-    document.getElementById('mainImage').src = currentImages[0];
 
+    const colorData = JSON.parse(product.colors || '{}');
+    const defaultColor = Object.keys(colorData)[0];
+    let currentImages = colorData[defaultColor]?.split(',') || [];
+
+    document.getElementById('mainImage').src = currentImages[0];
     const thumbnails = document.getElementById('thumbnails');
     currentImages.forEach((img, i) => {
       const t = document.createElement('img');
@@ -340,13 +350,9 @@
       alert('✅ Added to cart!');
     }
 
-    // Review system
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyCG13BeF36Gse-bK-dsBAcmRK9appuW4uNKD4nmEgaXSn_Y2DIrYQGQHTxYOWWPnAPCg/exec';
-    const productId = product.id || product.name;
-    let selectedRating = 0;
-
     const reviewList = document.getElementById('review-list');
     const stars = document.querySelectorAll('#starRating span');
+
     stars.forEach(star => {
       star.addEventListener('click', () => {
         selectedRating = parseInt(star.dataset.rate);
@@ -362,26 +368,20 @@
     }
 
     async function renderReviews() {
-      try {
-        const res = await fetch(`${API_URL}?productId=${encodeURIComponent(productId)}`);
-        const reviews = await res.json();
-        reviewList.innerHTML = reviews.map(r => `<div class='review-item'><strong>${r.name}</strong> (${r.rating || 'N/A'}★): ${r.text}</div>`).join('');
-      } catch (err) {
-        reviewList.innerHTML = "<p>Unable to load reviews. Try again later.</p>";
-      }
+      const res = await fetch(`${API_URL}?productId=${productId}`);
+      const reviews = await res.json();
+      reviewList.innerHTML = reviews.map(r => `<div class='review-item'><strong>${r.name}</strong> (${r.rating}★): ${r.text}</div>`).join('');
     }
 
     async function submitReview() {
       const name = document.getElementById('reviewer').value.trim();
       const text = document.getElementById('reviewText').value.trim();
       if (!name || !text || !selectedRating) return alert('Please complete all fields and rating');
-
       await fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ productId, name, text, rating: selectedRating }),
         headers: { 'Content-Type': 'application/json' }
       });
-
       selectedRating = 0;
       updateStarDisplay();
       document.getElementById('reviewer').value = '';
