@@ -2,132 +2,394 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product</title>
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    
-
-    
-
-    
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      margin: 0;
+      background: #f0eff7;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    @media (min-width: 768px) {
+      .product-card {
+        flex-direction: row;
+        display: flex;
+        max-width: 900px;
+      }
+      .product-image, .product-info {
+        width: 50%;
+      }
+    }
+    .product-image {
+      width: 100%;
+      background: #dedaf4;
+      position: relative;
+    }
+    .main-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .thumbnails {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+    }
+    .thumbnails img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      background: #aaa;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+    .thumbnails img.active {
+      border: 2px solid #5c4edc;
+      opacity: 1;
+    }
+    .product-info {
+      padding: 1.5rem;
+    }
+    .product-info h1 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+    .price {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin: 0.4rem 0;
+    }
+    .desc-text {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    .select-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .size-options button, .color-options div {
+      border: 1px solid #ccc;
+      padding: 0.4rem 0.9rem;
+      margin: 0.2rem;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      position: relative;
+    }
+    .size-options button.selected,
+    .color-options div.selected {
+      background: #5c4edc;
+      color: white;
+      border-color: #5c4edc;
+    }
+    .size-options button.disabled {
+      color: #aaa;
+      border-color: #ddd;
+      background: #f7f7f7;
+      cursor: not-allowed;
+    }
+    .size-options button.disabled::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #aaa;
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+    .color-options {
+      display: flex;
+      gap: 0.6rem;
+      margin: 0.5rem 0;
+    }
+    .color-options div {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+    .desc-tabs {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0 0.5rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .desc-tabs div {
+      cursor: pointer;
+      padding-bottom: 0.3rem;
+    }
+    .desc-tabs div.active {
+      border-bottom: 2px solid #5c4edc;
+      font-weight: 600;
+    }
+    .desc {
+      font-size: 0.85rem;
+      color: #444;
+      min-height: 50px;
+    }
+    .actions {
+      margin-top: 1.5rem;
+    }
+    .actions button {
+      background: #5c4edc;
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      border-radius: 14px;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 9;
+      background: rgba(255,255,255,0.7);
+      padding: 0.4rem 0.8rem;
+      border-radius: 10px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .review-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .review-form input, .review-form textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .review-form .rating-stars {
+      display: flex;
+      gap: 4px;
+      font-size: 1.3rem;
+    }
+    .review-form .rating-stars span {
+      cursor: pointer;
+      color: #ccc;
+    }
+    .review-form .rating-stars span.selected {
+      color: gold;
+    }
+    .review-form button {
+      align-self: flex-start;
+      padding: 0.6rem 1rem;
+      background: #5c4edc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .review-item {
+      border-bottom: 1px solid #eee;
+      padding: 0.5rem 0;
+    }
   </style>
 </head>
 <body>
   <div class="product-card">
     <div class="product-image">
-      <img id="mainImage" class="main-img" src="" alt="Product Image" />
+      <button class="back-button" onclick="window.location.href='index.html'">←</button>
+      <img id="mainImage" class="main-img" src="" alt="Product Image">
       <div class="thumbnails" id="thumbnails"></div>
     </div>
     <div class="product-info">
       <h1 id="productName">Product Name</h1>
       <p class="price" id="productPrice">₹0</p>
-      <p class="desc" id="productDesc">No description available.</p>
+      <p class="desc-text">Price <b>Inclusive</b> Of All Taxes</p>
 
-      <div class="selects">
-        <select id="colorSelect" onchange="updateColorImages()"></select>
-        <select id="sizeSelect"></select>
-        <input type="number" id="quantityInput" min="1" value="" placeholder="Qty (e.g 1, 2, 3)" />
+      <span class="select-label">Choose Size</span>
+      <div class="size-options" id="sizeOptions"></div>
+
+      <span class="select-label">Color</span>
+      <div class="color-options" id="colorOptions"></div>
+
+      <div class="desc-tabs">
+        <div class="tab active" onclick="showTab('desc')">Description</div>
+        <div class="tab" onclick="showTab('delivery')">Delivery</div>
+        <div class="tab" onclick="showTab('reviews')">Reviews</div>
       </div>
-      
+      <div class="desc" id="tab-desc"></div>
+      <div class="desc" id="tab-delivery" style="display:none">Fast delivery in 3-5 days with tracking ID and cash on delivery available.</div>
+      <div class="desc" id="tab-reviews" style="display:none">
+        <div id="review-list"></div>
+        <div class="review-form">
+          <input type="text" id="reviewer" placeholder="Your Name">
+          <textarea id="reviewText" rows="3" placeholder="Write your review..."></textarea>
+          <div class="rating-stars" id="starRating">
+            <span data-rate="1">★</span><span data-rate="2">★</span><span data-rate="3">★</span><span data-rate="4">★</span><span data-rate="5">★</span>
+          </div>
+          <button onclick="submitReview()">Submit Review</button>
+        </div>
+      </div>
 
       <div class="actions">
-        <button onclick="addToCart()">🛒 Add to Cart</button>
-        <button onclick="buyNow()">💳 Buy Now</button>
+        <button onclick="addToCart()">Add To Cart ₹<span id="priceBtn">0</span></button>
       </div>
     </div>
   </div>
 
-  <div class="container dock-navbar" >
-    <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
-    <button><img src="images/shop.png" alt="HOME"></button>
-    </a>
-    <button><img src="images/box.png" alt="ORDERS"></button>
-    <button><img src="images/shopping-cart.png" alt="CART"></button>
-    <button><img src="images/user.png" alt="PROFILE"></button>
-  </div>
-
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    console.log('Loaded product:', product);
     const colorData = JSON.parse(product.colors || '{}');
-    const defaultImages = Object.values(colorData)[0]?.split(',') || [];
-    let currentImages = defaultImages;
-    let currentColor = Object.keys(colorData)[0] || '';
+    const defaultColor = Object.keys(colorData)[0];
+    let currentImages = colorData[defaultColor]?.split(',') || [];
 
     document.getElementById('productName').innerText = product.name;
     document.getElementById('productPrice').innerText = `₹${product.price}`;
-    if (product.desc) {
-      document.getElementById('productDesc').innerText = product.desc;
-    } else {
-      document.getElementById('productDesc').innerText = 'No description available.';
-      console.warn('⚠️ Description missing from product:', product);
-    }
+    document.getElementById('priceBtn').innerText = `${product.price}`;
+    if (product.desc) document.getElementById('tab-desc').innerText = product.desc;
+    document.getElementById('mainImage').src = currentImages[0];
 
-    const colorSelect = document.getElementById('colorSelect');
-    const sizeSelect = document.getElementById('sizeSelect');
     const thumbnails = document.getElementById('thumbnails');
-
-    (product.sizes || 'S,M,L,XL').split(',').forEach(size => {
-      const opt = document.createElement('option');
-      opt.value = opt.textContent = size;
-      sizeSelect.appendChild(opt);
+    currentImages.forEach((img, i) => {
+      const t = document.createElement('img');
+      t.src = img;
+      t.classList.toggle('active', i === 0);
+      t.onclick = () => {
+        document.getElementById('mainImage').src = img;
+        thumbnails.querySelectorAll('img').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+      };
+      thumbnails.appendChild(t);
     });
 
-    Object.keys(colorData).forEach(color => {
-      const opt = document.createElement('option');
-      opt.value = opt.textContent = color;
-      colorSelect.appendChild(opt);
-    });
-
-    function updateColorImages() {
-      const selected = colorSelect.value;
-      currentColor = selected;
-      currentImages = colorData[selected]?.split(',') || [];
-      showImageGallery(currentImages);
-    }
-
-    function showImageGallery(images) {
-      if (!images.length) return;
-      document.getElementById('mainImage').src = images[0];
-      thumbnails.innerHTML = '';
-      images.forEach((img, index) => {
-        const t = document.createElement('img');
-        t.src = img;
-        t.classList.toggle('active', index === 0);
-        t.onclick = () => {
-          document.getElementById('mainImage').src = img;
-          document.querySelectorAll('.thumbnails img').forEach(i => i.classList.remove('active'));
-          t.classList.add('active');
+    const sizeOptions = document.getElementById('sizeOptions');
+    const availableSizes = (product.sizes || '').split(',');
+    ['S','M','L','XL'].forEach(size => {
+      const btn = document.createElement('button');
+      btn.textContent = size;
+      if (!availableSizes.includes(size)) {
+        btn.classList.add('disabled');
+      } else {
+        btn.onclick = () => {
+          sizeOptions.querySelectorAll('button').forEach(x => x.classList.remove('selected'));
+          btn.classList.add('selected');
         };
-        thumbnails.appendChild(t);
-      });
+      }
+      sizeOptions.appendChild(btn);
+    });
+
+    const colorOptions = document.getElementById('colorOptions');
+    Object.keys(colorData).forEach(color => {
+      const div = document.createElement('div');
+      div.style.background = color;
+      div.onclick = () => {
+        document.querySelectorAll('.color-options div').forEach(x => x.classList.remove('selected'));
+        div.classList.add('selected');
+        const imgs = colorData[color]?.split(',') || [];
+        document.getElementById('mainImage').src = imgs[0];
+        thumbnails.innerHTML = '';
+        imgs.forEach((img, i) => {
+          const t = document.createElement('img');
+          t.src = img;
+          t.classList.toggle('active', i === 0);
+          t.onclick = () => {
+            document.getElementById('mainImage').src = img;
+            thumbnails.querySelectorAll('img').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+          };
+          thumbnails.appendChild(t);
+        });
+      };
+      colorOptions.appendChild(div);
+    });
+
+    function showTab(tab) {
+      document.querySelectorAll('.desc-tabs div').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.desc').forEach(x => x.style.display = 'none');
+      document.querySelector(`.desc-tabs .tab[onclick*="${tab}"]`).classList.add('active');
+      document.getElementById(`tab-${tab}`).style.display = 'block';
     }
 
     function addToCart() {
-      const size = sizeSelect.value;
-      const qty = parseInt(document.getElementById('quantityInput').value);
+      const size = document.querySelector('.size-options .selected')?.textContent;
+      const color = document.querySelector('.color-options .selected')?.style.background;
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ ...product, color: currentColor, size, qty });
+      cart.push({ ...product, size, color });
       localStorage.setItem('cart', JSON.stringify(cart));
       alert('✅ Added to cart!');
     }
 
-    function buyNow() {
-      const qty = parseInt(document.getElementById('quantityInput').value);
-      if (!product.amount) return alert('Invalid product amount');
-      Razorpay.open({
-        key: 'rzp_test_1234567890', // replace with your Razorpay key
-        amount: product.amount * qty,
-        name: product.name,
-        description: `Buying ${product.name}`,
-        image: currentImages[0],
-        handler: () => alert('✅ Payment successful!')
+    // Review system
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwuDdH_eyqqLd8LOfolsRy4xvayfKHDmAAvmQZjVlIYX9AoE9-SiTUMVy2fCVYdEy7ZoA/exec';
+    const productId = product.id || product.name;
+    let selectedRating = 0;
+
+    const reviewList = document.getElementById('review-list');
+    const stars = document.querySelectorAll('#starRating span');
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.rate);
+        updateStarDisplay();
+      });
+    });
+
+    function updateStarDisplay() {
+      stars.forEach(star => {
+        const rate = parseInt(star.dataset.rate);
+        star.classList.toggle('selected', rate <= selectedRating);
       });
     }
 
-    updateColorImages();
+    async function renderReviews() {
+      try {
+        const res = await fetch(`${API_URL}?productId=${encodeURIComponent(productId)}`);
+        const reviews = await res.json();
+        reviewList.innerHTML = reviews.map(r => `<div class='review-item'><strong>${r.name}</strong> (${r.rating || 'N/A'}★): ${r.text}</div>`).join('');
+      } catch (err) {
+        reviewList.innerHTML = "<p>Unable to load reviews. Try again later.</p>";
+      }
+    }
+
+    async function submitReview() {
+      const name = document.getElementById('reviewer').value.trim();
+      const text = document.getElementById('reviewText').value.trim();
+      if (!name || !text || !selectedRating) return alert('Please complete all fields and rating');
+
+      await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ productId, name, text, rating: selectedRating }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      selectedRating = 0;
+      updateStarDisplay();
+      document.getElementById('reviewer').value = '';
+      document.getElementById('reviewText').value = '';
+      renderReviews();
+    }
+
+    renderReviews();
   </script>
 </body>
 </html>
