@@ -2,14 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
+    * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
     body {
       margin: 0;
       background: #f0eff7;
@@ -28,56 +25,35 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     }
     @media (min-width: 768px) {
-      .product-card {
-        flex-direction: row;
-        display: flex;
-        max-width: 900px;
-      }
-      .product-image, .product-info {
-        width: 50%;
-      }
+      .product-card { flex-direction: row; display: flex; max-width: 900px; }
+      .product-image, .product-info { width: 50%; }
     }
     .product-image {
       width: 100%;
       background: #dedaf4;
       position: relative;
     }
-    .main-img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+    .main-img { width: 100%; height: auto; display: block; }
     .thumbnails {
       display: flex;
-      justify-content: start;
+      justify-content: center;
       gap: 0.5rem;
-      padding: 0.5rem;
-      flex-wrap: wrap;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 2;
+      padding: 0.5rem 0;
     }
     .thumbnails img {
-      width: 70px;
-      height: 70px;
-      border-radius: 10px;
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
       background: #aaa;
       cursor: pointer;
-      opacity: 0.7;
-      object-fit: cover;
+      opacity: 0.6;
     }
     .thumbnails img.active {
       border: 2px solid #5c4edc;
       opacity: 1;
     }
-    .product-info {
-      padding: 1.5rem;
-    }
-    .product-info h1 {
-      font-size: 1.4rem;
-      margin: 0;
-    }
+    .product-info { padding: 1.5rem; }
+    .product-info h1 { font-size: 1.4rem; margin: 0; }
     .price {
       font-weight: bold;
       font-size: 1.2rem;
@@ -118,12 +94,12 @@
     .size-options button.disabled::after {
       content: "";
       position: absolute;
+      top: 50%;
+      left: 50%;
       width: 100%;
       height: 2px;
       background: #aaa;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%) rotate(-45deg);
+      transform: translate(-50%, -50%) rotate(-45deg);
     }
     .color-options {
       display: flex;
@@ -150,13 +126,12 @@
       border-bottom: 2px solid #5c4edc;
       font-weight: 600;
     }
-    .desc {
-      font-size: 0.85rem;
-      color: #444;
-      min-height: 50px;
-    }
+    .desc { font-size: 0.85rem; color: #444; min-height: 50px; }
     .actions {
       margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
     .actions button {
       background: #5c4edc;
@@ -216,8 +191,30 @@
       cursor: pointer;
     }
     .review-item {
-      border-bottom: 1px solid #eee;
-      padding: 0.5rem 0;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(6px);
+      padding: 1rem;
+      margin: 0.5rem 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .review-item .review-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.3rem;
+    }
+    .review-item .review-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .review-item .review-stars {
+      color: gold;
+      font-size: 0.9rem;
+    }
+    .review-item .review-text {
+      font-size: 0.85rem;
+      color: #444;
     }
   </style>
 </head>
@@ -232,10 +229,8 @@
       <h1 id="productName">Product Name</h1>
       <p class="price" id="productPrice">₹0</p>
       <p class="desc-text">Price <b>Inclusive</b> Of All Taxes</p>
-
       <span class="select-label">Choose Size</span>
       <div class="size-options" id="sizeOptions"></div>
-
       <span class="select-label">Color</span>
       <div class="color-options" id="colorOptions"></div>
 
@@ -244,7 +239,7 @@
         <div class="tab" onclick="showTab('delivery')">Delivery</div>
         <div class="tab" onclick="showTab('reviews')">Reviews</div>
       </div>
-      <div class="desc" id="tab-desc">Loading...</div>
+      <div class="desc" id="tab-desc"></div>
       <div class="desc" id="tab-delivery" style="display:none">Fast delivery in 3-5 days with tracking ID and cash on delivery available.</div>
       <div class="desc" id="tab-reviews" style="display:none">
         <div id="review-list"></div>
@@ -260,15 +255,21 @@
 
       <div class="actions">
         <button onclick="addToCart()">Add To Cart ₹<span id="priceBtn">0</span></button>
+        <button onclick="shareProduct()">🔗 Share Product</button>
       </div>
     </div>
   </div>
 
   <script>
-    const product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    const API_URL = 'https://script.google.com/macros/s/AKfycbw3it7nprccXDYjSq3bLhqTdqYcDDpnlBg947QSxI6_rh2Cv8aXQO7xdi9HydLz8EUn/exec'; // Replace this with your live Apps Script URL
-    const productId = product.id;
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec';
     let selectedRating = 0;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    let product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+    if (product.id !== productId) {
+      // Optional: fetch from server if not available
+    }
 
     document.getElementById('productName').innerText = product.name;
     document.getElementById('productPrice').innerText = `₹${product.price}`;
@@ -278,8 +279,8 @@
     const colorData = JSON.parse(product.colors || '{}');
     const defaultColor = Object.keys(colorData)[0];
     let currentImages = colorData[defaultColor]?.split(',') || [];
-
     document.getElementById('mainImage').src = currentImages[0];
+
     const thumbnails = document.getElementById('thumbnails');
     currentImages.forEach((img, i) => {
       const t = document.createElement('img');
@@ -350,43 +351,66 @@
       alert('✅ Added to cart!');
     }
 
-    const reviewList = document.getElementById('review-list');
     const stars = document.querySelectorAll('#starRating span');
-
     stars.forEach(star => {
       star.addEventListener('click', () => {
         selectedRating = parseInt(star.dataset.rate);
-        updateStarDisplay();
+        stars.forEach(s => s.classList.toggle('selected', parseInt(s.dataset.rate) <= selectedRating));
       });
     });
 
-    function updateStarDisplay() {
-      stars.forEach(star => {
-        const rate = parseInt(star.dataset.rate);
-        star.classList.toggle('selected', rate <= selectedRating);
-      });
-    }
-
     async function renderReviews() {
-      const res = await fetch(`${API_URL}?productId=${productId}`);
-      const reviews = await res.json();
-      reviewList.innerHTML = reviews.map(r => `<div class='review-item'><strong>${r.name}</strong> (${r.rating}★): ${r.text}</div>`).join('');
+      try {
+        const res = await fetch(`${API_URL}?action=getReviews&productId=${encodeURIComponent(productId)}`);
+        const reviews = await res.json();
+        const reviewList = document.getElementById('review-list');
+        reviewList.innerHTML = reviews.map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-name">${r.name}</span>
+              <span class="review-stars">${'★'.repeat(r.rating)}</span>
+            </div>
+            <div class="review-text">${r.text}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Failed to fetch reviews:', e);
+      }
     }
 
     async function submitReview() {
       const name = document.getElementById('reviewer').value.trim();
       const text = document.getElementById('reviewText').value.trim();
-      if (!name || !text || !selectedRating) return alert('Please complete all fields and rating');
+      if (!name || !text || !selectedRating) return alert('Please fill all fields and rating.');
+
+      const form = new URLSearchParams();
+      form.append("action", "addReview");
+      form.append("productId", productId);
+      form.append("name", name);
+      form.append("text", text);
+      form.append("rating", selectedRating);
+
       await fetch(API_URL, {
         method: 'POST',
-        body: JSON.stringify({ productId, name, text, rating: selectedRating }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form
       });
+
       selectedRating = 0;
-      updateStarDisplay();
+      stars.forEach(s => s.classList.remove('selected'));
       document.getElementById('reviewer').value = '';
       document.getElementById('reviewText').value = '';
       renderReviews();
+    }
+
+    function shareProduct() {
+      const url = `${location.origin}${location.pathname}?id=${encodeURIComponent(productId)}`;
+      if (navigator.share) {
+        navigator.share({ title: product.name, url });
+      } else {
+        navigator.clipboard.writeText(url);
+        alert("🔗 Link copied to clipboard!");
+      }
     }
 
     renderReviews();
