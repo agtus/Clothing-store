@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
+      background: #f0eff7;
     }
 
     .topbar {
@@ -91,7 +91,7 @@
     }
 
     button.checkout {
-      background: black;
+      background: #5c4edc;
       color: white;
       border: none;
       padding: 1rem 2rem;
@@ -141,6 +141,7 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    let user = JSON.parse(localStorage.getItem('user') || '{}');
 
     function renderCart() {
       const container = document.getElementById('cartItems');
@@ -148,17 +149,18 @@
       let total = 0;
 
       cart.forEach((item, i) => {
-        const itemTotal = item.price * item.qty;
+        const itemTotal = item.price * (item.qty || 1);
         total += itemTotal;
 
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
-          <img src="${item.image}" />
+          <img src="${item.image || item.images?.[0] || ''}" />
           <div class="cart-details">
             <h4>${item.name}</h4>
-            <p>Size: ${item.size}</p>
-            <p>Qty: ${item.qty}</p>
+            <p>Size: ${item.size || '-'}</p>
+            <p>Color: ${item.color || '-'}</p>
+            <p>Qty: ${item.qty || 1}</p>
             <p>Price: ₹${item.price}</p>
           </div>
           <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
@@ -179,22 +181,33 @@
 
     function checkout() {
       if (!cart.length) return alert('Your cart is empty.');
+      if (!user.name || !user.email || !user.phone || !user.address) {
+        return alert('Please fill your details in account.html before checkout.');
+      }
 
       let total = 0;
-      cart.forEach(p => total += p.amount * p.qty);
+      cart.forEach(p => total += p.price * (p.qty || 1));
 
       const options = {
-        key: "rzp_test_1234567890", // 🔁 Replace with real Razorpay key
-        amount: total,
+        key: "rzp_test_QqmeTYF3YHPpLs", // Replace with your Razorpay key
+        amount: total * 100, // Razorpay takes amount in paise
         currency: "INR",
         name: "My Clothing Store",
         description: "Cart Checkout",
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: user.phone
+        },
+        notes: {
+          address: user.address
+        },
         handler: () => {
           alert("✅ Payment Successful!");
           localStorage.removeItem('cart');
           renderCart();
         },
-        theme: { color: "#000" }
+        theme: { color: "#5c4edc" }
       };
 
       const rzp = new Razorpay(options);
