@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Clothing Store</title>
+  <title>KAIRAH</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -43,7 +43,7 @@
     <button><img src="images/shop.png" alt="Home" /></button>
     <button><img src="images/box.png" alt="Orders" /></button>
     <button onclick="window.open('cart.html')"><img src="images/shopping-cart.png" alt="Cart" /></button>
-    <button><img src="images/user.png" alt="Profile" /></button>
+    <button onclick="window.open('account.html')"><img src="images/user.png" alt="Profile" /></button>
   </nav>
 
   <script>
@@ -65,7 +65,7 @@
         return renderProducts(allProducts);
       }
 
-      const res = await fetch("https://script.google.com/macros/s/AKfycbwtvzscTXXDR_r0BAxAtY5BuZO4VsCkFj_wGh3F3GIRXPhkymB5Y1BrTpppg9XH_nfF8Q/exec");
+      const res = await fetch("https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec");
       const data = await res.json();
       const rows = data.slice(1);
 
