@@ -83,59 +83,60 @@
 </style>
 </head>
 <body>
+
 <h1>🛠️ Admin Panel</h1>
 
 <form id="productForm">
-<h2>Add / Edit Product</h2>
+  <h2>Add / Edit Product</h2>
 
-<label>Name</label>
-<input type="text" name="name" required />
+  <label>Name</label>
+  <input type="text" name="name" required />
 
-<label>Price (₹)</label>
-<input type="text" name="price" required />
+  <label>Price (₹)</label>
+  <input type="text" name="price" required />
 
-<label>Amount (Paise)</label>
-<input type="text" name="amount" required />
+  <label>Amount (Paise)</label>
+  <input type="text" name="amount" required />
 
-<label>Description</label>
-<textarea name="desc" required></textarea>
+  <label>Description</label>
+  <textarea name="desc" required></textarea>
 
-<label>Trending</label>
-<select name="trending">
-  <option value="Yes">Yes</option>
-  <option value="No">No</option>
-</select>
+  <label>Trending</label>
+  <select name="trending">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-<label>Section</label>
-<select name="section">
-  <option value="Women">Women</option>
-  <option value="three piece">three piece set</option>
-  <option value="saree">saree</option>
-  <option value="ready to wear">ready to wear</option>
-  <option value ="two piece">two piece set</option>
-  <option value="Raw Materials">Raw Materials</option>
-  <option value ="fancy bag">fancy bags</option>
-  <option value="Bedsheets">Bedsheets</option>
-  <option value="Home Decors">Home Decors</option>
-</select>
+  <label>Section</label>
+  <select name="section">
+    <option value="Women">Women</option>
+    <option value="three piece">three piece set</option>
+    <option value="saree">saree</option>
+    <option value="ready to wear">ready to wear</option>
+    <option value="two piece">two piece set</option>
+    <option value="Raw Materials">Raw Materials</option>
+    <option value="fancy bag">fancy bags</option>
+    <option value="Bedsheets">Bedsheets</option>
+    <option value="Home Decors">Home Decors</option>
+  </select>
 
-<label>Available Sizes (hold Ctrl/Cmd to select multiple)</label>
-<select name="sizes" multiple>
-  <option value="S">S</option>
-  <option value="M">M</option>
-  <option value="L">L</option>
-  <option value="XL">XL</option>
-</select>
+  <label>Available Sizes</label>
+  <select name="sizes" multiple>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+  </select>
 
-<div id="colorsContainer">
-  <h3>Color Variants</h3>
-</div>
-<button type="button" onclick="addColorSection()">➕ Add Color</button>
+  <div id="colorsContainer">
+    <h3>Color Variants</h3>
+  </div>
+  <button type="button" onclick="addColorSection()">➕ Add Color</button>
 
-<input type="hidden" name="colors" id="colorData" />
+  <input type="hidden" name="colors" id="colorData" />
 
-<button type="submit">💾 Save Product</button>
-<div class="message" id="formMsg"></div>
+  <button type="submit">💾 Save Product</button>
+  <div class="message" id="formMsg"></div>
 </form>
 
 <h2>All Products</h2>
@@ -154,13 +155,29 @@ function addColorSection(name = '', hex = '#ffffff', urls = []) {
   div.id = id;
   div.innerHTML = `
     <h4>Color Name & Picker</h4>
-    <input type="text" placeholder="e.g. Red" value="${name}" style="width:70%" />
-    <input type="color" value="${hex}" style="width:25%; float:right;"/>
+    <input type="text" placeholder="e.g. Red" value="${name}" style="width:70%; background:${hex}; color:${getContrast(hex)}" oninput="updateColorData()" />
+    <input type="color" value="${hex}" style="width:28%; float:right;" onchange="syncColorName(this)" />
     <input type="file" accept="image/*" multiple onchange="uploadColorImages(event, '${id}')" />
     <div class="thumb-preview" id="${id}-thumbs">${urls.map(u => `<img src="${u}">`).join('')}</div>
     <button type="button" onclick="removeColorSection('${id}')">❌ Remove Color</button>
   `;
   document.getElementById('colorsContainer').appendChild(div);
+  updateColorData();
+}
+
+function getContrast(hex) {
+  const c = hex.substring(1);
+  const rgb = parseInt(c,16);
+  const r = (rgb>>16)&0xff, g = (rgb>>8)&0xff, b = (rgb)&0xff;
+  const yiq = ((r*299)+(g*587)+(b*114))/1000;
+  return (yiq>=128) ? 'black' : 'white';
+}
+
+function syncColorName(input) {
+  const section = input.closest('.color-section');
+  const textInput = section.querySelector('input[type="text"]');
+  textInput.style.background = input.value;
+  textInput.style.color = getContrast(input.value);
   updateColorData();
 }
 
@@ -184,11 +201,8 @@ async function uploadColorImages(e, sectionId) {
       method: 'POST',
       body: formData
     });
-
     const data = await res.json();
-    if (data.secure_url) {
-      urls.push(data.secure_url);
-    }
+    if (data.secure_url) urls.push(data.secure_url);
   }
 
   thumbs.innerHTML = urls.map(u => `<img src="${u}" />`).join('');
@@ -199,15 +213,9 @@ function updateColorData() {
   const sections = document.querySelectorAll('.color-section');
   const obj = {};
   sections.forEach(sec => {
-    const colorName = sec.querySelector('input[type="text"]').value.trim().toLowerCase();
-    const hexColor = sec.querySelector('input[type="color"]').value;
+    const hex = sec.querySelector('input[type="color"]').value;
     const imgs = Array.from(sec.querySelectorAll('img')).map(img => img.src);
-    if (colorName && imgs.length) {
-      obj[colorName] = {
-        hex: hexColor,
-        images: imgs
-      };
-    }
+    if (hex && imgs.length) obj[hex] = imgs.join(',');
   });
   document.getElementById("colorData").value = JSON.stringify(obj);
 }
@@ -216,9 +224,7 @@ document.getElementById('productForm').addEventListener('submit', async function
   e.preventDefault();
   const form = new FormData(this);
 
-  const sizes = Array.from(document.querySelector('select[name="sizes"]').selectedOptions)
-    .map(opt => opt.value)
-    .join(',');
+  const sizes = Array.from(document.querySelector('select[name="sizes"]').selectedOptions).map(opt => opt.value).join(',');
   form.set("sizes", sizes);
   form.set("colors", document.getElementById("colorData").value);
 
@@ -230,14 +236,9 @@ document.getElementById('productForm').addEventListener('submit', async function
     form.append("action", "add");
   }
 
-  const res = await fetch(scriptURL, {
-    method: 'POST',
-    body: new URLSearchParams(form)
-  });
-
+  const res = await fetch(scriptURL, { method: 'POST', body: new URLSearchParams(form) });
   const msg = await res.text();
-  document.getElementById('formMsg').innerText = msg.includes("Added") || msg.includes("Edited")
-    ? `✅ Product ${editingId ? 'updated' : 'added'}!` : "❌ Error";
+  document.getElementById('formMsg').innerText = msg.includes("Added") || msg.includes("Edited") ? `✅ Product ${editingId ? 'updated' : 'added'}!` : "❌ Error";
 
   if (msg.includes("Added") || msg.includes("Edited")) {
     this.reset();
@@ -252,31 +253,20 @@ async function loadProducts() {
   const data = await res.json();
   const productList = document.getElementById("productList");
   productList.innerHTML = "";
-
   data.slice(1).forEach(row => {
     const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
-    let colorObj = {};
-    let firstImg = '';
-
-    try {
-      colorObj = JSON.parse(colors || '{}');
-      firstImg = Object.values(colorObj)[0]?.images?.[0] || '';
-    } catch {}
-
+    let colorObj = {}, firstImg = '';
+    try { colorObj = JSON.parse(colors || '{}'); firstImg = Object.values(colorObj)[0]?.split(',')[0] || ''; } catch {}
     const div = document.createElement('div');
     div.className = 'product-card';
-    div.innerHTML = `
-      <img src="${firstImg}" />
-      <h4>${name}</h4>
-      <p>₹${price}</p>
+    div.innerHTML = `<img src="${firstImg}" /><h4>${name}</h4><p>₹${price}</p>
       <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
-      <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
-    `;
+      <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>`;
     productList.appendChild(div);
   });
 }
 
-function editProduct([id, name, price, desc, trending, section, amount, colors, sizes]) {
+function editProduct([id,name,price,desc,trending,section,amount,colors,sizes]) {
   editingId = id;
   document.querySelector("input[name='name']").value = name;
   document.querySelector("input[name='price']").value = price;
@@ -284,31 +274,22 @@ function editProduct([id, name, price, desc, trending, section, amount, colors, 
   document.querySelector("textarea[name='desc']").value = desc;
   document.querySelector("select[name='trending']").value = trending;
   document.querySelector("select[name='section']").value = section;
-
   const sizeArr = (sizes || '').split(',');
-  document.querySelectorAll("select[name='sizes'] option").forEach(opt => {
-    opt.selected = sizeArr.includes(opt.value);
-  });
-
+  for (let opt of document.querySelector("select[name='sizes']").options) opt.selected = sizeArr.includes(opt.value);
   document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
   try {
     const parsedColors = JSON.parse(colors || '{}');
-    for (let c in parsedColors) {
-      const { hex, images } = parsedColors[c];
-      addColorSection(c, hex, images);
+    for (let hex in parsedColors) {
+      const imgs = parsedColors[hex].split(',');
+      addColorSection('', hex, imgs);
     }
   } catch {}
-
-  document.getElementById('formMsg').innerText = `📝 Editing ${name}...`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function deleteProduct(id) {
   if (!confirm(`Delete product ID ${id}?`)) return;
-  const res = await fetch(scriptURL, {
-    method: "POST",
-    body: new URLSearchParams({ id, action: "delete" })
-  });
+  const res = await fetch(scriptURL, { method: "POST", body: new URLSearchParams({ id, action: "delete" }) });
   const msg = await res.text();
   alert(msg === "Deleted" ? "✅ Deleted" : "❌ Not found");
   if (msg === "Deleted") loadProducts();
@@ -316,5 +297,6 @@ async function deleteProduct(id) {
 
 loadProducts();
 </script>
+
 </body>
 </html>
