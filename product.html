@@ -314,6 +314,7 @@
     Object.keys(colorData).forEach(color => {
       const div = document.createElement('div');
       div.style.background = color;
+      if (index === 0) div.classList.add('selected');
       div.onclick = () => {
         document.querySelectorAll('.color-options div').forEach(x => x.classList.remove('selected'));
         div.classList.add('selected');
