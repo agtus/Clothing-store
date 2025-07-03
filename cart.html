@@ -12,27 +12,6 @@ body {
   background: #f0eff7;
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  padding: 1rem 2rem;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: black;
-  font-weight: bold;
-  font-size: 1.4rem;
-}
-
-.logo img {
-  height: 40px;
-  margin-right: 10px;
-}
 
 .container {
   max-width: 900px;
@@ -155,12 +134,6 @@ button.checkout {
 </head>
 <body>
 
-<div class="topbar">
-  <a href="index.html" class="logo">
-    <img src="https://via.placeholder.com/40x40?text=🛍️" alt="Logo" />
-    My Clothing Store
-  </a>
-</div>
 
 <div class="container">
   <h2>Your Cart</h2>
@@ -182,7 +155,7 @@ button.checkout {
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-let user = JSON.parse(localStorage.getItem('user') || '{}');
+let user = JSON.parse(localStorage.getItem('userDetails') || '{}');
 
 function renderCart() {
   const container = document.getElementById('cartItems');
@@ -222,7 +195,12 @@ function removeItem(index) {
 
 function checkout() {
   if (!cart.length) return alert('Your cart is empty.');
-  if (!user.name || !user.email || !user.phone || !user.address) {
+  if (
+    (!user.firstName && !user.googleName) ||
+    (!user.email && !user.googleEmail) ||
+    !user.phone ||
+    !user.address
+  ) {
     return alert('Please fill your details in account.html before checkout.');
   }
 
