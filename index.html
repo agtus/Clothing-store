@@ -43,7 +43,7 @@
     <button><img src="images/shop.png" alt="Home" /></button>
     <button><img src="images/box.png" alt="Orders" /></button>
     <button onclick="window.open('cart.html')"><img src="images/shopping-cart.png" alt="Cart" /></button>
-    <button onclick="window.open('account.html')"><img src="images/user.png" alt="Profile" /></button>
+    <button onclick="window.location.href('account.html')"><img src="images/user.png" alt="Profile" /></button>
   </nav>
 
   <script>
@@ -113,8 +113,9 @@
           </div>
         `;
         div.addEventListener('click', () => {
-          localStorage.setItem('selectedProduct', JSON.stringify(p));
-          window.location.href = 'product.html';
+          localStorage.setItem(p.id, JSON.stringify(p));
+          window.location.href = `product.html?id=${p.id}`;
+
         });
         container.appendChild(div);
       });
@@ -135,12 +136,9 @@
         bar.innerHTML = `
           <div class="category-icon" onclick="toggleWomenSubcategories();filterProducts('all')">🔙<span>Back</span></div>
           <div class="category-icon" onclick="filterProducts('women')">👩‍🦰<span>Women</span></div>
-          <div class="category-icon" onclick="filterProducts('three piece')">👗<span>three piece</span></div>
+          <div class="category-icon" onclick="filterProducts('kurti')">👗<span>Kurti</span></div>
           <div class="category-icon" onclick="filterProducts('saree')">👘<span>Saree</span></div>
-          <div class="category-icon" onclick="filterProducts('two piece')">🩳<span>cord sets</span></div>
-          <div class="category-icon" onclick="filterProducts('Raw Materials')">🩳<span>raw materials</span></div>
-          <div class="category-icon" onclick="filterProducts('ready to wear')">🩳<span>ready to wear</span></div>
-          <div class="category-icon" onclick="filterProducts('fancy bag')">🩳<span>fancy bags</span></div>
+          <div class="category-icon" onclick="filterProducts('churidar')">🩳<span>Churidar</span></div>
         `;
       } else {
         bar.innerHTML = `
