@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Account Info</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -40,7 +42,7 @@
       font-size: 1rem;
     }
 
-    button {
+    #save {
       margin-top: 2rem;
       width: 100%;
       padding: 1rem;
@@ -53,62 +55,242 @@
       cursor: pointer;
     }
 
-    button:hover {
+    #save:hover {
       background: #333;
+    }
+
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 1rem 1rem;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
+      animation: fadeIn 0.4s;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b8da91 60%, #839371 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: #fff;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: visible;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(50,168,82,0.10);
+    }
+
+    .profile-avatar img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #fff;
+      object-fit: cover;
+      margin-bottom: 0.2rem;
+      border: 3px solid #b8da91;
+      box-shadow: 0 1px 4px rgba(50,168,82,0.08);
+    }
+
+    #g_id_signin {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    #g_id_signin > div {
+      border-radius: 12px !important;
+      box-shadow: 0 2px 8px rgba(50,168,82,0.10);
+      background: #f5f8f3 !important;
+      min-width: 220px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #g_id_signin iframe {
+      border-radius: 12px !important;
+    }
+
+    .profile-info {
+      width: 100%;
+      text-align: center;
+    }
+
+    .profile-info h3 {
+      margin: 0.5rem 0 0.2rem 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .profile-info p {
+      margin: 0.2rem 0;
+      color: #444;
+      font-size: 1rem;
+    }
+
+    .edit-btn {
+      margin-top: 1.2rem;
+      padding: 0.7rem 2.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #b8da91;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .edit-btn:hover {
+      background: #b1c798;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Account Information</h2>
-    <label for="firstName">First Name</label>
-    <input type="text" id="firstName" placeholder="Enter your first name">
-
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName" placeholder="Enter your last name">
-
-    <label for="email">Email</label>
-    <input type="email" id="email" placeholder="Enter your email">
-
-    <label for="phone">Phone Number</label>
-    <input type="tel" id="phone" placeholder="Enter your phone number">
-
-    <label for="address">Shipping Address</label>
-    <textarea id="address" rows="4" placeholder="Enter your shipping address"></textarea>
-
-    <button onclick="saveAccount()">Save</button>
+    <!-- Profile Card (hidden by default) -->
+    <div id="profileCard" class="profile-card" style="display:none;">
+      <div class="profile-avatar">
+        <img id="profileImg" src="images/user.png" alt="Profile" />
+      </div>
+      <div id="g_id_signin"></div>
+      <div class="profile-info">
+        <h3 id="profileName"></h3>
+        <p id="profileEmail"></p>
+        <p id="profilePhone"></p>
+        <p id="profileAddress"></p>
+      </div>
+      <button class="edit-btn" onclick="showEditForm()">Edit</button>
+    </div>
+    <!-- Edit Form -->
+    <form id="accountForm" style="display:none;">
+      <h2>Account Information</h2>
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" placeholder="Enter your first name">
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" placeholder="Enter your last name">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email">
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" placeholder="Enter your phone number">
+      <label for="address">Shipping Address</label>
+      <textarea id="address" rows="4" placeholder="Enter your shipping address"></textarea>
+      <button type="submit" id="save">Save</button>
+    </form>
   </div>
-
+  <nav class="bottom-nav">
+    <button onclick="navigateTo('index.html')"><img src="images/shop.png" alt="Home" /></button>
+    <button onclick="navigateTo('orders.html')"><img src="images/box.png" alt="Orders" /></button>
+    <button onclick="navigateTo('cart.html')"><img src="images/shopping-cart.png" alt="Cart" /></button>
+    <button onclick="navigateTo('account.html')"><img src="images/user.png" alt="Profile" /></button>
+  </nav>
   <script>
-    function saveAccount() {
-      const user = {
-        firstName: document.getElementById('firstName').value.trim(),
-        lastName: document.getElementById('lastName').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        address: document.getElementById('address').value.trim()
-      };
-
-      if (!user.firstName || !user.lastName || !user.email || !user.phone || !user.address) {
-        return alert("⚠️ Please fill in all fields.");
-      }
-
-      localStorage.setItem('userDetails', JSON.stringify(user));
-      alert('✅ Account information saved!');
-      window.location.href = 'cart.html';
-    }
-
-    // Optional: preload saved data
-    window.onload = () => {
-      const saved = JSON.parse(localStorage.getItem('userDetails') || '{}');
-      if (saved) {
-        document.getElementById('firstName').value = saved.firstName || '';
-        document.getElementById('lastName').value = saved.lastName || '';
-        document.getElementById('email').value = saved.email || '';
-        document.getElementById('phone').value = saved.phone || '';
-        document.getElementById('address').value = saved.address || '';
-      }
-    };
+const GOOGLE_CLIENT_ID = "778560528606-k6k2u0i7skhj27unclgcu6jrgm6bam3g.apps.googleusercontent.com";
+function getUserDetails() {
+  return JSON.parse(localStorage.getItem('userDetails') || '{}');
+}
+function setUserDetails(user) {
+  localStorage.setItem('userDetails', JSON.stringify(user));
+}
+function showProfile() {
+  const user = getUserDetails();
+  if (!user.firstName && !user.googleName) { showEditForm(); return; }
+  document.getElementById('profileName').innerText = user.googleName || (user.firstName + ' ' + (user.lastName || ''));
+  document.getElementById('profileEmail').innerText = user.googleEmail || user.email || '';
+  document.getElementById('profilePhone').innerText = user.phone || '';
+  document.getElementById('profileAddress').innerText = user.address || '';
+  // Show Google profile picture if available
+  const avatar = document.getElementById('profileImg');
+  if (user.googlePhoto) {
+    avatar.src = user.googlePhoto;
+  } else {
+    avatar.src = "images/user.png";
+  }
+  document.getElementById('profileCard').style.display = '';
+  document.getElementById('accountForm').style.display = 'none';
+  // Hide Google Sign-In button if already signed in
+  document.getElementById('g_id_signin').style.display = user.googleName ? 'none' : '';
+}
+function showEditForm() {
+  const user = getUserDetails();
+  document.getElementById('firstName').value = user.firstName || '';
+  document.getElementById('lastName').value = user.lastName || '';
+  document.getElementById('email').value = user.email || '';
+  document.getElementById('phone').value = user.phone || '';
+  document.getElementById('address').value = user.address || '';
+  document.getElementById('profileCard').style.display = 'none';
+  document.getElementById('accountForm').style.display = '';
+}
+document.getElementById('accountForm').onsubmit = function(e) {
+  e.preventDefault();
+  const user = {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    address: document.getElementById('address').value.trim()
+  };
+  if (!user.firstName || !user.lastName || !user.email || !user.phone || !user.address) {
+    return alert("⚠️ Please fill in all fields.");
+  }
+  setUserDetails(user);
+  alert('✅ Account information saved!');
+  showProfile();
+};
+// Google Sign-In callback
+function handleCredentialResponse(response) {
+  // Decode JWT
+  const data = parseJwt(response.credential);
+  const user = getUserDetails();
+  user.googleName = data.name;
+  user.googleEmail = data.email;
+  user.googlePhoto = data.picture;
+  setUserDetails(user);
+  showProfile();
+}
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+}
+// On load, show profile or form and render Google Sign-In
+window.onload = function() {
+  const user = getUserDetails();
+  if (user.googleName || user.firstName) {
+    showProfile();
+  } else {
+    showEditForm();
+  }
+  // Render Google Sign-In button
+  window.google?.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleCredentialResponse
+  });
+  window.google?.accounts.id.renderButton(
+    document.getElementById("g_id_signin"),
+    { theme: "outline", size: "large" }
+  );
+};
+function navigateTo(page) {
+  window.location.href = page;
+}
   </script>
 </body>
 </html>
