@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Product</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
     body {
       margin: 0;
       background: #f0eff7;
@@ -216,205 +216,200 @@
       font-size: 0.85rem;
       color: #444;
     }
-  </style>
+</style>
 </head>
 <body>
-  <div class="product-card">
-    <div class="product-image">
-      <button class="back-button" onclick="window.location.href='index.html'">←</button>
-      <img id="mainImage" class="main-img" src="" alt="Product Image">
-      <div class="thumbnails" id="thumbnails"></div>
+<div class="product-card">
+  <div class="product-image">
+    <button class="back-button" onclick="window.location.href='index.html'">←</button>
+    <img id="mainImage" class="main-img" src="" alt="Product Image">
+    <div class="thumbnails" id="thumbnails"></div>
+  </div>
+  <div class="product-info">
+    <h1 id="productName">Product Name</h1>
+    <p class="price" id="productPrice">₹0</p>
+    <p class="desc-text">Price <b>Inclusive</b> Of All Taxes</p>
+    <span class="select-label">Choose Size</span>
+    <div class="size-options" id="sizeOptions"></div>
+    <span class="select-label">Color</span>
+    <div class="color-options" id="colorOptions"></div>
+
+    <div class="desc-tabs">
+      <div class="tab active" onclick="showTab('desc')">Description</div>
+      <div class="tab" onclick="showTab('delivery')">Delivery</div>
+      <div class="tab" onclick="showTab('reviews')">Reviews</div>
     </div>
-    <div class="product-info">
-      <h1 id="productName">Product Name</h1>
-      <p class="price" id="productPrice">₹0</p>
-      <p class="desc-text">Price <b>Inclusive</b> Of All Taxes</p>
-      <span class="select-label">Choose Size</span>
-      <div class="size-options" id="sizeOptions"></div>
-      <span class="select-label">Color</span>
-      <div class="color-options" id="colorOptions"></div>
-
-      <div class="desc-tabs">
-        <div class="tab active" onclick="showTab('desc')">Description</div>
-        <div class="tab" onclick="showTab('delivery')">Delivery</div>
-        <div class="tab" onclick="showTab('reviews')">Reviews</div>
-      </div>
-      <div class="desc" id="tab-desc"></div>
-      <div class="desc" id="tab-delivery" style="display:none">Fast delivery in 3-5 days with tracking ID and cash on delivery available.</div>
-      <div class="desc" id="tab-reviews" style="display:none">
-        <div id="review-list"></div>
-        <div class="review-form">
-          <input type="text" id="reviewer" placeholder="Your Name">
-          <textarea id="reviewText" rows="3" placeholder="Write your review..."></textarea>
-          <div class="rating-stars" id="starRating">
-            <span data-rate="1">★</span><span data-rate="2">★</span><span data-rate="3">★</span><span data-rate="4">★</span><span data-rate="5">★</span>
-          </div>
-          <button onclick="submitReview()">Submit Review</button>
+    <div class="desc" id="tab-desc"></div>
+    <div class="desc" id="tab-delivery" style="display:none">Fast delivery in 3-5 days with tracking ID and cash on delivery available.</div>
+    <div class="desc" id="tab-reviews" style="display:none">
+      <div id="review-list"></div>
+      <div class="review-form">
+        <input type="text" id="reviewer" placeholder="Your Name">
+        <textarea id="reviewText" rows="3" placeholder="Write your review..."></textarea>
+        <div class="rating-stars" id="starRating">
+          <span data-rate="1">★</span><span data-rate="2">★</span><span data-rate="3">★</span><span data-rate="4">★</span><span data-rate="5">★</span>
         </div>
+        <button onclick="submitReview()">Submit Review</button>
       </div>
+    </div>
 
-      <div class="actions">
-        <button onclick="addToCart()">Add To Cart ₹<span id="priceBtn">0</span></button>
-        <button onclick="shareProduct()">🔗 Share Product</button>
-      </div>
+    <div class="actions">
+      <button onclick="addToCart()">Add To Cart ₹<span id="priceBtn">0</span></button>
+      <button onclick="shareProduct()">🔗 Share Product</button>
     </div>
   </div>
+</div>
 
-  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec';
-    let selectedRating = 0;
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec';
+let selectedRating = 0;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
-    let product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-    if (product.id !== productId) {
-      // Optional: fetch from server if not available
-    }
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
+let product = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+if (product.id !== productId) {
+  // Optional: fetch from server if not available
+}
 
-    document.getElementById('productName').innerText = product.name;
-    document.getElementById('productPrice').innerText = `₹${product.price}`;
-    document.getElementById('priceBtn').innerText = `${product.price}`;
-    if (product.desc) document.getElementById('tab-desc').innerText = product.desc;
+document.getElementById('productName').innerText = product.name;
+document.getElementById('productPrice').innerText = `₹${product.price}`;
+document.getElementById('priceBtn').innerText = `${product.price}`;
+if (product.desc) document.getElementById('tab-desc').innerText = product.desc;
 
-    const colorData = JSON.parse(product.colors || '{}');
-    const defaultColor = Object.keys(colorData)[0];
-    let currentImages = colorData[defaultColor]?.split(',') || [];
-    document.getElementById('mainImage').src = currentImages[0];
+const colorData = JSON.parse(product.colors || '{}');
+const defaultColor = Object.keys(colorData)[0];
+let currentImages = colorData[defaultColor]?.split(',') || [];
+document.getElementById('mainImage').src = currentImages[0];
 
-    const thumbnails = document.getElementById('thumbnails');
-    currentImages.forEach((img, i) => {
-      const t = document.createElement('img');
-      t.src = img;
-      t.classList.toggle('active', i === 0);
-      t.onclick = () => {
-        document.getElementById('mainImage').src = img;
-        thumbnails.querySelectorAll('img').forEach(x => x.classList.remove('active'));
-        t.classList.add('active');
-      };
-      thumbnails.appendChild(t);
-    });
+const thumbnails = document.getElementById('thumbnails');
+function renderThumbnails(images) {
+  thumbnails.innerHTML = '';
+  images.forEach((img, i) => {
+    const t = document.createElement('img');
+    t.src = img;
+    t.classList.toggle('active', i === 0);
+    t.onclick = () => {
+      document.getElementById('mainImage').src = img;
+      thumbnails.querySelectorAll('img').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    };
+    thumbnails.appendChild(t);
+  });
+}
+renderThumbnails(currentImages);
 
-    const sizeOptions = document.getElementById('sizeOptions');
-    const availableSizes = (product.sizes || '').split(',');
-    ['S','M','L','XL'].forEach(size => {
-      const btn = document.createElement('button');
-      btn.textContent = size;
-      if (!availableSizes.includes(size)) {
-        btn.classList.add('disabled');
-      } else {
-        btn.onclick = () => {
-          sizeOptions.querySelectorAll('button').forEach(x => x.classList.remove('selected'));
-          btn.classList.add('selected');
-        };
-      }
-      sizeOptions.appendChild(btn);
-    });
+const sizeOptions = document.getElementById('sizeOptions');
+const availableSizes = (product.sizes || '').split(',');
+['S','M','L','XL'].forEach(size => {
+  const btn = document.createElement('button');
+  btn.textContent = size;
+  if (!availableSizes.includes(size)) {
+    btn.classList.add('disabled');
+  } else {
+    btn.onclick = () => {
+      sizeOptions.querySelectorAll('button').forEach(x => x.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+  }
+  sizeOptions.appendChild(btn);
+});
 
-    const colorOptions = document.getElementById('colorOptions');
-    Object.keys(colorData).forEach(color => {
-      const div = document.createElement('div');
-      div.style.background = color;
-      if (index === 0) div.classList.add('selected');
-      div.onclick = () => {
-        document.querySelectorAll('.color-options div').forEach(x => x.classList.remove('selected'));
-        div.classList.add('selected');
-        const imgs = colorData[color]?.split(',') || [];
-        document.getElementById('mainImage').src = imgs[0];
-        thumbnails.innerHTML = '';
-        imgs.forEach((img, i) => {
-          const t = document.createElement('img');
-          t.src = img;
-          t.classList.toggle('active', i === 0);
-          t.onclick = () => {
-            document.getElementById('mainImage').src = img;
-            thumbnails.querySelectorAll('img').forEach(x => x.classList.remove('active'));
-            t.classList.add('active');
-          };
-          thumbnails.appendChild(t);
-        });
-      };
-      colorOptions.appendChild(div);
-    });
+const colorOptions = document.getElementById('colorOptions');
+Object.keys(colorData).forEach((color, index) => {
+  const div = document.createElement('div');
+  div.style.background = color;
+  if (index === 0) div.classList.add('selected');
+  div.onclick = () => {
+    document.querySelectorAll('.color-options div').forEach(x => x.classList.remove('selected'));
+    div.classList.add('selected');
+    const imgs = colorData[color]?.split(',') || [];
+    document.getElementById('mainImage').src = imgs[0];
+    renderThumbnails(imgs);
+  };
+  colorOptions.appendChild(div);
+});
 
-    function showTab(tab) {
-      document.querySelectorAll('.desc-tabs div').forEach(x => x.classList.remove('active'));
-      document.querySelectorAll('.desc').forEach(x => x.style.display = 'none');
-      document.querySelector(`.desc-tabs .tab[onclick*="${tab}"]`).classList.add('active');
-      document.getElementById(`tab-${tab}`).style.display = 'block';
-    }
+function showTab(tab) {
+  document.querySelectorAll('.desc-tabs div').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.desc').forEach(x => x.style.display = 'none');
+  document.querySelector(`.desc-tabs .tab[onclick*="${tab}"]`).classList.add('active');
+  document.getElementById(`tab-${tab}`).style.display = 'block';
+}
 
-    function addToCart() {
-      const size = document.querySelector('.size-options .selected')?.textContent;
-      const color = document.querySelector('.color-options .selected')?.style.background;
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ ...product, size, color });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert('✅ Added to cart!');
-    }
+function addToCart() {
+  const size = document.querySelector('.size-options .selected')?.textContent || 'Default';
+  const color = document.querySelector('.color-options .selected')?.style.background;
+  const image = document.getElementById('mainImage').src;
 
-    const stars = document.querySelectorAll('#starRating span');
-    stars.forEach(star => {
-      star.addEventListener('click', () => {
-        selectedRating = parseInt(star.dataset.rate);
-        stars.forEach(s => s.classList.toggle('selected', parseInt(s.dataset.rate) <= selectedRating));
-      });
-    });
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  cart.push({ ...product, size, color, image });
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert('✅ Added to cart!');
+}
 
-    async function renderReviews() {
-      try {
-        const res = await fetch(`${API_URL}?action=getReviews&productId=${encodeURIComponent(productId)}`);
-        const reviews = await res.json();
-        const reviewList = document.getElementById('review-list');
-        reviewList.innerHTML = reviews.map(r => `
-          <div class="review-item">
-            <div class="review-header">
-              <span class="review-name">${r.name}</span>
-              <span class="review-stars">${'★'.repeat(r.rating)}</span>
-            </div>
-            <div class="review-text">${r.text}</div>
-          </div>
-        `).join('');
-      } catch (e) {
-        console.error('Failed to fetch reviews:', e);
-      }
-    }
+const stars = document.querySelectorAll('#starRating span');
+stars.forEach(star => {
+  star.addEventListener('click', () => {
+    selectedRating = parseInt(star.dataset.rate);
+    stars.forEach(s => s.classList.toggle('selected', parseInt(s.dataset.rate) <= selectedRating));
+  });
+});
 
-    async function submitReview() {
-      const name = document.getElementById('reviewer').value.trim();
-      const text = document.getElementById('reviewText').value.trim();
-      if (!name || !text || !selectedRating) return alert('Please fill all fields and rating.');
+async function renderReviews() {
+  try {
+    const res = await fetch(`${API_URL}?action=getReviews&productId=${encodeURIComponent(productId)}`);
+    const reviews = await res.json();
+    const reviewList = document.getElementById('review-list');
+    reviewList.innerHTML = reviews.map(r => `
+      <div class="review-item">
+        <div class="review-header">
+          <span class="review-name">${r.name}</span>
+          <span class="review-stars">${'★'.repeat(r.rating)}</span>
+        </div>
+        <div class="review-text">${r.text}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error('Failed to fetch reviews:', e);
+  }
+}
 
-      const form = new URLSearchParams();
-      form.append("action", "addReview");
-      form.append("productId", productId);
-      form.append("name", name);
-      form.append("text", text);
-      form.append("rating", selectedRating);
+async function submitReview() {
+  const name = document.getElementById('reviewer').value.trim();
+  const text = document.getElementById('reviewText').value.trim();
+  if (!name || !text || !selectedRating) return alert('Please fill all fields and rating.');
 
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: form
-      });
+  const form = new URLSearchParams();
+  form.append("action", "addReview");
+  form.append("productId", productId);
+  form.append("name", name);
+  form.append("text", text);
+  form.append("rating", selectedRating);
 
-      selectedRating = 0;
-      stars.forEach(s => s.classList.remove('selected'));
-      document.getElementById('reviewer').value = '';
-      document.getElementById('reviewText').value = '';
-      renderReviews();
-    }
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: form
+  });
 
-    function shareProduct() {
-      const url = `${location.origin}${location.pathname}?id=${encodeURIComponent(productId)}`;
-      if (navigator.share) {
-        navigator.share({ title: product.name, url });
-      } else {
-        navigator.clipboard.writeText(url);
-        alert("🔗 Link copied to clipboard!");
-      }
-    }
+  selectedRating = 0;
+  stars.forEach(s => s.classList.remove('selected'));
+  document.getElementById('reviewer').value = '';
+  document.getElementById('reviewText').value = '';
+  renderReviews();
+}
 
-    renderReviews();
-  </script>
+function shareProduct() {
+  const url = `${location.origin}${location.pathname}?id=${encodeURIComponent(productId)}`;
+  if (navigator.share) {
+    navigator.share({ title: product.name, url });
+  } else {
+    navigator.clipboard.writeText(url);
+    alert("🔗 Link copied to clipboard!");
+  }
+}
+
+renderReviews();
+</script>
 </body>
 </html>
