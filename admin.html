@@ -1,325 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Panel</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f4f4f4;
-      padding: 2rem;
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    form {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.3rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .color-section {
-      border: 1px solid #ddd;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-radius: 6px;
-      background: #f9f9f9;
-    }
-    .color-section h4 {
-      margin: 0 0 0.5rem;
-    }
-    .thumb-preview img {
-      height: 60px;
-      margin: 5px;
-      border-radius: 5px;
-    }
-    button {
-      margin-top: 1rem;
-      padding: 0.7rem 1.2rem;
-      background: #000;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .message {
-      text-align: center;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    .product-list {
-      max-width: 1000px;
-      margin: 2rem auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-    }
-    .product-card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 1rem;
-      text-align: center;
-    }
-    .product-card img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 5px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Admin Panel</title>
+<style>
+  body {
+    font-family: Arial;
+    background: #f4f4f4;
+    padding: 2rem;
+  }
+  h1, h2 {
+    text-align: center;
+  }
+  form {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  label {
+    display: block;
+    margin-top: 1rem;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  .color-section {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 6px;
+    background: #f9f9f9;
+  }
+  .color-section h4 {
+    margin: 0 0 0.5rem;
+  }
+  .thumb-preview img {
+    height: 60px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+  button {
+    margin-top: 1rem;
+    padding: 0.7rem 1.2rem;
+    background: #000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .message {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+  }
+  .product-list {
+    max-width: 1000px;
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  .product-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 1rem;
+    text-align: center;
+  }
+  .product-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+</style>
 </head>
 <body>
-  <h1>🛠️ Admin Panel</h1>
 
-  <form id="productForm">
-    <h2>Add / Edit Product</h2>
+<h1>🛠️ Admin Panel</h1>
 
-    <label>Name</label>
-    <input type="text" name="name" required />
+<form id="productForm">
+<h2>Add / Edit Product</h2>
 
-    <label>Price (₹)</label>
-    <input type="text" name="price" required />
+<label>Name</label>
+<input type="text" name="name" required />
 
-    <label>Amount (Paise)</label>
-    <input type="text" name="amount" required />
+<label>Price (₹)</label>
+<input type="text" name="price" required />
 
-    <label>Description</label>
-    <textarea name="desc" required></textarea>
+<label>Amount (Paise)</label>
+<input type="text" name="amount" required />
 
-    <label>Trending</label>
-    <select name="trending">
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
+<label>Description</label>
+<textarea name="desc" required></textarea>
 
-    <label>Section</label>
-    <select name="section">
-      <option value="Women">Women</option>
-      <option value="three piece">three piece set</option>
-      <option value="saree">saree</option>
-      <option value="ready to wear">ready to wear</option>
-      <option value ="two piece">two piece set</option>
-      <option value="Raw Materials">Raw Materials</option>
-      <option value ="fancy bag">fancy bags</option>
-      <option value="Bedsheets">Bedsheets</option>
-      <option value="Home Decors">Home Decors</option>
-    </select>
+<label>Trending</label>
+<select name="trending">
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select>
 
-    <label>Available Sizes (hold Ctrl/Cmd to select multiple)</label>
-    <select name="sizes" multiple>
-      <option value="S">S</option>
-      <option value="M">M</option>
-      <option value="L">L</option>
-      <option value="XL">XL</option>
-    </select>
+<label>Section</label>
+<select name="section">
+  <option value="Women">Women</option>
+  <option value="three piece">three piece set</option>
+  <option value="saree">saree</option>
+  <option value="ready to wear">ready to wear</option>
+  <option value ="two piece">two piece set</option>
+  <option value="Raw Materials">Raw Materials</option>
+  <option value ="fancy bag">fancy bags</option>
+  <option value="Bedsheets">Bedsheets</option>
+  <option value="Home Decors">Home Decors</option>
+</select>
 
-    <div id="colorsContainer">
-      <h3>Color Variants</h3>
-    </div>
-    <button type="button" onclick="addColorSection()">➕ Add Color</button>
+<label>Available Sizes (hold Ctrl/Cmd to select multiple)</label>
+<select name="sizes" multiple>
+  <option value="S">S</option>
+  <option value="M">M</option>
+  <option value="L">L</option>
+  <option value="XL">XL</option>
+</select>
 
-    <input type="hidden" name="colors" id="colorData" />
+<div id="colorsContainer">
+  <h3>Color Variants</h3>
+</div>
+<button type="button" onclick="addColorSection()">➕ Add Color</button>
 
-    <button type="submit">💾 Save Product</button>
-    <div class="message" id="formMsg"></div>
-  </form>
+<input type="hidden" name="colors" id="colorData" />
 
-  <h2>All Products</h2>
-  <section class="product-list" id="productList"></section>
+<button type="submit">💾 Save Product</button>
+<div class="message" id="formMsg"></div>
+</form>
 
-  <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec';
-    const cloudName = 'dxwvqo37k';
-    const uploadPreset = 'unsigned_preset';
-    let editingId = null;
+<h2>All Products</h2>
+<section class="product-list" id="productList"></section>
 
-    function addColorSection(name = '', urls = []) {
-      const id = 'color-' + Date.now();
-      const div = document.createElement('div');
-      div.className = 'color-section';
-      div.id = id;
-      div.innerHTML = `
-        <h4>Color Name</h4>
-        <input type="text" placeholder="e.g. Red" value="${name}" />
-        <input type="file" accept="image/*" multiple onchange="uploadColorImages(event, '${id}')" />
-        <div class="thumb-preview" id="${id}-thumbs">${urls.map(u => `<img src="${u}">`).join('')}</div>
-        <button type="button" onclick="removeColorSection('${id}')">❌ Remove Color</button>
-      `;
-      document.getElementById('colorsContainer').appendChild(div);
-      updateColorData();
-    }
+<script>
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec';
+const cloudName = 'dxwvqo37k';
+const uploadPreset = 'unsigned_preset';
+let editingId = null;
 
-    function removeColorSection(id) {
-      document.getElementById(id).remove();
-      updateColorData();
-    }
+function addColorSection(name = '', hex = '#ffffff', urls = []) {
+  const id = 'color-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'color-section';
+  div.id = id;
+  div.innerHTML = `
+    <h4>Color Name & Picker</h4>
+    <input type="text" placeholder="e.g. Red" value="${name}" style="width:70%" />
+    <input type="color" value="${hex}" style="width:25%; float:right;"/>
+    <input type="file" accept="image/*" multiple onchange="uploadColorImages(event, '${id}')" />
+    <div class="thumb-preview" id="${id}-thumbs">${urls.map(u => `<img src="${u}">`).join('')}</div>
+    <button type="button" onclick="removeColorSection('${id}')">❌ Remove Color</button>
+  `;
+  document.getElementById('colorsContainer').appendChild(div);
+  updateColorData();
+}
 
-    async function uploadColorImages(e, sectionId) {
-      const files = e.target.files;
-      const thumbs = document.getElementById(`${sectionId}-thumbs`);
-      thumbs.innerHTML = 'Uploading...';
-      const urls = [];
+function removeColorSection(id) {
+  document.getElementById(id).remove();
+  updateColorData();
+}
 
-      for (let file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', uploadPreset);
+async function uploadColorImages(e, sectionId) {
+  const files = e.target.files;
+  const thumbs = document.getElementById(`${sectionId}-thumbs`);
+  thumbs.innerHTML = 'Uploading...';
+  const urls = [];
 
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
-          method: 'POST',
-          body: formData
-        });
+  for (let file of files) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
 
-        const data = await res.json();
-        if (data.secure_url) {
-          urls.push(data.secure_url);
-        }
-      }
-
-      thumbs.innerHTML = urls.map(u => `<img src="${u}" />`).join('');
-      updateColorData();
-    }
-
-    function updateColorData() {
-      const sections = document.querySelectorAll('.color-section');
-      const obj = {};
-      sections.forEach(sec => {
-        const color = sec.querySelector('input[type="text"]').value.trim().toLowerCase();
-        const imgs = Array.from(sec.querySelectorAll('img')).map(img => img.src);
-        if (color && imgs.length) {
-          obj[color] = imgs.join(',');
-        }
-      });
-      document.getElementById("colorData").value = JSON.stringify(obj);
-    }
-
-    document.getElementById('productForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const form = new FormData(this);
-
-      const sizes = Array.from(document.querySelector('select[name="sizes"]').selectedOptions)
-        .map(opt => opt.value)
-        .join(',');
-      form.set("sizes", sizes);
-      form.set("colors", document.getElementById("colorData").value);
-
-      if (editingId) {
-        form.append("id", editingId);
-        form.append("action", "edit");
-      } else {
-        form.append("id", Date.now().toString());
-        form.append("action", "add");
-      }
-
-      const res = await fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams(form)
-      });
-
-      const msg = await res.text();
-      document.getElementById('formMsg').innerText = msg.includes("Added") || msg.includes("Edited")
-        ? `✅ Product ${editingId ? 'updated' : 'added'}!` : "❌ Error";
-
-      if (msg.includes("Added") || msg.includes("Edited")) {
-        this.reset();
-        editingId = null;
-        document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-        loadProducts();
-      }
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+      method: 'POST',
+      body: formData
     });
 
-    async function loadProducts() {
-      try {
-        const res = await fetch(scriptURL);
-        const data = await res.json();
-        const productList = document.getElementById("productList");
-        productList.innerHTML = "";
-
-        data.slice(1).forEach(row => {
-          const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
-          let colorObj = {};
-          let firstImg = '';
-
-          try {
-            colorObj = JSON.parse(colors || '{}');
-            firstImg = Object.values(colorObj)[0]?.split(',')[0] || '';
-          } catch (err) {
-            console.warn("Invalid colors JSON:", colors);
-          }
-
-          const div = document.createElement('div');
-          div.className = 'product-card';
-          div.innerHTML = `
-            <img src="${firstImg}" />
-            <h4>${name}</h4>
-            <p>₹${price}</p>
-            <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
-            <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
-          `;
-          productList.appendChild(div);
-        });
-      } catch (err) {
-        console.error("Failed to load products:", err);
-        document.getElementById("productList").innerHTML = `<p style="color:red;">❌ Failed to load products</p>`;
-      }
+    const data = await res.json();
+    if (data.secure_url) {
+      urls.push(data.secure_url);
     }
+  }
 
-    function editProduct([id, name, price, desc, trending, section, amount, colors, sizes]) {
-      editingId = id;
-      document.querySelector("input[name='name']").value = name;
-      document.querySelector("input[name='price']").value = price;
-      document.querySelector("input[name='amount']").value = amount;
-      document.querySelector("textarea[name='desc']").value = desc;
-      document.querySelector("select[name='trending']").value = trending;
-      document.querySelector("select[name='section']").value = section;
+  thumbs.innerHTML = urls.map(u => `<img src="${u}" />`).join('');
+  updateColorData();
+}
 
-      const sizeArr = (sizes || '').split(',');
-      const sizeOptions = document.querySelector("select[name='sizes']").options;
-      for (let opt of sizeOptions) {
-        opt.selected = sizeArr.includes(opt.value);
-      }
-
-      document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
-      try {
-        const parsedColors = JSON.parse(colors || '{}');
-        for (let c in parsedColors) {
-          const imgs = parsedColors[c].split(',');
-          addColorSection(c, imgs);
-        }
-      } catch (err) {
-        console.warn("Invalid color JSON during edit:", colors);
-      }
-
-      document.getElementById('formMsg').innerText = `📝 Editing ${name}...`;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+function updateColorData() {
+  const sections = document.querySelectorAll('.color-section');
+  const obj = {};
+  sections.forEach(sec => {
+    const colorName = sec.querySelector('input[type="text"]').value.trim().toLowerCase();
+    const hexColor = sec.querySelector('input[type="color"]').value;
+    const imgs = Array.from(sec.querySelectorAll('img')).map(img => img.src);
+    if (colorName && imgs.length) {
+      obj[colorName] = {
+        hex: hexColor,
+        images: imgs
+      };
     }
+  });
+  document.getElementById("colorData").value = JSON.stringify(obj);
+}
 
-    async function deleteProduct(id) {
-      if (!confirm(`Delete product ID ${id}?`)) return;
-      const res = await fetch(scriptURL, {
-        method: "POST",
-        body: new URLSearchParams({ id, action: "delete" })
-      });
-      const msg = await res.text();
-      alert(msg === "Deleted" ? "✅ Deleted" : "❌ Not found");
-      if (msg === "Deleted") loadProducts();
-    }
+document.getElementById('productForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const form = new FormData(this);
 
+  const sizes = Array.from(document.querySelector('select[name="sizes"]').selectedOptions)
+    .map(opt => opt.value)
+    .join(',');
+  form.set("sizes", sizes);
+  form.set("colors", document.getElementById("colorData").value);
+
+  if (editingId) {
+    form.append("id", editingId);
+    form.append("action", "edit");
+  } else {
+    form.append("id", Date.now().toString());
+    form.append("action", "add");
+  }
+
+  const res = await fetch(scriptURL, {
+    method: 'POST',
+    body: new URLSearchParams(form)
+  });
+
+  const msg = await res.text();
+  document.getElementById('formMsg').innerText = msg.includes("Added") || msg.includes("Edited")
+    ? `✅ Product ${editingId ? 'updated' : 'added'}!` : "❌ Error";
+
+  if (msg.includes("Added") || msg.includes("Edited")) {
+    this.reset();
+    editingId = null;
+    document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
     loadProducts();
-  </script>
+  }
+});
+
+async function loadProducts() {
+  try {
+    const res = await fetch(scriptURL);
+    const data = await res.json();
+    const productList = document.getElementById("productList");
+    productList.innerHTML = "";
+
+    data.slice(1).forEach(row => {
+      const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
+      let colorObj = {};
+      let firstImg = '';
+
+      try {
+        colorObj = JSON.parse(colors || '{}');
+        firstImg = Object.values(colorObj)[0]?.images?.[0] || '';
+      } catch {}
+
+      const div = document.createElement('div');
+      div.className = 'product-card';
+      div.innerHTML = `
+        <img src="${firstImg}" />
+        <h4>${name}</h4>
+        <p>₹${price}</p>
+        <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
+        <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
+      `;
+      productList.appendChild(div);
+    });
+  } catch {
+    document.getElementById("productList").innerHTML = `<p style="color:red;">❌ Failed to load products</p>`;
+  }
+}
+
+function editProduct([id, name, price, desc, trending, section, amount, colors, sizes]) {
+  editingId = id;
+  document.querySelector("input[name='name']").value = name;
+  document.querySelector("input[name='price']").value = price;
+  document.querySelector("input[name='amount']").value = amount;
+  document.querySelector("textarea[name='desc']").value = desc;
+  document.querySelector("select[name='trending']").value = trending;
+  document.querySelector("select[name='section']").value = section;
+
+  const sizeArr = (sizes || '').split(',');
+  const sizeOptions = document.querySelector("select[name='sizes']").options;
+  for (let opt of sizeOptions) opt.selected = sizeArr.includes(opt.value);
+
+  document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
+  try {
+    const parsedColors = JSON.parse(colors || '{}');
+    for (let c in parsedColors) {
+      const { hex, images } = parsedColors[c];
+      addColorSection(c, hex, images);
+    }
+  } catch {}
+
+  document.getElementById('formMsg').innerText = `📝 Editing ${name}...`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function deleteProduct(id) {
+  if (!confirm(`Delete product ID ${id}?`)) return;
+  const res = await fetch(scriptURL, {
+    method: "POST",
+    body: new URLSearchParams({ id, action: "delete" })
+  });
+  const msg = await res.text();
+  alert(msg === "Deleted" ? "✅ Deleted" : "❌ Not found");
+  if (msg === "Deleted") loadProducts();
+}
+
+loadProducts();
+</script>
 </body>
 </html>
