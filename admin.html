@@ -83,7 +83,6 @@
 </style>
 </head>
 <body>
-
 <h1>🛠️ Admin Panel</h1>
 
 <form id="productForm">
@@ -249,36 +248,32 @@ document.getElementById('productForm').addEventListener('submit', async function
 });
 
 async function loadProducts() {
-  try {
-    const res = await fetch(scriptURL);
-    const data = await res.json();
-    const productList = document.getElementById("productList");
-    productList.innerHTML = "";
+  const res = await fetch(scriptURL);
+  const data = await res.json();
+  const productList = document.getElementById("productList");
+  productList.innerHTML = "";
 
-    data.slice(1).forEach(row => {
-      const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
-      let colorObj = {};
-      let firstImg = '';
+  data.slice(1).forEach(row => {
+    const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
+    let colorObj = {};
+    let firstImg = '';
 
-      try {
-        colorObj = JSON.parse(colors || '{}');
-        firstImg = Object.values(colorObj)[0]?.images?.[0] || '';
-      } catch {}
+    try {
+      colorObj = JSON.parse(colors || '{}');
+      firstImg = Object.values(colorObj)[0]?.images?.[0] || '';
+    } catch {}
 
-      const div = document.createElement('div');
-      div.className = 'product-card';
-      div.innerHTML = `
-        <img src="${firstImg}" />
-        <h4>${name}</h4>
-        <p>₹${price}</p>
-        <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
-        <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
-      `;
-      productList.appendChild(div);
-    });
-  } catch {
-    document.getElementById("productList").innerHTML = `<p style="color:red;">❌ Failed to load products</p>`;
-  }
+    const div = document.createElement('div');
+    div.className = 'product-card';
+    div.innerHTML = `
+      <img src="${firstImg}" />
+      <h4>${name}</h4>
+      <p>₹${price}</p>
+      <button onclick='editProduct(${JSON.stringify(row)})'>✏️ Edit</button>
+      <button onclick='deleteProduct("${id}")'>🗑️ Delete</button>
+    `;
+    productList.appendChild(div);
+  });
 }
 
 function editProduct([id, name, price, desc, trending, section, amount, colors, sizes]) {
@@ -291,8 +286,9 @@ function editProduct([id, name, price, desc, trending, section, amount, colors, 
   document.querySelector("select[name='section']").value = section;
 
   const sizeArr = (sizes || '').split(',');
-  const sizeOptions = document.querySelector("select[name='sizes']").options;
-  for (let opt of sizeOptions) opt.selected = sizeArr.includes(opt.value);
+  document.querySelectorAll("select[name='sizes'] option").forEach(opt => {
+    opt.selected = sizeArr.includes(opt.value);
+  });
 
   document.getElementById("colorsContainer").innerHTML = "<h3>Color Variants</h3>";
   try {
