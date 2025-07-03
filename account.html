@@ -194,7 +194,6 @@
   </div>
   <nav class="bottom-nav">
     <button onclick="navigateTo('index.html')"><img src="images/shop.png" alt="Home" /></button>
-    <button onclick="navigateTo('orders.html')"><img src="images/box.png" alt="Orders" /></button>
     <button onclick="navigateTo('cart.html')"><img src="images/shopping-cart.png" alt="Cart" /></button>
     <button onclick="navigateTo('account.html')"><img src="images/user.png" alt="Profile" /></button>
   </nav>
@@ -270,7 +269,7 @@ function parseJwt(token) {
   }).join(''));
   return JSON.parse(jsonPayload);
 }
-// On load, show profile or form and render Google Sign-In
+
 window.onload = function() {
   const user = getUserDetails();
   if (user.googleName || user.firstName) {
@@ -278,7 +277,7 @@ window.onload = function() {
   } else {
     showEditForm();
   }
-  // Render Google Sign-In button
+  
   window.google?.accounts.id.initialize({
     client_id: GOOGLE_CLIENT_ID,
     callback: handleCredentialResponse
