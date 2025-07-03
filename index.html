@@ -5,33 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KAIRAH</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .category-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 0.5rem;
+      cursor: pointer;
+    }
+    .category-icon img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 0.3rem;
+    }
+    
+  </style>
 </head>
 <body>
 
   <header class="topbar">
-    <h1>Discover</h1>
+    <h1>KAIRAH</h1>
     <p>Explore Our New Collections</p>
-    <div class="sort-bar">
-      <label for="sort">Sort By</label>
-      <select id="sort" onchange="sortProducts()">
-        <option value="popular">Popular</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-        <option value="name">Name</option>
-      </select>
+    <div class="top-controls">
+      <div class="sort-bar">
+        <label for="sort">Sort By</label>
+        <select id="sort" onchange="sortProducts()">
+          <option value="popular">Popular</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+      <div class="search-wrapper search-desktop">
+        <span class="search-3d-icon"></span>
+        <input type="text" placeholder="Search for products..." oninput="searchProducts(this.value)">
+      </div>
     </div>
   </header>
 
   <nav class="categories" id="category-bar">
-    <div class="category-icon" onclick="toggleWomenSubcategories()">👩‍🦰<span>Women</span></div>
-    <div class="category-icon" onclick="filterProducts('men')">👨‍🦰<span>Men</span></div>
-    <div class="category-icon" onclick="filterProducts('kids')">👶<span>Kids</span></div>
-    <div class="category-icon" onclick="filterProducts('footwear')">👟<span>Footwear</span></div>
-    <div class="category-icon" onclick="filterProducts('bedsheets')">🛏️<span>Bedsheets</span></div>
-    <div class="category-icon" onclick="filterProducts('home decors')">🏠<span>Decor</span></div>
+    <div class="category-icon" onclick="toggleWomenSubcategories()">
+      <img src="images/women.png" alt="Women"/>
+      <span>Women</span>
+    </div>
+    <div class="category-icon" onclick="filterProducts('men')">
+      <img src="images/men.png" alt="Men"/>
+      <span>Men</span>
+    </div>
+    <div class="category-icon" onclick="filterProducts('kids')">
+      <img src="images/kids.png" alt="Kids"/>
+      <span>Kids</span>
+    </div>
+    <div class="category-icon" onclick="filterProducts('bedsheets')">
+      <img src="images/bedsheets.png" alt="Bedsheets"/>
+      <span>Bedsheets</span>
+    </div>
+    <div class="category-icon" onclick="filterProducts('home decors')">
+      <img src="images/decor.png" alt="Decor"/>
+      <span>Decor</span>
+    </div>
   </nav>
 
-  <div class="search-wrapper">
+  <!-- Mobile-only search bar -->
+  <div class="search-wrapper search-mobile">
+    <span class="search-3d-icon"></span>
     <input type="text" placeholder="Search for products..." oninput="searchProducts(this.value)">
   </div>
 
@@ -40,10 +79,10 @@
   <div id="loader" class="loader-overlay"><div class="spinner"></div></div>
 
   <nav class="bottom-nav">
-    <button><img src="images/shop.png" alt="Home" /></button>
-    <button><img src="images/box.png" alt="Orders" /></button>
-    <button onclick="window.open('cart.html')"><img src="images/shopping-cart.png" alt="Cart" /></button>
-    <button onclick="window.location.href('account.html')"><img src="images/user.png" alt="Profile" /></button>
+    <button onclick="location.href='index.html'"><img src="images/shop.png" alt="Home" /></button>
+    <button onclick="location.href='orders.html'"><img src="images/box.png" alt="Orders" /></button>
+    <button onclick="location.href='cart.html'"><img src="images/shopping-cart.png" alt="Cart" /></button>
+    <button onclick="location.href='account.html'"><img src="images/user.png" alt="Profile" /></button>
   </nav>
 
   <script>
@@ -84,7 +123,6 @@
         };
       });
 
-      // Save to localStorage
       localStorage.setItem("productCache", JSON.stringify(allProducts));
       localStorage.setItem("productCacheTime", Date.now());
 
@@ -113,9 +151,8 @@
           </div>
         `;
         div.addEventListener('click', () => {
-          localStorage.setItem(p.id, JSON.stringify(p));
+          localStorage.setItem('selectedProduct', JSON.stringify(p));
           window.location.href = `product.html?id=${p.id}`;
-
         });
         container.appendChild(div);
       });
@@ -134,21 +171,31 @@
 
       if (isWomenExpanded) {
         bar.innerHTML = `
-          <div class="category-icon" onclick="toggleWomenSubcategories();filterProducts('all')">🔙<span>Back</span></div>
-          <div class="category-icon" onclick="filterProducts('women')">👩‍🦰<span>Women</span></div>
-          <div class="category-icon" onclick="filterProducts('kurti')">👗<span>Kurti</span></div>
-          <div class="category-icon" onclick="filterProducts('saree')">👘<span>Saree</span></div>
-          <div class="category-icon" onclick="filterProducts('churidar')">🩳<span>Churidar</span></div>
+          <div class="category-icon" onclick="toggleWomenSubcategories();filterProducts('all')">
+            <img src="images/menu.png" alt="Back" /><span>Back</span>
+          </div>
+          <div class="category-icon" onclick="filterProducts('three piece)">
+            <img src="images/threepiece.png" alt="Three Piece Set" /><span>Three Piece</span>
+          </div>
+          <div class="category-icon" onclick="filterProducts('two piece')">
+            <img src="images/cordset.png" alt="cord set" /><span>cord set</span>
+          </div>
+          <div class="category-icon" onclick="filterProducts('ready to wear')">
+            <img src="images/women.png" alt="ready to wear" /><span>ready to wear</span>
+          </div>
+          <div class="category-icon" onclick="filterProducts('saree')">
+            <img src="images/saree.png" alt="Saree" /><span>Saree</span>
+          </div>
+          <div class="category-icon" onclick="filterProducts('Raw Materials')">
+            <img src="images/rawmaterials.png" alt="raw materials" /><span>Raw Materials</span>
+          </div>
+          <div class="category-icon" onclick="filterProducts('fancy bag')">
+            <img src="images/fancybags.png" alt="fancybags" /><span>fancy bags</span>
+          </div>
         `;
       } else {
-        bar.innerHTML = `
-          <div class="category-icon" onclick="toggleWomenSubcategories()">👩‍🦰<span>Women</span></div>
-          <div class="category-icon" onclick="filterProducts('men')">👨‍🦰<span>Men</span></div>
-          <div class="category-icon" onclick="filterProducts('kids')">👶<span>Kids</span></div>
-          <div class="category-icon" onclick="filterProducts('footwear')">👟<span>Footwear</span></div>
-          <div class="category-icon" onclick="filterProducts('bedsheets')">🛏️<span>Bedsheets</span></div>
-          <div class="category-icon" onclick="filterProducts('home decors')">🏠<span>Decor</span></div>
-        `;
+        bar.innerHTML = document.querySelector('header + nav').outerHTML;
+        location.reload(); // reload to reset
       }
     }
 
