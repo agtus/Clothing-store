@@ -1,220 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Your Cart</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0eff7;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Your Cart</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f0eff7;
+}
 
-    .topbar {
-      display: flex;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 
-    .logo {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-      font-size: 1.4rem;
-    }
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  font-size: 1.4rem;
+}
 
-    .logo img {
-      height: 40px;
-      margin-right: 10px;
-    }
+.logo img {
+  height: 40px;
+  margin-right: 10px;
+}
 
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      background: white;
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
 
-    h2 {
-      margin-bottom: 1rem;
-    }
+h2 {
+  margin-bottom: 1rem;
+}
 
-    .cart-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 1rem;
-    }
+.cart-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
 
-    .cart-item img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-right: 1rem;
-    }
+.cart-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 1rem;
+}
 
-    .cart-details {
-      flex: 1;
-    }
+.cart-details {
+  flex: 1;
+}
 
-    .cart-details h4 {
-      margin: 0 0 5px;
-    }
+.cart-details h4 {
+  margin: 0 0 5px;
+}
 
-    .cart-details p {
-      margin: 3px 0;
-      font-size: 0.95rem;
-    }
+.cart-details p {
+  margin: 3px 0;
+  font-size: 0.95rem;
+}
 
-    .remove-btn {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      padding: 0.5rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+.color-circle {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  vertical-align: middle;
+}
 
-    .summary {
-      text-align: right;
-      margin-top: 2rem;
-      font-size: 1.2rem;
-    }
+.remove-btn {
+  background: #3c80e7;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-    button.checkout {
-      background: #5c4edc;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 1rem;
-      float: right;
-    }
+.summary {
+  text-align: right;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+}
 
-    @media (max-width: 600px) {
-      .cart-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+button.checkout {
+  background: #202020;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  float: right;
+}
 
-      .cart-item img {
-        margin-bottom: 0.5rem;
-      }
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  border-top: 1px solid #ccc;
+  padding: 0.5rem 0;
+}
 
-      .summary, button.checkout {
-        float: none;
-        width: 100%;
-        text-align: center;
-      }
-    }
-  </style>
+.bottom-nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.bottom-nav img {
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 600px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cart-item img {
+    margin-bottom: 0.5rem;
+  }
+
+  .summary, button.checkout {
+    float: none;
+    width: 100%;
+    text-align: center;
+  }
+}
+</style>
 </head>
 <body>
-  <div class="topbar">
-    <a href="index.html" class="logo">
-      <img src="https://via.placeholder.com/40x40?text=🛍️" alt="Logo" />
-      My Clothing Store
-    </a>
+
+<div class="topbar">
+  <a href="index.html" class="logo">
+    <img src="https://via.placeholder.com/40x40?text=🛍️" alt="Logo" />
+    My Clothing Store
+  </a>
+</div>
+
+<div class="container">
+  <h2>Your Cart</h2>
+  <div id="cartItems"></div>
+
+  <div class="summary">
+    Total: ₹<span id="totalAmount">0</span><br/>
+    <button class="checkout" onclick="checkout()">Proceed to Pay</button>
   </div>
+</div>
 
-  <div class="container">
-    <h2>Your Cart</h2>
-    <div id="cartItems"></div>
+<nav class="bottom-nav">
+  <button onclick="navigateTo('index.html')"><img src="images/shop.png" alt="Home" /></button>
+  <button onclick="navigateTo('orders.html')"><img src="images/box.png" alt="Orders" /></button>
+  <button onclick="navigateTo('cart.html')"><img src="images/shopping-cart.png" alt="Cart" /></button>
+  <button onclick="navigateTo('account.html')"><img src="images/user.png" alt="Profile" /></button>
+</nav>
 
-    <div class="summary">
-      Total: ₹<span id="totalAmount">0</span><br/>
-      <button class="checkout" onclick="checkout()">Proceed to Pay</button>
-    </div>
-  </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+let user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script>
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    let user = JSON.parse(localStorage.getItem('user') || '{}');
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  container.innerHTML = '';
+  let total = 0;
 
-    function renderCart() {
-      const container = document.getElementById('cartItems');
-      container.innerHTML = '';
-      let total = 0;
+  cart.forEach((item, i) => {
+    const itemTotal = item.price * (item.qty || 1);
+    total += itemTotal;
 
-      cart.forEach((item, i) => {
-        const itemTotal = item.price * (item.qty || 1);
-        total += itemTotal;
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <img src="${item.image || item.images?.[0] || ''}" />
+      <div class="cart-details">
+        <h4>${item.name}</h4>
+        <p>Size: ${item.size || 'Default'}</p>
+        <p>Color: ${item.color ? `<span class="color-circle" style="background:${item.color}"></span>` : '-'}</p>
+        <p>Qty: ${item.qty || 1}</p>
+        <p>Price: ₹${item.price}</p>
+      </div>
+      <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
+    `;
+    container.appendChild(div);
+  });
 
-        const div = document.createElement('div');
-        div.className = 'cart-item';
-        div.innerHTML = `
-          <img src="${item.image || item.images?.[0] || ''}" />
-          <div class="cart-details">
-            <h4>${item.name}</h4>
-            <p>Size: ${item.size || '-'}</p>
-            <p>Color: ${item.color || '-'}</p>
-            <p>Qty: ${item.qty || 1}</p>
-            <p>Price: ₹${item.price}</p>
-          </div>
-          <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
-        `;
-        container.appendChild(div);
-      });
+  document.getElementById('totalAmount').innerText = total;
+}
 
-      document.getElementById('totalAmount').innerText = total;
-    }
-
-    function removeItem(index) {
-      if (confirm('Remove this item?')) {
-        cart.splice(index, 1);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        renderCart();
-      }
-    }
-
-    function checkout() {
-      if (!cart.length) return alert('Your cart is empty.');
-      if (!user.name || !user.email || !user.phone || !user.address) {
-        return alert('Please fill your details in account.html before checkout.');
-      }
-
-      let total = 0;
-      cart.forEach(p => total += p.price * (p.qty || 1));
-
-      const options = {
-        key: "rzp_test_QqmeTYF3YHPpLs", // Replace with your Razorpay key
-        amount: total * 100, // Razorpay takes amount in paise
-        currency: "INR",
-        name: "My Clothing Store",
-        description: "Cart Checkout",
-        prefill: {
-          name: user.name,
-          email: user.email,
-          contact: user.phone
-        },
-        notes: {
-          address: user.address
-        },
-        handler: () => {
-          alert("✅ Payment Successful!");
-          localStorage.removeItem('cart');
-          renderCart();
-        },
-        theme: { color: "#5c4edc" }
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.open();
-    }
-
+function removeItem(index) {
+  if (confirm('Remove this item?')) {
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
-  </script>
+  }
+}
+
+function checkout() {
+  if (!cart.length) return alert('Your cart is empty.');
+  if (!user.name || !user.email || !user.phone || !user.address) {
+    return alert('Please fill your details in account.html before checkout.');
+  }
+
+  let total = 0;
+  cart.forEach(p => total += p.price * (p.qty || 1));
+
+  const options = {
+    key: "rzp_test_QqmeTYF3YHPpLs",
+    amount: total * 100,
+    currency: "INR",
+    name: "My Clothing Store",
+    description: "Cart Checkout",
+    prefill: {
+      name: user.name,
+      email: user.email,
+      contact: user.phone
+    },
+    notes: {
+      address: user.address
+    },
+    handler: () => {
+      alert("✅ Payment Successful!");
+      localStorage.removeItem('cart');
+      renderCart();
+    },
+    theme: { color: "#5c4edc" }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
+function navigateTo(page) {
+  window.location.href = page;
+}
+
+renderCart();
+</script>
 </body>
 </html>
