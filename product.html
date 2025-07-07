@@ -296,7 +296,7 @@
 
     const sizeOptions = document.getElementById('sizeOptions');
     const availableSizes = (product.sizes || '').split(',');
-    ['S','M','L','XL','XXL','XXXL'].forEach(size => {
+    ['S','M','L','XL','XXL','XXXL','XXXXL','XXXXXL'].forEach(size => {
       const btn = document.createElement('button');
       btn.textContent = size;
       if (!availableSizes.includes(size)) {
