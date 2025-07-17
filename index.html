@@ -20,7 +20,24 @@
       border-radius: 50%;
       margin-bottom: 0.3rem;
     }
-    
+    /* Trending badge styles */
+    .trending-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #ff4081;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 12px;
+      z-index: 2;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      pointer-events: none;
+    }
+    .product {
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -46,7 +63,7 @@
   </header>
 
   <nav class="categories" id="category-bar">
-    <div class="category-icon" onclick="toggleWomenSubcategories();filterProducts('fancy bag');filterProducts('Raw Materials');filterProducts('two piece');filterProducts('ready to wear');filterProducts('party wear');filterProducts('saree');filterProducts('three piece')">
+    <div class="category-icon" onclick="toggleWomenSubcategories()">
       <img src="images/women.png" alt="Women"/>
       <span>Women</span>
     </div>
@@ -133,16 +150,27 @@
       const container = document.getElementById('product-container');
       container.innerHTML = '';
 
-      products.forEach(p => {
+      // Sort so ONAM SALE (trending) products are at the top
+      const sortedProducts = [...products].sort((a, b) => {
+        const aTrending = a.trending && a.trending.toLowerCase() === 'yes';
+        const bTrending = b.trending && b.trending.toLowerCase() === 'yes';
+        return (bTrending ? 1 : 0) - (aTrending ? 1 : 0);
+      });
+
+      sortedProducts.forEach(p => {
         let imgUrl = 'fallback.jpg';
         try {
           const parsedColors = JSON.parse(p.colors || '{}');
           imgUrl = Object.values(parsedColors)[0]?.split(',')[0] || imgUrl;
         } catch {}
 
+        // Trending badge HTML if product is trending
+        const trendingBadge = p.trending && p.trending.toLowerCase() === 'yes' ? '<span class="trending-badge">ONAM SALE</span>' : '';
+
         const div = document.createElement('div');
         div.className = 'product';
         div.innerHTML = `
+          ${trendingBadge}
           <img src="${imgUrl}" alt="${p.name}" loading="lazy" />
           <div class="product-info-overlay">
             <h3>${p.name}</h3>
@@ -173,14 +201,11 @@
           <div class="category-icon" onclick="toggleWomenSubcategories();filterProducts('all')">
             <img src="images/menu.png" alt="Back" /><span>Back</span>
           </div>
-          <div class="category-icon" onclick="filterProducts('three piece')">
+          <div class="category-icon" onclick="filterProducts('three piece)">
             <img src="images/threepiece.png" alt="Three Piece Set" /><span>Three Piece</span>
           </div>
           <div class="category-icon" onclick="filterProducts('two piece')">
             <img src="images/cordset.png" alt="cord set" /><span>cord set</span>
-          </div>
-          <div class="category-icon" onclick="filterProducts('party wear')">
-            <img src="images/partywear.png" alt="party wear" /><span>party wear</span>
           </div>
           <div class="category-icon" onclick="filterProducts('ready to wear')">
             <img src="images/women.png" alt="ready to wear" /><span>ready to wear</span>
