@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Cart</title>
+<title>Your Cart</title>
 <link rel="stylesheet" href="style.css" />
 <style>
 body {
@@ -221,8 +221,8 @@ function checkout() {
     name: "My Clothing Store",
     description: "Cart Checkout",
     prefill: {
-      name: user.name,
-      email: user.email,
+      name: user.firstName || user.googleName,
+      email: user.email || user.googleEmail,
       contact: user.phone
     },
     notes: {
@@ -230,6 +230,17 @@ function checkout() {
     },
     handler: () => {
       alert("✅ Payment Successful!");
+
+      // 🔷 Send order to Telegram bot via Worker
+      fetch("https://proud-hat-6333.agtusjohn3.workers.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, cart })
+      })
+      .then(res => res.text())
+      .then(response => console.log("Telegram Bot Response:", response))
+      .catch(err => console.error("Telegram Bot Error:", err));
+
       localStorage.removeItem('cart');
       renderCart();
     },
@@ -239,6 +250,7 @@ function checkout() {
   const rzp = new Razorpay(options);
   rzp.open();
 }
+
 
 function navigateTo(page) {
   window.location.href = page;
