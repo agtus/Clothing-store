@@ -86,12 +86,15 @@
       <img src="images/decor.png" alt="Decor"/>
       <span>Decor</span>
     </div>
+    <div class="category-icon" onclick="filterProducts('fancy bag')">
+      <img src="images/fancybags.png" alt="fancybags" /><span>Bags</span>
+    </div>
   </nav>
 
   <!-- Mobile-only search bar -->
   <div class="search-wrapper search-mobile">
     <span class="search-3d-icon"></span>
-    <input type="text" placeholder="Search for products..." oninput="searchProducts(this.value)">
+    <input type="text" placeholder="Search" oninput="searchProducts(this.value)">
   </div>
 
   <div class="product-grid" id="product-container"></div>
@@ -219,9 +222,7 @@
           <div class="category-icon" onclick="filterProducts('Raw Materials')">
             <img src="images/rawmaterials.png" alt="raw materials" /><span>Raw Materials</span>
           </div>
-          <div class="category-icon" onclick="filterProducts('fancy bag')">
-            <img src="images/fancybags.png" alt="fancybags" /><span>fancy bags</span>
-          </div>
+          
         `;
       } else {
         bar.innerHTML = document.querySelector('header + nav').outerHTML;
