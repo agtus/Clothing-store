@@ -149,7 +149,7 @@ button.checkout {
 
   <div class="summary">
     <span class="total-label">Total:</span> ₹<span id="totalAmount">0</span><br/>
-    <button class="checkout" onclick="checkout()">Proceed to Pay</button>
+    <button class="checkout" id="pay-btn" onclick="checkout()">Proceed to Pay</button>
   </div>
 </div>
 
@@ -208,17 +208,32 @@ function checkout() {
     !user.phone ||
     !user.address
   ) {
-    return alert('Please fill your details in account.html before checkout.');
+    alert('Please fill your details in account before checkout.');
+    window.location.href = 'account.html';
+    return;
   }
 
   let total = 0;
   cart.forEach(p => total += p.price * (p.qty || 1));
 
+  document.getElementById('pay-btn').onclick = async () => {
+    const response = await fetch('https://plain-band-68c0.agtusjohn3.workers.dev/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: total * 100 }) // in paise
+  });
+
+    const data = await response.json();
+    if (!data || !data.id) {
+      alert("Failed to create order.");
+      return;
+    }
+
   const options = {
     key: "rzp_live_MLv52Q9oPRvFxJ",
     amount: total * 100,
     currency: "INR",
-    name: "My Clothing Store",
+    name: "Kairah",
     description: "Cart Checkout",
     prefill: {
       name: user.firstName || user.googleName,
@@ -230,6 +245,7 @@ function checkout() {
     },
     handler: () => {
       alert("✅ Payment Successful!");
+      localStorage.removeItem('cart');
 
       // 🔷 Send order to Telegram bot via Worker
       fetch("https://proud-hat-6333.agtusjohn3.workers.dev/", {
@@ -249,6 +265,7 @@ function checkout() {
 
   const rzp = new Razorpay(options);
   rzp.open();
+  };
 }
 
 
