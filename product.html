@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
   <style>
     * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
     body {
@@ -17,23 +18,31 @@
       padding: 1rem;
     }
     .product-card {
-      background: #fff;
+      background: #ffffff;
       border-radius: 24px;
+      margin-bottom: 100px;
       overflow: hidden;
       max-width: 420px;
       width: 100%;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.205);
     }
-    @media (min-width: 767px) {
-      .product-card { flex-direction: row; display: flex; max-width: 900px; }
+    @media (min-width: 768px) {
+      .product-card { flex-direction: row; display: flex; max-width: 900px;max-height: 700px;
+      }
       .product-image, .product-info { width: 50%; }
     }
     .product-image {
       width: 100%;
       background: #839371;
       position: relative;
+      margin-top: 0px;
     }
-    .main-img { width: 100%; height: auto; display: block; }
+    .main-img { 
+      width: 100%;
+     height: auto;
+     display: block;
+     
+    }
     .thumbnails {
       display: flex;
       justify-content: center;
@@ -60,6 +69,7 @@
       margin: 0.4rem 0;
     }
     .desc-text {
+      
       font-size: 0.9rem;
       color: #666;
       margin-bottom: 1rem;
@@ -126,7 +136,12 @@
       border-bottom: 2px solid #839371;
       font-weight: 600;
     }
-    .desc { font-size: 0.85rem; color: #444; min-height: 50px; }
+    .desc { 
+      font-size: 0.85rem; 
+      color: #444;
+      min-height: 50px;
+      
+      }
     .actions {
       margin-top: 1.5rem;
       display: flex;
@@ -135,6 +150,8 @@
     }
     .actions button {
       background: #839371;
+      position:relative;
+      top: 10px;
       color: #fff;
       border: none;
       padding: 1rem;
@@ -159,7 +176,7 @@
     .review-form {
       display: flex;
       flex-direction: column;
-      gap: 0.51rem;
+      gap: 0.5rem;
       margin-top: 1rem;
     }
     .review-form input, .review-form textarea {
@@ -240,7 +257,7 @@
         <div class="tab" onclick="showTab('reviews')">Reviews</div>
       </div>
       <div class="desc" id="tab-desc"></div>
-      <div class="desc" id="tab-delivery" style="display:none">delivery in 7-10 days.</div>
+      <div class="desc" id="tab-delivery" style="display:none">Fast delivery in 3-5 days with tracking ID and cash on delivery available.</div>
       <div class="desc" id="tab-reviews" style="display:none">
         <div id="review-list"></div>
         <div class="review-form">
@@ -259,6 +276,11 @@
       </div>
     </div>
   </div>
+  <nav class="bottom-nav">
+    <button onclick="navigateTo('index.html')"><img src="images/shop.png" alt="Home" /></button>
+    <button onclick="navigateTo('cart.html')"><img src="images/shopping-cart.png" alt="Cart" /></button>
+    <button onclick="navigateTo('account.html')"><img src="images/user.png" alt="Profile" /></button>
+  </nav>
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec';
@@ -296,7 +318,7 @@
 
     const sizeOptions = document.getElementById('sizeOptions');
     const availableSizes = (product.sizes || '').split(',');
-    ['S','M','L','XL','XXL','XXXL','XXXXL','XXXXXL'].forEach(size => {
+    ['S','M','L','XL'].forEach(size => {
       const btn = document.createElement('button');
       btn.textContent = size;
       if (!availableSizes.includes(size)) {
@@ -415,6 +437,9 @@
         navigator.clipboard.writeText(url);
         alert("🔗 Link copied to clipboard!");
       }
+    }
+    function navigateTo(page) {
+      window.location.href = page;
     }
 
     renderReviews();
