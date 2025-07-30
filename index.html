@@ -6,7 +6,8 @@
   <title>Kairah | Official Store</title>
   <meta name="description" content="Welcome to Kairah – the official online store for fashion and lifestyle.">
   <meta name="keywords" content="kairah, kairah store, kairah online, fashion store, kairah brand">
-  
+
+
   <link rel="stylesheet" href="style.css" />
   <style>
     .category-icon {
@@ -28,8 +29,8 @@
       position: absolute;
       top: 8px;
       left: 8px;
-      background: #ff4082;
-      color: #fff;
+      background: #629e4c;
+      color: #ffffff;
       font-size: 0.75rem;
       font-weight: bold;
       padding: 2px 8px;
@@ -46,60 +47,132 @@
 <body>
 
   <header class="topbar">
-    <h1>KAIRAH</h1>
-    <p>Explore Our New Collections</p>
-    <div class="top-controls">
-      <div class="sort-bar">
-        <label for="sort">Sort By</label>
-        <select id="sort" onchange="sortProducts()">
-          <option value="popular">Popular</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="name">Name</option>
-        </select>
-      </div>
+    <div class="header-top">
+      <h1 class="desktop-logo">KAIRAH</h1>
       <div class="search-wrapper search-desktop">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2"/></svg>
+        <input type="text" oninput="searchProducts(this.value)" placeholder="Search">
+      </div>
+    </div>
+    
+    <!-- Mobile header with logo left, search/filter right -->
+    <div class="mobile-header">
+      <h1 class="mobile-logo">KAIRAH</h1>
+    </div>
+    
+    <nav class="categories" id="category-bar">
+      <div class="category-icon" onclick="toggleWomenSubcategories();filterProducts('three piece')">
+        <img src="images/women.png" alt="Women"/>
+        <span>Women</span>
+      </div>
+      <div class="category-icon" onclick="filterProducts('men')">
+        <img src="images/men.png" alt="Men"/>
+        <span>Men</span>
+      </div>
+      <div class="category-icon" onclick="filterProducts('kids')">
+        <img src="images/kids.png" alt="Kids"/>
+        <span>Kids</span>
+      </div>
+      <div class="category-icon" onclick="filterProducts('bedsheets')">
+        <img src="images/bedsheets.png" alt="Bedsheets"/>
+        <span>Bedsheets</span>
+      </div>
+      <div class="category-icon" onclick="filterProducts('home decors')">
+        <img src="images/decor.png" alt="Decor"/>
+        <span>Decor</span>
+      </div>
+      <div class="category-icon" onclick="filterProducts('fancy bag')">
+        <img src="images/fancybags.png" alt="bags" /><span>Bags</span>
+      </div>
+    </nav>
+    
+    <!-- Mobile search and filter below categories -->
+    <div class="mobile-search-filter">
+      <div class="search-wrapper search-mobile">
         <span class="search-3d-icon"></span>
         <input type="text" placeholder="Search for products..." oninput="searchProducts(this.value)">
       </div>
+      <button class="filter-btn-mobile" onclick="openFilterMenu()" aria-label="Filter">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+        </svg>
+      </button>
     </div>
   </header>
-
-  <nav class="categories" id="category-bar">
-    <div class="category-icon" onclick="toggleWomenSubcategories(),filterProducts('three piece')">
-      <img src="images/women.png" alt="Women"/>
-      <span>Women</span>
+  <!-- Mobile Filter Modal -->
+  <div id="filterModal" class="filter-modal" style="display:none;">
+    <div class="filter-modal-content">
+      <div class="filter-modal-header">
+        <span>Filters</span>
+        <button class="close-filter-btn" onclick="closeFilterMenu()" aria-label="Close">&times;</button>
+      </div>
+      <div class="filter-modal-body">
+        <div class="filter-group">
+          <div class="custom-dropdown" id="customSortDropdown" tabindex="0" onclick="toggleSortDropdown()">
+            <span id="customSortSelected">Trending</span>
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z" fill="#839371"/></svg>
+            <ul class="custom-dropdown-list" id="customSortList" style="display:none;">
+              <li data-value="trending" onclick="selectSortOption('trending', event)">Trending</li>
+              <li data-value="price-low" onclick="selectSortOption('price-low', event)">Price: Low to High</li>
+              <li data-value="price-high" onclick="selectSortOption('price-high', event)">Price: High to Low</li>
+              <li data-value="name" onclick="selectSortOption('name', event)">Name A-Z</li>
+              <li data-value="newest" onclick="selectSortOption('newest', event)">Newest</li>
+            </ul>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label for="modal-price-range">Price Range:</label>
+          <input type="range" id="modal-price-range" min="0" max="5000" value="5000" oninput="updateModalPriceDisplay(this.value)">
+          <span id="modal-price-display">₹0 - ₹5000</span>
+        </div>
+      </div>
+      <button class="apply-filter-btn" onclick="applyMobileFilters()">Apply</button>
     </div>
-    <div class="category-icon" onclick="filterProducts('men')">
-      <img src="images/men.png" alt="Men"/>
-      <span>Men</span>
-    </div>
-    <div class="category-icon" onclick="filterProducts('kids')">
-      <img src="images/kids.png" alt="Kids"/>
-      <span>Kids</span>
-    </div>
-    <div class="category-icon" onclick="filterProducts('bedsheets')">
-      <img src="images/bedsheets.png" alt="Bedsheets"/>
-      <span>Bedsheets</span>
-    </div>
-    <div class="category-icon" onclick="filterProducts('home decors')">
-      <img src="images/decor.png" alt="Decor"/>
-      <span>Decor</span>
-    </div>
-    <div class="category-icon" onclick="filterProducts('fancy bag')">
-      <img src="images/fancybags.png" alt="fancybags" /><span>Bags</span>
-    </div>
-  </nav>
-
-  <!-- Mobile-only search bar -->
-  <div class="search-wrapper search-mobile">
-    <span class="search-3d-icon"></span>
-    <input type="text" placeholder="Search" oninput="searchProducts(this.value)">
   </div>
 
-  <div class="product-grid" id="product-container"></div>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h2>Discover Your Style</h2>
+      <p>Explore our latest collection of trendy fashion and lifestyle products</p>
+      <button class="cta-button" onclick="scrollToProducts()">Shop Now</button>
+    </div>
+  </section>
 
-  <div id="loader" class="loader-overlay"><div class="spinner"></div></div>
+  <!-- Filter & Sort Section -->
+  <div class="filter-section">
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label for="price-range">Price Range:</label>
+        <input type="range" id="price-range" min="0" max="5000" value="5000" oninput="updatePriceFilter(this.value)">
+        <span id="price-display" style="font-weight: 600; color: #839371; min-width: 80px;">₹0 - ₹5000</span>
+      </div>
+      <div class="filter-group">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select" onchange="sortProducts()">
+          <option value="trending">Trending</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="name">Name A-Z</option>
+          <option value="newest">Newest</option>
+        </select>
+      </div>
+      <button class="filter-toggle" onclick="toggleFilters()">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
+        </svg>
+        Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Grid with Loading Skeletons -->
+  <div class="product-grid" id="product-container">
+    <!-- Loading skeletons will be added here -->
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
 
   <nav class="bottom-nav">
     <button onclick="location.href='index.html'"><img src="images/shop.png" alt="Home" /></button>
@@ -111,9 +184,148 @@
     let allProducts = [];
     let currentCategory = "all";
     let isWomenExpanded = false;
+    let currentPriceFilter = 5000;
+    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+
+    // Initialize loading skeletons
+    function showLoadingSkeletons() {
+      const container = document.getElementById('product-container');
+      container.innerHTML = '';
+      for (let i = 0; i < 8; i++) {
+        container.innerHTML += `
+          <div class="product-skeleton">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+              <div class="skeleton-title"></div>
+              <div class="skeleton-price"></div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Toast notification system
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    // Scroll to products function
+    function scrollToProducts() {
+      document.querySelector('.product-grid').scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    }
+
+    // Price filter function
+    function updatePriceFilter(value) {
+      currentPriceFilter = parseInt(value);
+      document.getElementById('price-display').textContent = `₹0 - ₹${value}`;
+      filterAndRenderProducts();
+    }
+
+    // Toggle filters function
+    function toggleFilters() {
+      const filterSection = document.querySelector('.filter-section');
+      filterSection.classList.toggle('expanded');
+    }
+
+    // Enhanced product filtering and rendering
+    function filterAndRenderProducts() {
+      let filtered = [...allProducts];
+      
+      // Apply category filter
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(p => p.section === currentCategory);
+      }
+      
+      // Apply price filter
+      filtered = filtered.filter(p => p.price <= currentPriceFilter);
+      
+      renderProducts(filtered);
+    }
+
+    // Quick add to cart function
+    function quickAddToCart(productId, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) return;
+      
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existingItem = cart.find(item => item.id === product.id);
+      
+      if (existingItem) {
+        existingItem.qty = (existingItem.qty || 1) + 1;
+      } else {
+        cart.push({
+          ...product,
+          qty: 1,
+          addedAt: new Date().toISOString()
+        });
+      }
+      
+      localStorage.setItem('cart', JSON.stringify(cart));
+      showToast('Added to cart! 🛒', 'success');
+      updateCartBadge();
+    }
+
+    // Wishlist functions
+    function toggleWishlist(productId, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) return;
+      
+      const index = wishlist.findIndex(item => item.id === product.id);
+      if (index > -1) {
+        wishlist.splice(index, 1);
+        showToast('Removed from wishlist', 'info');
+      } else {
+        wishlist.push(product);
+        showToast('Added to wishlist! ❤️', 'success');
+      }
+      
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      updateWishlistBadge();
+      
+      // Update the button appearance
+      const button = event.target.closest('.wishlist-btn');
+      if (button) {
+        button.classList.toggle('wishlisted');
+      }
+    }
+
+    // Update cart badge
+    function updateCartBadge() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const totalItems = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      
+      // Update cart button in bottom nav
+      const cartButton = document.querySelector('.bottom-nav button:nth-child(2)');
+      if (totalItems > 0) {
+        cartButton.setAttribute('data-badge', totalItems);
+      } else {
+        cartButton.removeAttribute('data-badge');
+      }
+    }
+
+    // Update wishlist badge
+    function updateWishlistBadge() {
+      const wishlistCount = wishlist.length;
+      // You can add wishlist badge logic here if needed
+    }
 
     async function fetchProducts(force = false) {
-      document.getElementById('loader').style.display = 'flex';
+      showLoadingSkeletons();
 
       const cached = localStorage.getItem("productCache");
       const lastFetched = localStorage.getItem("productCacheTime");
@@ -122,45 +334,79 @@
 
       if (isFresh && !force) {
         allProducts = JSON.parse(cached);
-        document.getElementById('loader').style.display = 'none';
-        return renderProducts(allProducts);
+        filterAndRenderProducts();
+        return;
       }
 
-      const res = await fetch("https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec");
-      const data = await res.json();
-      const rows = data.slice(1);
+      try {
+        const res = await fetch("https://script.google.com/macros/s/AKfycbwGHz8UWJnzEnlzzA3WAEL7o7weI3EZ8S19X43M1A_6HhY9DboEVO0uHLrVXmqOH5OJLg/exec");
+        const data = await res.json();
+        const rows = data.slice(1);
 
-      allProducts = rows.map(row => {
-        const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
-        return {
-          id,
-          name,
-          price: parseFloat(price),
-          desc,
-          trending,
-          section: section?.trim().toLowerCase(),
-          amount,
-          colors,
-          sizes
-        };
-      });
+        allProducts = rows.map(row => {
+          const [id, name, price, desc, trending, section, amount, colors, sizes] = row;
+          return {
+            id,
+            name,
+            price: parseFloat(price),
+            desc,
+            trending,
+            section: section?.trim().toLowerCase(),
+            amount,
+            colors,
+            sizes
+          };
+        });
 
-      localStorage.setItem("productCache", JSON.stringify(allProducts));
-      localStorage.setItem("productCacheTime", Date.now());
+        localStorage.setItem("productCache", JSON.stringify(allProducts));
+        localStorage.setItem("productCacheTime", Date.now());
 
-      document.getElementById('loader').style.display = 'none';
-      renderProducts(allProducts);
+        filterAndRenderProducts();
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        showToast('Failed to load products. Please try again.', 'error');
+        // Hide loading skeletons on error
+        document.getElementById('product-container').innerHTML = `
+          <div class="no-products">
+            <h3>Failed to load products</h3>
+            <p>Please check your internet connection and try again</p>
+          </div>
+        `;
+      }
     }
 
     function renderProducts(products) {
       const container = document.getElementById('product-container');
       container.innerHTML = '';
 
-      // Sort so ONAM SALE (trending) products are at the top
+      if (products.length === 0) {
+        container.innerHTML = `
+          <div class="no-products">
+            <h3>No products found</h3>
+            <p>Try adjusting your filters or search terms</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort products based on current sort option
+      const sortValue = document.getElementById('sort-select').value;
       const sortedProducts = [...products].sort((a, b) => {
-        const aTrending = a.trending && a.trending.toLowerCase() === 'yes';
-        const bTrending = b.trending && b.trending.toLowerCase() === 'yes';
-        return (bTrending ? 1 : 0) - (aTrending ? 1 : 0);
+        switch (sortValue) {
+          case 'price-low':
+            return a.price - b.price;
+          case 'price-high':
+            return b.price - a.price;
+          case 'name':
+            return a.name.localeCompare(b.name);
+          case 'newest':
+            return new Date(b.addedAt || 0) - new Date(a.addedAt || 0);
+          case 'trending':
+          default:
+            const aTrending = a.trending && a.trending.toLowerCase() === 'yes';
+            const bTrending = b.trending && b.trending.toLowerCase() === 'yes';
+            return (bTrending ? 1 : 0) - (aTrending ? 1 : 0);
+        }
       });
 
       sortedProducts.forEach(p => {
@@ -170,32 +416,67 @@
           imgUrl = Object.values(parsedColors)[0]?.split(',')[0] || imgUrl;
         } catch {}
 
-        // Trending badge HTML if product is trending
         const trendingBadge = p.trending && p.trending.toLowerCase() === 'yes' ? '<span class="trending-badge">ONAM SALE</span>' : '';
+        const isWishlisted = wishlist.some(item => item.id === p.id);
+
+        let priceHtml = '';
+        if (p.trending && p.trending.toLowerCase() === 'yes') {
+          const discounted = Math.round(p.price * 0.9);
+          priceHtml = `<span class="strike-price">₹${p.price}</span> <span class="discounted-price">₹${discounted}</span>`;
+        } else {
+          priceHtml = `₹${p.price}`;
+        }
 
         const div = document.createElement('div');
         div.className = 'product';
         div.innerHTML = `
           ${trendingBadge}
+          <div class="product-actions">
+            <button class="wishlist-btn ${isWishlisted ? 'wishlisted' : ''}" onclick="toggleWishlist('${p.id}', event)" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </button>
+            <button class="quick-add-btn" onclick="quickAddToCart('${p.id}', event)" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+            </button>
+          </div>
           <img src="${imgUrl}" alt="${p.name}" loading="lazy" />
           <div class="product-info-overlay">
             <h3>${p.name}</h3>
-            <h4>₹${p.price}</h4>
+            <h4>${priceHtml}</h4>
           </div>
         `;
-        div.addEventListener('click', () => {
+        
+        // Add click event to product card (excluding buttons)
+        div.addEventListener('click', (e) => {
+          // Don't navigate if clicking on buttons
+          if (e.target.closest('.product-actions')) {
+            return;
+          }
+          
+          // Add to recently viewed
+          const existingIndex = recentlyViewed.findIndex(item => item.id === p.id);
+          if (existingIndex > -1) {
+            recentlyViewed.splice(existingIndex, 1);
+          }
+          recentlyViewed.unshift(p);
+          recentlyViewed = recentlyViewed.slice(0, 10); // Keep only last 10
+          localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+          
           localStorage.setItem('selectedProduct', JSON.stringify(p));
           window.location.href = `product.html?id=${p.id}`;
         });
+        
         container.appendChild(div);
       });
     }
 
     function filterProducts(category) {
       currentCategory = category;
-      if (category === 'all') return renderProducts(allProducts);
-      const filtered = allProducts.filter(p => p.section === category);
-      renderProducts(filtered);
+      filterAndRenderProducts();
     }
 
     function toggleWomenSubcategories() {
@@ -222,11 +503,9 @@
           <div class="category-icon" onclick="filterProducts('Raw Materials')">
             <img src="images/rawmaterials.png" alt="raw materials" /><span>Raw Materials</span>
           </div>
-          
         `;
       } else {
-        bar.innerHTML = document.querySelector('header + nav').outerHTML;
-        location.reload(); // reload to reset
+        location.reload();
       }
     }
 
@@ -240,20 +519,124 @@
     }
 
     function sortProducts() {
-      const value = document.getElementById("sort").value;
-      let sorted = [...allProducts];
-
-      if (value === 'price-low') {
-        sorted.sort((a, b) => a.price - b.price);
-      } else if (value === 'price-high') {
-        sorted.sort((a, b) => b.price - a.price);
-      } else if (value === 'name') {
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-      }
-      renderProducts(sorted);
+      filterAndRenderProducts();
     }
 
+    // --- Mobile Filter Modal Functions ---
+    function openFilterMenu() {
+      var modal = document.getElementById('filterModal');
+      if (!modal) {
+        console.error('Filter modal not found');
+        return;
+      }
+      
+      // Sync modal values with current filters
+      if (document.getElementById('sort-select')) {
+        const sortSelect = document.getElementById('sort-select');
+        const selectedText = sortSelect.selectedOptions[0].textContent;
+        document.getElementById('customSortSelected').textContent = selectedText;
+      }
+      
+      if (document.getElementById('modal-price-range')) {
+        document.getElementById('modal-price-range').value = currentPriceFilter;
+        updateModalPriceDisplay(currentPriceFilter);
+      }
+      
+      modal.style.display = 'flex';
+      setTimeout(function() { 
+        modal.classList.add('active'); 
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+    function closeFilterMenu() {
+      var modal = document.getElementById('filterModal');
+      if (!modal) return;
+      modal.classList.remove('active');
+      setTimeout(function() { modal.style.display = 'none'; }, 200);
+      document.body.style.overflow = '';
+    }
+    function updateModalPriceDisplay(value) {
+      document.getElementById('modal-price-display').textContent = `₹0 - ₹${value}`;
+    }
+    function applyMobileFilters() {
+      // Apply modal filters to main controls
+      const customSelected = document.getElementById('customSortSelected');
+      const sortSelect = document.getElementById('sort-select');
+      
+      if (customSelected && sortSelect) {
+        // Map the custom dropdown text to the select value
+        const textToValue = {
+          'Trending': 'trending',
+          'Price: Low to High': 'price-low',
+          'Price: High to Low': 'price-high',
+          'Name A-Z': 'name',
+          'Newest': 'newest'
+        };
+        
+        const selectedText = customSelected.textContent;
+        const value = textToValue[selectedText] || 'trending';
+        sortSelect.value = value;
+      }
+      
+      if (document.getElementById('modal-price-range')) {
+        updatePriceFilter(document.getElementById('modal-price-range').value);
+      }
+      
+      sortProducts();
+      closeFilterMenu();
+    }
+
+    // Custom dropdown functions
+    function toggleSortDropdown() {
+      const dropdown = document.getElementById('customSortDropdown');
+      const list = document.getElementById('customSortList');
+      list.style.display = list.style.display === 'block' ? 'none' : 'block';
+      dropdown.classList.toggle('active');
+    }
+
+    function selectSortOption(value, event) {
+      const dropdown = document.getElementById('customSortDropdown');
+      const selectedSpan = document.getElementById('customSortSelected');
+      const list = document.getElementById('customSortList');
+      
+      // Update the selected text
+      selectedSpan.textContent = event.target.textContent;
+      
+      // Hide the dropdown list
+      list.style.display = 'none';
+      dropdown.classList.remove('active');
+      
+      // Update the main sort select value
+      const sortSelect = document.getElementById('sort-select');
+      if (sortSelect) {
+        const textToValue = {
+          'Trending': 'trending',
+          'Price: Low to High': 'price-low',
+          'Price: High to Low': 'price-high',
+          'Name A-Z': 'name',
+          'Newest': 'newest'
+        };
+        const selectedText = event.target.textContent;
+        const value = textToValue[selectedText] || 'trending';
+        sortSelect.value = value;
+      }
+    }
+
+    // Add click outside functionality to close dropdown
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('customSortDropdown');
+      const list = document.getElementById('customSortList');
+      
+      if (dropdown && !dropdown.contains(event.target)) {
+        list.style.display = 'none';
+        dropdown.classList.remove('active');
+      }
+    });
+
+    // Initialize
     fetchProducts();
+    updateCartBadge();
+    updateWishlistBadge();
   </script>
 </body>
 </html>
