@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account Info</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f8f3;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 50px;
+    }
+
+    .container {
+      max-width: 600px;
+      
+      margin: 2.5rem auto;
+      background: white;
+      padding: 2.5rem 2rem 2rem 2rem;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(131,147,113,0.10);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #839371;
+      letter-spacing: 1px;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 1.2rem 0 0.3rem;
+      color: #839371;
+      letter-spacing: 0.5px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.9rem;
+      border: 1.5px solid #dbe6d0;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      background: #f8faf7;
+      margin-bottom: 0.2rem;
+      transition: border 0.2s;
+      box-shadow: 0 1px 4px rgba(131,147,113,0.04);
+    }
+    input:focus, textarea:focus {
+      border: 1.5px solid #839371;
+      outline: none;
+      background: #fff;
+    }
+
+    #save {
+      margin-top: 2.2rem;
+      width: 100%;
+      padding: 1.1rem;
+      font-size: 1.08rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      background: #839371;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(131,147,113,0.10);
+      letter-spacing: 1px;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    #save:hover {
+      background: #6d7c5d;
+      box-shadow: 0 4px 16px rgba(131,147,113,0.13);
+    }
+
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(131,147,113,0.10);
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.4s;
+    }
+
+    .profile-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b8da91 60%, #839371 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.7rem;
+      color: #fff;
+      margin-bottom: 1.1rem;
+      position: relative;
+      overflow: visible;
+      flex-direction: column;
+      box-shadow: 0 2px 12px rgba(131,147,113,0.10);
+    }
+
+    .profile-avatar img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #fff;
+      object-fit: cover;
+      margin-bottom: 0.2rem;
+      border: 3px solid #839371;
+      box-shadow: 0 1px 6px rgba(131,147,113,0.08);
+    }
+
+    .profile-info {
+      width: 100%;
+      text-align: center;
+    }
+
+    .profile-info h3 {
+      margin: 0.7rem 0 0.2rem 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #839371;
+      letter-spacing: 0.5px;
+    }
+
+    .profile-info p {
+      margin: 0.2rem 0;
+      color: #444;
+      font-size: 1.05rem;
+      letter-spacing: 0.2px;
+    }
+
+    .edit-btn {
+      margin-top: 1.5rem;
+      padding: 0.8rem 2.5rem;
+      font-size: 1.05rem;
+      border: none;
+      border-radius: 10px;
+      background: #839371;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(131,147,113,0.10);
+      letter-spacing: 0.5px;
+      display: block;
+      width: 100%;
+    }
+
+    .edit-btn:hover {
+      background: #6d7c5d;
+      box-shadow: 0 4px 16px rgba(131,147,113,0.13);
+    }
+
+    .logout-btn {
+      margin-top: 0.7rem;
+      padding: 0.8rem 2.5rem;
+      font-size: 1.05rem;
+      border: 2px solid #839371;
+      border-radius: 10px;
+      background: #fff;
+      color: #839371;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(131,147,113,0.07);
+      letter-spacing: 0.5px;
+      display: block;
+      width: 100%;
+    }
+    .logout-btn:hover {
+      background: #839371;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(131,147,113,0.13);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Profile Card (hidden by default) -->
+    <div id="profileCard" class="profile-card" style="display:none;">
+      <div class="profile-avatar">
+        <img id="profileImg" src="images/user.png" alt="Profile" />
+      </div>
+      <div class="profile-info">
+        <h3 id="profileName"></h3>
+        <p id="profileEmail"></p>
+        <p id="profilePhone"></p>
+        <p id="profileAddress"></p>
+        <p id="profilePostal"></p>
+      </div>
+      <button class="edit-btn" onclick="showEditForm()">Edit</button>
+      <button class="logout-btn" onclick="logoutUser()" type="button">Logout</button>
+    </div>
+    <!-- Edit Form -->
+    <form id="accountForm" style="display:none;">
+      <h2>Account Information</h2>
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" placeholder="Enter your first name">
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" placeholder="Enter your last name">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email">
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" placeholder="Enter your phone number">
+      <label for="address">Shipping Address</label>
+      <textarea id="address" rows="4" placeholder="Enter your shipping address"></textarea>
+      <label for="postalCode">Postal Code</label>
+      <input type="text" id="postalCode" placeholder="Enter your postal code">
+      <button type="submit" id="save">Save</button>
+    </form>
+  </div>
+  <nav class="bottom-nav">
+    <button onclick="navigateTo('index.html')"><img src="images/shop.png" alt="Home" /><span>Shop</span></button>
+    <button onclick="navigateTo('cart.html')" data-badge="0"><img src="images/shopping-cart.png" alt="Cart" /><span>Cart</span></button>
+    <button class="active" onclick="navigateTo('account.html')"><img src="images/user.png" alt="Profile" /><span>Account</span></button>
+  </nav>
+  <script>
+function getUserDetails() {
+  return JSON.parse(localStorage.getItem('userDetails') || '{}');
+}
+function setUserDetails(user) {
+  localStorage.setItem('userDetails', JSON.stringify(user));
+}
+function showProfile() {
+  const user = getUserDetails();
+  if (!user.firstName) { showEditForm(); return; }
+  document.getElementById('profileName').innerText = user.firstName + ' ' + (user.lastName || '');
+  document.getElementById('profileEmail').innerText = user.email || '';
+  document.getElementById('profilePhone').innerText = user.phone || '';
+  document.getElementById('profileAddress').innerText = user.address || '';
+  document.getElementById('profilePostal').innerText = user.postalCode ? 'Postal Code: ' + user.postalCode : '';
+  // Show default profile picture
+  const avatar = document.getElementById('profileImg');
+  avatar.src = "images/user.png";
+  document.getElementById('profileCard').style.display = '';
+  document.getElementById('accountForm').style.display = 'none';
+}
+function showEditForm() {
+  const user = getUserDetails();
+  document.getElementById('firstName').value = user.firstName || '';
+  document.getElementById('lastName').value = user.lastName || '';
+  document.getElementById('email').value = user.email || '';
+  document.getElementById('phone').value = user.phone || '';
+  document.getElementById('address').value = user.address || '';
+  document.getElementById('postalCode').value = user.postalCode || '';
+  document.getElementById('profileCard').style.display = 'none';
+  document.getElementById('accountForm').style.display = '';
+}
+document.getElementById('accountForm').onsubmit = function(e) {
+  e.preventDefault();
+  const user = {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    address: document.getElementById('address').value.trim(),
+    postalCode: document.getElementById('postalCode').value.trim()
+  };
+  if (!user.firstName || !user.lastName || !user.email || !user.phone || !user.address || !user.postalCode) {
+    return alert("⚠️ Please fill in all fields.");
+  }
+  setUserDetails(user);
+  alert('✅ Account information saved!');
+  showProfile();
+};
+function navigateTo(page) {
+  window.location.href = page;
+}
+
+function logoutUser() {
+  localStorage.removeItem('userDetails');
+  location.reload();
+}
+
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const totalItems = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+  const cartButton = document.querySelector('.bottom-nav button:nth-child(2)');
+  if (totalItems > 0) {
+    cartButton.setAttribute('data-badge', totalItems);
+  } else {
+    cartButton.removeAttribute('data-badge');
+  }
+}
+
+window.onload = function() {
+  const user = getUserDetails();
+  if (user.firstName) {
+    showProfile();
+  } else {
+    showEditForm();
+  }
+  updateCartBadge();
+};
+  </script>
+</body>
+</html>
